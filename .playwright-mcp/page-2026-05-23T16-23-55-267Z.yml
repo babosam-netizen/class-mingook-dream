@@ -1,0 +1,19 @@
+- generic [ref=e6]:
+  - generic [ref=e7]:
+    - heading "민국이의 꿈" [level=1] [ref=e8]
+    - paragraph [ref=e9]: 우리의 턴(Turn)이 왔다 — 작은 대한민국 시뮬레이션
+  - generic [ref=e14]:
+    - generic [ref=e15]:
+      - text: 반 코드
+      - textbox "반 코드" [ref=e16]:
+        - /placeholder: "예: AB3C5K"
+    - generic [ref=e17]:
+      - generic [ref=e18]:
+        - text: 번호
+        - spinbutton "번호" [ref=e19]
+      - generic [ref=e20]:
+        - text: 이름
+        - textbox "이름" [ref=e21]:
+          - /placeholder: 홍길동
+    - button "입장하기" [ref=e22]
+    - button "← 뒤로" [ref=e23]

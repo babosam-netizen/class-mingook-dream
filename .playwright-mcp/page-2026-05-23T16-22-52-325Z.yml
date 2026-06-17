@@ -1,0 +1,1716 @@
+- generic [ref=e29]:
+  - banner [ref=e30]:
+    - generic [ref=e31]:
+      - generic [ref=e32]:
+        - generic [ref=e33]: 민국이의 꿈
+        - generic [ref=e34]: 꿈꾸는 대한민국 (시연용)
+        - generic [ref=e35]: DEMO24
+        - generic [ref=e36]: v1.2.202
+      - navigation [ref=e37]:
+        - link "시민광장" [ref=e38] [cursor=pointer]:
+          - /url: "#/phase1"
+        - link "선거" [ref=e39] [cursor=pointer]:
+          - /url: "#/phase2"
+        - link "국정포털" [ref=e40] [cursor=pointer]:
+          - /url: "#/phase3"
+        - link "여론판" [ref=e41] [cursor=pointer]:
+          - /url: "#/news"
+        - link "정리글벽" [ref=e42] [cursor=pointer]:
+          - /url: "#/reflection"
+        - button "⚡ 여론조사" [ref=e43]
+        - link "👩‍🏫 교사실" [ref=e44] [cursor=pointer]:
+          - /url: "#/teacher"
+      - generic [ref=e45]:
+        - link "세 번째 여정 — 국정 포털" [ref=e46] [cursor=pointer]:
+          - /url: "#/phase3"
+        - generic [ref=e47]: 👩‍🏫 선생님
+        - button "나가기" [ref=e48]
+  - generic [ref=e49]:
+    - generic [ref=e50]:
+      - generic [ref=e51]: 📎 링크
+      - button "대기 0" [ref=e52]
+      - button "승인 0" [ref=e53]
+      - button "전체 0" [ref=e54]
+    - button "📜 청원 · 0" [ref=e55]
+    - button "🎙️ 토론 도구" [ref=e56]
+    - button "🔍 제출물 열람" [ref=e57]
+    - button "⚙️ 학급 설정" [ref=e58]
+    - button "📱 입장 QR" [ref=e59]
+    - link "📷 갤러리" [ref=e60] [cursor=pointer]:
+      - /url: "#/gallery"
+    - link "📊 학생 분석" [ref=e61] [cursor=pointer]:
+      - /url: "#/analytics"
+    - button "🗑️ 영구 삭제" [ref=e62]
+  - main [ref=e63]:
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - generic [ref=e68]:
+              - heading "🏫 학급 정보 요약" [level=3] [ref=e69]:
+                - generic [ref=e70]: 🏫
+                - text: 학급 정보 요약
+              - generic [ref=e71]: "CODE: DEMO24"
+            - generic [ref=e72]:
+              - paragraph [ref=e74]: 꿈꾸는 대한민국 (시연용)
+              - generic [ref=e75]:
+                - paragraph [ref=e76]: 현재 단계
+                - paragraph [ref=e77]: 세 번째 여정
+              - generic [ref=e78]:
+                - paragraph [ref=e79]: 접속 현황
+                - paragraph [ref=e80]:
+                  - text: "1"
+                  - generic [ref=e81]: /28
+              - generic [ref=e82]:
+                - paragraph [ref=e83]: 완료 인원
+                - paragraph [ref=e84]:
+                  - text: "0"
+                  - generic [ref=e85]: /1
+          - generic [ref=e87]:
+            - generic [ref=e88]:
+              - heading "👥 시민단체 현황" [level=3] [ref=e89]:
+                - generic [ref=e90]: 👥
+                - text: 시민단체 현황
+              - button "활동 상세 펼치기 ▼" [ref=e91]
+            - generic [ref=e92]:
+              - generic [ref=e93]:
+                - generic [ref=e94]:
+                  - button "🌱 그린피스(환경)" [ref=e95]
+                  - generic [ref=e96]: 0명
+                - generic [ref=e98]: 멤버 없음
+              - generic [ref=e99]:
+                - generic [ref=e100]:
+                  - button "🏠 마음의집(주거)" [ref=e101]
+                  - generic [ref=e102]: 1명
+                - generic "송지훈 (오프라인)" [ref=e104]:
+                  - generic [ref=e106]: "17."
+                  - generic [ref=e107]: 송지훈
+              - generic [ref=e108]:
+                - generic [ref=e109]:
+                  - button "🛠️ 내일의노동" [ref=e110]
+                  - generic [ref=e111]: 2명
+                - generic [ref=e112]:
+                  - generic "김민준 (오프라인)" [ref=e113]:
+                    - generic [ref=e115]: "1."
+                    - generic [ref=e116]: 김민준
+                    - generic "차시 활동 완료" [ref=e117]: ✓
+                  - generic "장현우 (오프라인)" [ref=e118]:
+                    - generic [ref=e120]: "9."
+                    - generic [ref=e121]: 장현우
+              - generic [ref=e122]:
+                - generic [ref=e123]:
+                  - button "🗺️ 함께마을(지역)" [ref=e124]
+                  - generic [ref=e125]: 2명
+                - generic [ref=e126]:
+                  - generic "최지우 (오프라인)" [ref=e127]:
+                    - generic [ref=e129]: "4."
+                    - generic [ref=e130]: 최지우
+                  - generic "7반 (오프라인)" [ref=e131]:
+                    - generic [ref=e133]: "40."
+                    - generic [ref=e134]: 7반
+              - generic [ref=e135]:
+                - generic [ref=e136]:
+                  - button "🤝 평등사회(인권)" [ref=e137]
+                  - generic [ref=e138]: 3명
+                - generic [ref=e139]:
+                  - generic "이서연 (접속 중)" [ref=e140]:
+                    - generic [ref=e142]: "2."
+                    - generic [ref=e143]: 이서연
+                    - generic "다른 창 보는 중" [ref=e144]: 💤
+                  - generic "박도윤 (오프라인)" [ref=e145]:
+                    - generic [ref=e147]: "3."
+                    - generic [ref=e148]: 박도윤
+                  - generic "안숙희 (오프라인)" [ref=e149]:
+                    - generic [ref=e151]: "33."
+                    - generic [ref=e152]: 안숙희
+              - generic [ref=e153]:
+                - generic [ref=e154]:
+                  - button "💰 함께살기(복지)" [ref=e155]
+                  - generic [ref=e156]: 1명
+                - generic "한가락 (오프라인)" [ref=e158]:
+                  - generic [ref=e160]: "25."
+                  - generic [ref=e161]: 한가락
+            - generic [ref=e162]:
+              - generic [ref=e163]:
+                - generic [ref=e164]:
+                  - generic [ref=e165]:
+                    - generic [ref=e166]: 👤
+                    - text: 미지정 학생
+                  - generic [ref=e167]: 19명
+                - generic [ref=e168]:
+                  - generic "정주원 (오프라인)" [ref=e169]:
+                    - generic [ref=e171]: "5."
+                    - generic [ref=e172]: 정주원
+                  - generic "강하은 (오프라인)" [ref=e173]:
+                    - generic [ref=e175]: "6."
+                    - generic [ref=e176]: 강하은
+                  - generic "조건우 (오프라인)" [ref=e177]:
+                    - generic [ref=e179]: "7."
+                    - generic [ref=e180]: 조건우
+                  - generic "윤지아 (오프라인)" [ref=e181]:
+                    - generic [ref=e183]: "8."
+                    - generic [ref=e184]: 윤지아
+                  - generic "임다인 (오프라인)" [ref=e185]:
+                    - generic [ref=e187]: "10."
+                    - generic [ref=e188]: 임다인
+                  - generic "한준서 (오프라인)" [ref=e189]:
+                    - generic [ref=e191]: "11."
+                    - generic [ref=e192]: 한준서
+                  - generic "오유나 (오프라인)" [ref=e193]:
+                    - generic [ref=e195]: "12."
+                    - generic [ref=e196]: 오유나
+                  - generic "서준혁 (오프라인)" [ref=e197]:
+                    - generic [ref=e199]: "13."
+                    - generic [ref=e200]: 서준혁
+                  - generic "권예은 (오프라인)" [ref=e201]:
+                    - generic [ref=e203]: "14."
+                    - generic [ref=e204]: 권예은
+                  - generic "황민철 (오프라인)" [ref=e205]:
+                    - generic [ref=e207]: "15."
+                    - generic [ref=e208]: 황민철
+                  - generic "안소희 (오프라인)" [ref=e209]:
+                    - generic [ref=e211]: "16."
+                    - generic [ref=e212]: 안소희
+                  - generic "전혜린 (오프라인)" [ref=e213]:
+                    - generic [ref=e215]: "18."
+                    - generic [ref=e216]: 전혜린
+                  - generic "유승민 (오프라인)" [ref=e217]:
+                    - generic [ref=e219]: "19."
+                    - generic [ref=e220]: 유승민
+                  - generic "홍채원 (오프라인)" [ref=e221]:
+                    - generic [ref=e223]: "20."
+                    - generic [ref=e224]: 홍채원
+                  - generic "백지안 (오프라인)" [ref=e225]:
+                    - generic [ref=e227]: "21."
+                    - generic [ref=e228]: 백지안
+                  - generic "남궁민 (오프라인)" [ref=e229]:
+                    - generic [ref=e231]: "22."
+                    - generic [ref=e232]: 남궁민
+                  - generic "제갈훈 (오프라인)" [ref=e233]:
+                    - generic [ref=e235]: "23."
+                    - generic [ref=e236]: 제갈훈
+                  - generic "선우연 (오프라인)" [ref=e237]:
+                    - generic [ref=e239]: "24."
+                    - generic [ref=e240]: 선우연
+                  - generic "크크 (오프라인)" [ref=e241]:
+                    - generic [ref=e243]: "51."
+                    - generic [ref=e244]: 크크
+              - generic [ref=e245]:
+                - generic [ref=e246]:
+                  - generic [ref=e247]:
+                    - generic [ref=e248]: 🚪
+                    - text: 미접속 (지정 외)
+                  - generic [ref=e249]: 8명
+                - generic [ref=e250]:
+                  - generic [ref=e251]: 31번
+                  - generic [ref=e252]: 32번
+                  - generic [ref=e253]: 34번
+                  - generic [ref=e254]: 35번
+                  - generic [ref=e255]: 36번
+                  - generic [ref=e256]: 37번
+                  - generic [ref=e257]: 38번
+                  - generic [ref=e258]: 39번
+        - generic [ref=e260]:
+          - generic [ref=e261]:
+            - generic [ref=e262]: 📺
+            - heading "학생 화면 실시간 미리보기" [level=2] [ref=e263]
+            - generic [ref=e264]: LIVE
+          - generic [ref=e265]:
+            - generic [ref=e266]:
+              - paragraph [ref=e267]: 📺 학생들이 지금 보는 화면입니다 (읽기 전용)
+              - paragraph [ref=e268]: 교사 미리보기 모드 — 입력 폼·추천·표결 등 학생 액션은 비활성됩니다. 데이터만 그대로 노출.
+            - generic [ref=e269]: ▶ 지금 활동:행정 ② 정책 및 예산 초안13차시
+            - generic [ref=e270]:
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic: 민국이의 꿈
+                          - generic: 꿈꾸는 대한민국 (시연용)
+                          - generic: DEMO24
+                          - generic: v1.2.202
+                        - navigation:
+                          - link "시민광장":
+                            - /url: "#/phase1"
+                          - link "선거":
+                            - /url: "#/phase2"
+                          - link "국정포털":
+                            - /url: "#/phase3"
+                          - link "여론판":
+                            - /url: "#/news"
+                          - link "정리글벽":
+                            - /url: "#/reflection"
+                          - button "⚡ 여론조사"
+                          - link "👩‍🏫 교사실":
+                            - /url: "#/teacher"
+                        - generic:
+                          - link "세 번째 여정 — 국정 포털":
+                            - /url: "#/phase3"
+                          - generic: 👩‍🏫 선생님
+                          - button "나가기"
+                    - main:
+                      - generic:
+                        - heading "국정 포털" [level=1]
+                        - generic:
+                          - paragraph: 🎯 National Agenda
+                          - 'heading "최우선 과제: 그린피스(환경)" [level=2]'
+                        - generic:
+                          - strong: 🥈 2라운드 — 행정부 (13~15차시)
+                          - text: · 활동 끝에 기사 작성 → 교사 승인 → 여론판 게시 → N차 여론조사
+                        - generic:
+                          - generic: 💬 오늘의 토론 주제
+                          - paragraph: 어디에 예산을 많이 사용해야 하는가? (공약대로 잘하고 있는가?)
+                          - paragraph: 제한된 예산을 어디에 우선 배정할지 토론하고 결정합니다. 시민들은 행정부의 시행을 감시하고 기사로 비판합니다.
+                        - generic:
+                          - button "📖 5분 브리핑 카드 보기"
+                          - generic: 차시 시작 5분에 함께 읽어요
+                      - generic:
+                        - generic:
+                          - button "🔒 입법부 · 의사당10~12차시" [disabled]
+                          - button "행정부 · 대시보드13~15차시"
+                          - button "🔒 사법부 · 법원16~18차시" [disabled]
+                        - generic:
+                          - generic:
+                            - generic:
+                              - heading "🏢 행정부 진행 단계" [level=3]
+                              - generic: 부처 6개 · 제출 1개
+                            - generic:
+                              - generic:
+                                - generic: ✓준비
+                              - generic:
+                                - generic: ▶초안작성
+                              - generic:
+                                - generic: 초안검토
+                              - generic:
+                                - generic: 토의·평가
+                              - generic:
+                                - generic: 국무회의
+                              - generic:
+                                - generic: 최종수정
+                              - generic:
+                                - generic: 발표
+                            - generic:
+                              - generic:
+                                - paragraph: ② 정책 및 예산 초안 작성
+                                - paragraph: "👥 다음 행동: 📈 집행계획과 시행령 초안, 예산 항목을 함께 작성하고 예산 계산기로 산출식을 만들어 보세요. 저장 시 평가단 열람 가능, 제출 시 공식 공개됩니다."
+                          - generic:
+                            - generic:
+                              - generic:
+                                - generic: 📋
+                                - generic: 행정부 참여 모둠 (6개 정책)
+                              - generic:
+                                - generic:
+                                  - generic: 🏠
+                                  - generic: 마음의집(주거)
+                                  - generic: — 보건복지부
+                                - generic:
+                                  - generic: 🤝
+                                  - generic: 평등사회(인권)
+                                  - generic: — 여성가족인권부
+                                - generic:
+                                  - generic: 🛠️
+                                  - generic: 내일의노동
+                                  - generic: — 정책
+                                - generic:
+                                  - generic: 🌱
+                                  - generic: 그린피스(환경)
+                                  - generic: — 정책
+                                - generic:
+                                  - generic: 🗺️
+                                  - generic: 함께마을(지역)
+                                  - generic: — 정책
+                                - generic:
+                                  - generic: 💰
+                                  - generic: 함께살기(복지)
+                                  - generic: — 정책
+                            - generic:
+                              - generic: ② 정책 초안 작성 (학생 미리보기)
+                            - generic:
+                              - generic:
+                                - generic:
+                                  - generic:
+                                    - generic:
+                                      - generic: 🏛️ 비빔민국 국무회의
+                                      - generic: ·
+                                      - generic: 예산 초안 검토 전광판
+                                    - heading "부처별 정책 및 예산 청구 현황" [level=1]
+                                    - paragraph: 각 부처가 제출한 정책 초안과 예산 청구액을 검토하고, 정부 총예산 내에서 최적의 조율을 준비합니다.
+                                  - generic:
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - generic: 정부 총예산
+                                          - generic:
+                                            - generic: "100"
+                                            - generic: 억원
+                                        - generic:
+                                          - generic: 부처 청구액 합계
+                                          - generic:
+                                            - generic: "195"
+                                            - generic: 억원
+                                        - generic:
+                                          - generic: ⚠️ 예산 초과
+                                          - generic:
+                                            - generic: "95"
+                                            - generic: 억원
+                                          - generic: 국무회의에서 예산 조정이 필요합니다
+                                      - generic:
+                                        - generic:
+                                          - generic: 예산 소진율
+                                          - generic: 195%
+                                  - main:
+                                    - article:
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic: 🏢 그린피스(환경)부
+                                            - generic: 그린피스(환경)
+                                            - generic: "장관: 한가락"
+                                          - heading "비빔민국 학교 간식시간 보장 정책" [level=3]
+                                        - generic:
+                                          - generic: 예산 청구액
+                                          - generic:
+                                            - generic: "4.1"
+                                            - generic: 억원
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📜 시행령 초안
+                                              - generic: 법적 근거
+                                            - paragraph: 제1조 (목적) 초등학생이 간식을 먹을 수 있도록 시간을 조정할 수 있도록 하고 간식을 지원한다. 제2조 (대상) 전국 초등학생 45000명에게 적용된다. 제3조 (시행 절차) 교육부는 매년 학기 초 학교에 학생수에 따라 예산을 배정한다. 제4조 (지원 및 예산) 학생 행복 증진 비용에서 학생당 1000원씩 학교에 지원한다. 제5조 (점검 및 예외) 학기말에 비용이 사용되었는지 점검하고 못한 경우 반납한다.
+                                          - generic:
+                                            - generic:
+                                              - generic: 📌 집행 계획 핵심
+                                              - generic: 세부 사업
+                                            - paragraph: 교육부는 매년 학기 초 학교에 학생수에 따라 예산을 배정한다.
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📊 예산 산출식 내역
+                                              - generic: 산출 근거
+                                            - generic:
+                                              - generic:
+                                                - generic:
+                                                  - generic: "항목 1: 간식 예산"
+                                                  - generic: 4.1 억원
+                                                - paragraph: "산출내역: 202,500명 x 1,000원 x 2번"
+                                          - generic:
+                                            - generic:
+                                              - generic: ✨ 기대 효과
+                                              - generic: 효과 분석
+                                            - paragraph: 가정에서 학생들이 짜증을 덜 부리게 된다.
+                                    - article:
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic: 🏢 보건복지부
+                                            - generic: 마음의집(주거)
+                                            - generic: "장관: 송지훈"
+                                          - heading "정책명이 입력되지 않았습니다." [level=3]
+                                        - generic:
+                                          - generic: 예산 청구액
+                                          - generic:
+                                            - generic: "89"
+                                            - generic: 억원
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📜 시행령 초안
+                                              - generic: 법적 근거
+                                            - paragraph: 시행령 내용이 없습니다.
+                                          - generic:
+                                            - generic:
+                                              - generic: 📌 집행 계획 핵심
+                                              - generic: 세부 사업
+                                            - paragraph: 집행 계획 내용이 없습니다.
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📊 예산 산출식 내역
+                                              - generic: 산출 근거
+                                            - generic:
+                                              - generic:
+                                                - generic:
+                                                  - generic: "항목 1: 곰곰"
+                                                  - generic: 89 억원
+                                                - paragraph: "산출내역: 1000000"
+                                          - generic:
+                                            - generic:
+                                              - generic: ✨ 기대 효과
+                                              - generic: 효과 분석
+                                            - paragraph: 기대 효과 내용이 없습니다.
+                                    - article:
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic: 🏢 내일의노동부
+                                            - generic: 내일의노동
+                                            - generic: "장관: 장현우"
+                                          - heading "비빔나라 간식 제공 의무화" [level=3]
+                                        - generic:
+                                          - generic: 예산 청구액
+                                          - generic:
+                                            - generic: "69.6"
+                                            - generic: 억원
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📜 시행령 초안
+                                              - generic: 법적 근거
+                                            - paragraph: 넝ㄴㅇ너ㅏ어
+                                          - generic:
+                                            - generic:
+                                              - generic: 📌 집행 계획 핵심
+                                              - generic: 세부 사업
+                                            - paragraph: 학교에서 수익자 부담으로 간식 신청 후 제공
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📊 예산 산출식 내역
+                                              - generic: 산출 근거
+                                            - generic:
+                                              - generic:
+                                                - generic:
+                                                  - generic: "항목 1: 간식비"
+                                                  - generic: 69.6 억원
+                                                - paragraph: "산출내역: 232,000명 x 10,000원 x 3번"
+                                              - generic:
+                                                - generic:
+                                                  - generic: "항목 2: 예산 항목 2"
+                                                  - generic: 0 억원
+                                                - paragraph: "산출내역: 산출내역 미입력"
+                                          - generic:
+                                            - generic:
+                                              - generic: ✨ 기대 효과
+                                              - generic: 효과 분석
+                                            - paragraph: ㅇ
+                                    - article:
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic: 🏢 함께마을(지역)부
+                                            - generic: 함께마을(지역)
+                                            - generic: "장관: 최지우"
+                                          - heading "청년주거안정정책" [level=3]
+                                        - generic:
+                                          - generic: 예산 청구액
+                                          - generic:
+                                            - generic: "30"
+                                            - generic: 억원
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📜 시행령 초안
+                                              - generic: 법적 근거
+                                            - paragraph: 제1조 (목적) 집집 제2조 (대상) 만34세미만청년 제3조 (시행 절차) 냠냠 제4조 (지원 및 예산) 쩝쩝 제5조 (점검 및 예외) 꿀꺽
+                                          - generic:
+                                            - generic:
+                                              - generic: 📌 집행 계획 핵심
+                                              - generic: 세부 사업
+                                            - paragraph: 냠냠
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📊 예산 산출식 내역
+                                              - generic: 산출 근거
+                                            - generic:
+                                              - generic:
+                                                - generic:
+                                                  - generic: "항목 1: 청년 주택 예산 항목 1"
+                                                  - generic: 30 억원
+                                                - paragraph: "산출내역: 10,000명 x 300,000원 x 1번"
+                                          - generic:
+                                            - generic:
+                                              - generic: ✨ 기대 효과
+                                              - generic: 효과 분석
+                                            - paragraph: 기대 효과 내용이 없습니다.
+                                    - article:
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic: 🏢 여성가족인권부
+                                            - generic: 평등사회(인권)
+                                            - generic: "장관: 서준혁"
+                                          - heading "정책명이 입력되지 않았습니다." [level=3]
+                                        - generic:
+                                          - generic: 예산 청구액
+                                          - generic:
+                                            - generic: "2.3"
+                                            - generic: 억원
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📜 시행령 초안
+                                              - generic: 법적 근거
+                                            - paragraph: 제1조 (목적) 이 시행령은 간식시간을 주세요에 따라 [정책 목적]을 실제로 시행하는 데 필요한 사항을 정한다. 제2조 (대상) 이 시행령의 적용 대상은 [대상 시민/기관/장소]로 한다. 제3조 (시행 절차) 여성가족인권부는 [언제/어디서/어떻게] 정책을 시행한다. 제4조 (지원 및 예산) 정부는 [예산 항목]에 배정된 예산을 [지원 방식]으로 사용한다. 제5조 (점검 및 예외) [점검 방법]으로 시행 상황을 확인하며, [예외 상황]에는 별도 기준을 적용한다.
+                                          - generic:
+                                            - generic:
+                                              - generic: 📌 집행 계획 핵심
+                                              - generic: 세부 사업
+                                            - paragraph: 집행 계획 내용이 없습니다.
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📊 예산 산출식 내역
+                                              - generic: 산출 근거
+                                            - generic:
+                                              - generic:
+                                                - generic:
+                                                  - generic: "항목 1: 예산 항목 2"
+                                                  - generic: 2.3 억원
+                                                - paragraph: "산출내역: 232,000명 x 1,000원 x 1번"
+                                          - generic:
+                                            - generic:
+                                              - generic: ✨ 기대 효과
+                                              - generic: 효과 분석
+                                            - paragraph: 기대 효과 내용이 없습니다.
+                                  - generic:
+                                    - paragraph: 대한민국 국무회의 시뮬레이션 시스템 · 예산 초안 검토 전광판
+                                    - paragraph: 선생님이 창을 닫으면 원래 대시보드 화면으로 돌아갑니다.
+                            - generic:
+                              - generic:
+                                - heading "④ 토의 및 평가 — 다른 모둠 집행계획 평가" [level=2]:
+                                  - generic: ④
+                                  - text: 토의 및 평가 — 다른 모둠 집행계획 평가
+                                - paragraph: 발의된 정책·예산안만 노출됩니다. 다른 부처의 집행계획·시행령·예산안을 보고 찬성/반대/중립 의견과 3축 평가를 남기세요. 토의 결과가 ④ 국무회의 토론의 토대가 됩니다.
+                                - generic:
+                                  - generic:
+                                    - generic:
+                                      - generic:
+                                        - heading "📊 실시간 부처별 예산 청구 합계 현황" [level=3]:
+                                          - generic: 📊 실시간 부처별 예산 청구 합계 현황
+                                        - paragraph: 각 부처의 청구 예산 합계를 확인하며, 어느 부처 예산을 조정해야 할지 토의의 근거로 삼으세요.
+                                      - generic:
+                                        - generic:
+                                          - generic: 정부 총예산
+                                          - generic: 100 억원
+                                        - generic:
+                                          - generic: 청구 합계
+                                          - generic: 194.99999999999997 억원
+                                        - generic:
+                                          - generic: 초과액
+                                          - generic: 94.99999999999997 억원 ⚠️
+                                    - generic:
+                                      - generic:
+                                        - generic: 예산 소진율
+                                        - generic: 195%
+                                  - article:
+                                    - generic:
+                                      - generic:
+                                        - heading "🏢 여성가족인권부 — 집행계획명 미입력" [level=3]
+                                        - paragraph: 청구 예산 2.3억 · 초안 2.3억
+                                      - generic: 시행령 저장 (발의 대기중)
+                                    - generic:
+                                      - generic:
+                                        - text: 근거 법령
+                                        - paragraph: 간식시간을 주세요
+                                      - generic:
+                                        - text: 문제
+                                        - paragraph
+                                      - generic:
+                                        - text: 대상
+                                        - paragraph: 미입력
+                                      - generic:
+                                        - text: 집행계획
+                                        - paragraph
+                                      - generic:
+                                        - text: 시행령 초안
+                                        - paragraph: 제1조 (목적) 이 시행령은 간식시간을 주세요에 따라 [정책 목적]을 실제로 시행하는 데 필요한 사항을 정한다. 제2조 (대상) 이 시행령의 적용 대상은 [대상 시민/기관/장소]로 한다. 제3조 (시행 절차) 여성가족인권부는 [언제/어디서/어떻게] 정책을 시행한다. 제4조 (지원 및 예산) 정부는 [예산 항목]에 배정된 예산을 [지원 방식]으로 사용한다. 제5조 (점검 및 예외) [점검 방법]으로 시행 상황을 확인하며, [예외 상황]에는 별도 기준을 적용한다.
+                                      - generic:
+                                        - text: 근거와 사례
+                                        - paragraph
+                                      - generic:
+                                        - text: 기대효과
+                                        - paragraph
+                                      - generic:
+                                        - text: 예산 항목
+                                        - list:
+                                          - listitem:
+                                            - text: "- 예산 항목 2:"
+                                            - generic: 2.3억
+                                            - text: · 232,000명 x 1,000원 x 1번
+                                    - generic:
+                                      - generic: 👑 현재 [저장 (발의 대기)] 상태입니다. 평가단 및 대통령 모둠은 사전에 열람하고 의견을 제시할 수 있습니다.
+                                      - generic:
+                                        - generic:
+                                          - generic: 찬성 0
+                                          - generic: 반대 0
+                                          - generic: 중립 0
+                                        - list:
+                                          - listitem: 아직 온라인 정책토의 의견이 없습니다.
+                                  - article:
+                                    - generic:
+                                      - generic:
+                                        - heading "🏢 보건복지부 — 집행계획명 미입력" [level=3]
+                                        - paragraph: 청구 예산 89억 · 초안 89억
+                                      - generic: 시행령 저장 (발의 대기중)
+                                    - generic:
+                                      - generic:
+                                        - text: 문제
+                                        - paragraph
+                                      - generic:
+                                        - text: 대상
+                                        - paragraph: 미입력
+                                      - generic:
+                                        - text: 집행계획
+                                        - paragraph
+                                      - generic:
+                                        - text: 시행령 초안
+                                        - paragraph: 미입력
+                                      - generic:
+                                        - text: 근거와 사례
+                                        - paragraph
+                                      - generic:
+                                        - text: 기대효과
+                                        - paragraph
+                                      - generic:
+                                        - text: 예산 항목
+                                        - list:
+                                          - listitem:
+                                            - text: "- 곰곰:"
+                                            - generic: 89억
+                                            - text: · 1000000
+                                    - generic:
+                                      - generic: 👑 현재 [저장 (발의 대기)] 상태입니다. 평가단 및 대통령 모둠은 사전에 열람하고 의견을 제시할 수 있습니다.
+                                      - generic:
+                                        - generic:
+                                          - generic: 찬성 0
+                                          - generic: 반대 0
+                                          - generic: 중립 0
+                                        - list:
+                                          - listitem: 아직 온라인 정책토의 의견이 없습니다.
+                                  - article:
+                                    - generic:
+                                      - generic:
+                                        - heading "🏢 내일의노동부 — 비빔나라 간식 제공 의무화" [level=3]
+                                        - paragraph: 청구 예산 69.6억 · 초안 69.6억
+                                      - generic: 정책·예산안 발의
+                                    - generic:
+                                      - generic:
+                                        - text: 근거 법령
+                                        - paragraph: 간식시간을 주세요
+                                      - generic:
+                                        - text: 문제
+                                        - paragraph: 성장기 어린이 도움
+                                      - generic:
+                                        - text: 대상
+                                        - paragraph: 초등학생 대상
+                                      - generic:
+                                        - text: 집행계획
+                                        - paragraph: 학교에서 수익자 부담으로 간식 신청 후 제공
+                                      - generic:
+                                        - text: 시행령 초안
+                                        - paragraph: 넝ㄴㅇ너ㅏ어
+                                      - generic:
+                                        - text: 근거와 사례
+                                        - paragraph: ㄴ
+                                      - generic:
+                                        - text: 기대효과
+                                        - paragraph: ㅇ
+                                      - generic:
+                                        - text: 예산 항목
+                                        - list:
+                                          - listitem:
+                                            - text: "- 간식비:"
+                                            - generic: 69.6억
+                                            - text: · 232,000명 x 10,000원 x 3번
+                                          - listitem:
+                                            - text: "- 예산 항목 2:"
+                                            - generic: 0억
+                                    - generic:
+                                      - generic:
+                                        - generic: 찬성 0
+                                        - generic: 반대 0
+                                        - generic: 중립 0
+                                      - list:
+                                        - listitem: 아직 온라인 정책토의 의견이 없습니다.
+                                  - article:
+                                    - generic:
+                                      - generic:
+                                        - heading "🏢 함께마을(지역)부 — 청년주거안정정책" [level=3]
+                                        - paragraph: 청구 예산 30억 · 초안 30억
+                                      - generic: 시행령 저장 (발의 대기중)
+                                    - generic:
+                                      - generic:
+                                        - text: 문제
+                                        - paragraph: 보건복지부
+                                      - generic:
+                                        - text: 대상
+                                        - paragraph: 만34세미만청년
+                                      - generic:
+                                        - text: 집행계획
+                                        - paragraph: 냠냠
+                                      - generic:
+                                        - text: 시행령 초안
+                                        - paragraph: 제1조 (목적) 집집 제2조 (대상) 만34세미만청년 제3조 (시행 절차) 냠냠 제4조 (지원 및 예산) 쩝쩝 제5조 (점검 및 예외) 꿀꺽
+                                      - generic:
+                                        - text: 근거와 사례
+                                        - paragraph
+                                      - generic:
+                                        - text: 기대효과
+                                        - paragraph
+                                      - generic:
+                                        - text: 예산 항목
+                                        - list:
+                                          - listitem:
+                                            - text: "- 청년 주택 예산 항목 1:"
+                                            - generic: 30억
+                                            - text: · 10,000명 x 300,000원 x 1번
+                                    - generic:
+                                      - generic: 👑 현재 [저장 (발의 대기)] 상태입니다. 평가단 및 대통령 모둠은 사전에 열람하고 의견을 제시할 수 있습니다.
+                                      - generic:
+                                        - generic:
+                                          - generic: 찬성 0
+                                          - generic: 반대 0
+                                          - generic: 중립 0
+                                        - list:
+                                          - listitem: 아직 온라인 정책토의 의견이 없습니다.
+                                  - article:
+                                    - generic:
+                                      - generic:
+                                        - heading "🏢 그린피스(환경)부 — 비빔민국 학교 간식시간 보장 정책" [level=3]
+                                        - paragraph: 청구 예산 4.1억 · 초안 4.1억
+                                      - generic: 시행령 저장 (발의 대기중)
+                                    - generic:
+                                      - generic:
+                                        - text: 근거 법령
+                                        - paragraph: 간식시간을 주세요
+                                      - generic:
+                                        - text: 문제
+                                        - paragraph: 간식시간을 보장하는 문제
+                                      - generic:
+                                        - text: 대상
+                                        - paragraph: 전국 초등학생 45000명에게 적용된다.
+                                      - generic:
+                                        - text: 집행계획
+                                        - paragraph: 교육부는 매년 학기 초 학교에 학생수에 따라 예산을 배정한다.
+                                      - generic:
+                                        - text: 시행령 초안
+                                        - paragraph: 제1조 (목적) 초등학생이 간식을 먹을 수 있도록 시간을 조정할 수 있도록 하고 간식을 지원한다. 제2조 (대상) 전국 초등학생 45000명에게 적용된다. 제3조 (시행 절차) 교육부는 매년 학기 초 학교에 학생수에 따라 예산을 배정한다. 제4조 (지원 및 예산) 학생 행복 증진 비용에서 학생당 1000원씩 학교에 지원한다. 제5조 (점검 및 예외) 학기말에 비용이 사용되었는지 점검하고 못한 경우 반납한다.
+                                      - generic:
+                                        - text: 근거와 사례
+                                        - paragraph: 간식을 먹으면 두뇌활동이 활성화 되고 학생의 행복지수가 올라간다는 연구보고가 있다.
+                                      - generic:
+                                        - text: 기대효과
+                                        - paragraph: 가정에서 학생들이 짜증을 덜 부리게 된다.
+                                      - generic:
+                                        - text: 예산 항목
+                                        - list:
+                                          - listitem:
+                                            - text: "- 간식 예산:"
+                                            - generic: 4.1억
+                                            - text: · 202,500명 x 1,000원 x 2번
+                                    - generic:
+                                      - generic: 👑 현재 [저장 (발의 대기)] 상태입니다. 평가단 및 대통령 모둠은 사전에 열람하고 의견을 제시할 수 있습니다.
+                                      - generic:
+                                        - generic:
+                                          - generic: 찬성 0
+                                          - generic: 반대 0
+                                          - generic: 중립 0
+                                        - list:
+                                          - listitem: 아직 온라인 정책토의 의견이 없습니다.
+                            - generic:
+                              - generic:
+                                - heading "⑤ 다자간 토론(국무회의)" [level=2]:
+                                  - generic: ⑤
+                                  - text: 다자간 토론(국무회의)
+                                - generic:
+                                  - paragraph: 🎙️ 학급 전체가 모여 국무회의 형식의 오프라인 토론 을 진행합니다. 각 부처의 장관(또는 발표자)이 집행계획과 예산 필요성을 설명하고, 정부 예산 안에 맞게 최종 배정액을 조정합니다.
+                                  - paragraph: 👩‍🏫 위의 최종 배정 예산 입력칸에서 조정 결과를 반영하고, 각 정책을 최종안으로 확정하세요.
+                            - generic:
+                              - generic:
+                                - generic:
+                                  - heading "⑥ 정책 및 예산안 최종 수정 (국무회의 후속 조치)" [level=2]:
+                                    - generic: ⑥
+                                    - text: 정책 및 예산안 최종 수정 (국무회의 후속 조치)
+                                  - paragraph: 국무회의 토론 결과를 바탕으로 각 부처의 시행령과 최종 배정 예산안을 집중 수정합니다. 대통령 모둠과 각 부처 장관이 상호 검토 후 최종 승인합니다.
+                                - generic:
+                                  - heading "총예산 대비 배정 현황판" [level=3]
+                                  - generic:
+                                    - generic:
+                                      - generic:
+                                        - paragraph: 정부 전체 예산
+                                        - paragraph: 100억
+                                      - generic:
+                                        - paragraph: 총 청구액
+                                        - paragraph: 69.6억
+                                        - paragraph: "30.4억 잔여: 더 배정할 곳을 찾아야 합니다."
+                                      - generic:
+                                        - paragraph: 최종 배정 합계
+                                        - paragraph: 69.6억
+                                        - paragraph: 30.4억 잔여
+                                    - generic:
+                                      - heading "토의 결과·예산 조정 메모 작성" [level=3]
+                                      - textbox "온라인 정책토의 결과를 요약해 주세요. 가장 논쟁적인 정책, 높은 평가를 받은 정책, 예산 조정 쟁점을 정리합니다."
+                                      - textbox "국무회의 질문을 줄바꿈으로 적어 주세요."
+                                      - 'textbox "권고: 유지 / 증액 / 감액 / 재검토 등"'
+                                      - button "조정 메모 저장" [disabled]
+                                    - generic:
+                                      - article:
+                                        - generic:
+                                          - generic:
+                                            - heading "내일의노동부 — 비빔나라 간식 제공 의무화" [level=3]
+                                            - paragraph: 찬성 0 · 반대 0 · 중립 0 · 평가 0개
+                                          - generic:
+                                            - paragraph:
+                                              - text: 청구
+                                              - generic: 69.6억
+                                            - paragraph:
+                                              - text: 최종
+                                              - generic: 69.6억
+                                        - generic:
+                                          - generic: 관련성 0
+                                          - generic: 실행가능성 0
+                                          - generic: 공익성 0
+                                        - paragraph:
+                                          - text: 근거 법령
+                                          - text: 간식시간을 주세요
+                                        - paragraph:
+                                          - text: 집행계획
+                                          - text: 학교에서 수익자 부담으로 간식 신청 후 제공
+                                        - paragraph:
+                                          - text: 시행령 초안
+                                          - text: 넝ㄴㅇ너ㅏ어
+                                        - paragraph:
+                                          - text: 기대효과
+                                          - text: ㅇ
+                                        - generic:
+                                          - text: 예산 항목
+                                          - list:
+                                            - listitem:
+                                              - text: "- 간식비:"
+                                              - generic: 69.6억
+                                              - text: · 232,000명 x 10,000원 x 3번
+                                            - listitem:
+                                              - text: "- 예산 항목 2:"
+                                              - generic: 0억
+                                        - generic:
+                                          - generic: 최종 배정 예산
+                                          - spinbutton: "69.6"
+                                          - generic: 억 원
+                                          - button "최종안 확정"
+                                - generic:
+                                  - heading "👩‍🏫 전체 부처 최종 수정 및 대통령 승인 관리" [level=3]
+                                  - generic:
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - generic: 🏢 그린피스(환경)부
+                                          - generic: ✏️ 최종 수정 진행중
+                                        - heading "비빔민국 학교 간식시간 보장 정책" [level=3]
+                                      - generic:
+                                        - generic: 최종 청구 예산
+                                        - generic:
+                                          - generic: "4.1"
+                                          - generic: 억원
+                                    - generic:
+                                      - generic:
+                                        - heading "📌 정책 핵심 내용 (집행계획 고정)" [level=4]:
+                                          - generic: 📌
+                                          - generic: 정책 핵심 내용 (집행계획 고정)
+                                        - generic: 최초 작성된 정책 뼈대는 고정됩니다.
+                                      - generic:
+                                        - generic:
+                                          - text: 근거 법령
+                                          - paragraph: 간식시간을 주세요
+                                        - generic:
+                                          - text: 해결하려는 문제
+                                          - paragraph: 간식시간을 보장하는 문제
+                                        - generic:
+                                          - text: 적용 대상
+                                          - paragraph: 전국 초등학생 45000명에게 적용된다.
+                                        - generic:
+                                          - text: 시행 절차 (집행계획)
+                                          - paragraph: 교육부는 매년 학기 초 학교에 학생수에 따라 예산을 배정한다.
+                                        - generic:
+                                          - text: 기대 효과
+                                          - paragraph: 가정에서 학생들이 짜증을 덜 부리게 된다.
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📜
+                                              - generic: 시행령 초안 최종 수정
+                                          - paragraph: 국무회의 토론에서 합의된 조항이나 문구를 반영하여 시행령을 최종 확정해 주세요.
+                                          - textbox "최종 시행령 조문을 자연스러운 문장으로 다듬어 적어 주세요.": 제1조 (목적) 초등학생이 간식을 먹을 수 있도록 시간을 조정할 수 있도록 하고 간식을 지원한다. 제2조 (대상) 전국 초등학생 45000명에게 적용된다. 제3조 (시행 절차) 교육부는 매년 학기 초 학교에 학생수에 따라 예산을 배정한다. 제4조 (지원 및 예산) 학생 행복 증진 비용에서 학생당 1000원씩 학교에 지원한다. 제5조 (점검 및 예외) 학기말에 비용이 사용되었는지 점검하고 못한 경우 반납한다.
+                                        - generic:
+                                          - generic:
+                                            - generic: 💡
+                                            - generic: 토의 및 국무회의 토론 반영 사항
+                                          - paragraph: 온라인 토의와 국무회의 토론을 거치며 예산이나 정책 내용 중 어떤 부분을 수정했는지 요약해 적어 주세요.
+                                          - 'textbox "예: 국무회의 토론 결과, 홍보비를 2억 감액하고 바우처 발급 대상을 500명 늘리기로 합의함."'
+                                      - complementary:
+                                        - generic:
+                                          - generic:
+                                            - heading "📊 예산 항목 최종 수정" [level=4]:
+                                              - generic: 📊
+                                              - generic: 예산 항목 최종 수정
+                                            - generic:
+                                              - button "산출 예시 보기"
+                                              - button "항목 추가"
+                                          - paragraph: "항목별로 `예산 항목 / 산출내역 / 금액`을 정리하면 합계가 자동으로 최종 청구 예산에 반영됩니다."
+                                          - generic:
+                                            - generic:
+                                              - generic:
+                                                - button "1. 간식 예산"
+                                                - button "202,500명 x 1,000원 x 2번"
+                                                - generic:
+                                                  - spinbutton "억": "4.1"
+                                                  - generic: 억
+                                              - generic:
+                                                - 'textbox "예산 항목 (예: 체험학습 바우처 발급비, 홍보물 제작비)"': 간식 예산
+                                                - 'textbox "산출내역 (예: 5,000명 x 30만원 x 1회)"': 202,500명 x 1,000원 x 2번
+                                          - generic:
+                                            - generic:
+                                              - generic: 항목 합계
+                                              - generic: 4.1 억원
+                                            - generic:
+                                              - generic: 최종 청구 예산
+                                              - spinbutton [disabled]: "4.1"
+                                              - text: 억
+                                    - generic:
+                                      - generic:
+                                        - paragraph: 총예산에 맞게 각 부처와 대통령 모둠이 상호 조율 후 최종 승인합니다.
+                                        - paragraph: 부처 장관이 [최종 수정안 저장]을 누르면, 대통령 모둠이 검토 후 [대통령 최종 승인]을 누릅니다.
+                                      - generic:
+                                        - button "최종 수정안 저장 (대통령 승인 대기)" [disabled]
+                                        - button "👑 대통령 최종 승인 (발표 확정)"
+                                  - generic:
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - generic: 🏢 보건복지부
+                                          - generic: ✏️ 최종 수정 진행중
+                                        - heading "정책명이 입력되지 않았습니다." [level=3]
+                                      - generic:
+                                        - generic: 최종 청구 예산
+                                        - generic:
+                                          - generic: "89"
+                                          - generic: 억원
+                                    - generic:
+                                      - generic:
+                                        - heading "📌 정책 핵심 내용 (집행계획 고정)" [level=4]:
+                                          - generic: 📌
+                                          - generic: 정책 핵심 내용 (집행계획 고정)
+                                        - generic: 최초 작성된 정책 뼈대는 고정됩니다.
+                                      - generic:
+                                        - generic:
+                                          - text: 해결하려는 문제
+                                          - paragraph: 미입력
+                                        - generic:
+                                          - text: 적용 대상
+                                          - paragraph: 미입력
+                                        - generic:
+                                          - text: 시행 절차 (집행계획)
+                                          - paragraph: 미입력
+                                        - generic:
+                                          - text: 기대 효과
+                                          - paragraph: 미입력
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📜
+                                              - generic: 시행령 초안 최종 수정
+                                          - paragraph: 국무회의 토론에서 합의된 조항이나 문구를 반영하여 시행령을 최종 확정해 주세요.
+                                          - textbox "최종 시행령 조문을 자연스러운 문장으로 다듬어 적어 주세요."
+                                        - generic:
+                                          - generic:
+                                            - generic: 💡
+                                            - generic: 토의 및 국무회의 토론 반영 사항
+                                          - paragraph: 온라인 토의와 국무회의 토론을 거치며 예산이나 정책 내용 중 어떤 부분을 수정했는지 요약해 적어 주세요.
+                                          - 'textbox "예: 국무회의 토론 결과, 홍보비를 2억 감액하고 바우처 발급 대상을 500명 늘리기로 합의함."'
+                                      - complementary:
+                                        - generic:
+                                          - generic:
+                                            - heading "📊 예산 항목 최종 수정" [level=4]:
+                                              - generic: 📊
+                                              - generic: 예산 항목 최종 수정
+                                            - generic:
+                                              - button "산출 예시 보기"
+                                              - button "항목 추가"
+                                          - paragraph: "항목별로 `예산 항목 / 산출내역 / 금액`을 정리하면 합계가 자동으로 최종 청구 예산에 반영됩니다."
+                                          - generic:
+                                            - generic:
+                                              - generic:
+                                                - button "1. 곰곰"
+                                                - button "1000000"
+                                                - generic:
+                                                  - spinbutton "억": "89"
+                                                  - generic: 억
+                                              - generic:
+                                                - 'textbox "예산 항목 (예: 체험학습 바우처 발급비, 홍보물 제작비)"': 곰곰
+                                                - 'textbox "산출내역 (예: 5,000명 x 30만원 x 1회)"': "1000000"
+                                          - generic:
+                                            - generic:
+                                              - generic: 항목 합계
+                                              - generic: 89 억원
+                                            - generic:
+                                              - generic: 최종 청구 예산
+                                              - spinbutton [disabled]: "89"
+                                              - text: 억
+                                    - generic:
+                                      - generic:
+                                        - paragraph: 총예산에 맞게 각 부처와 대통령 모둠이 상호 조율 후 최종 승인합니다.
+                                        - paragraph: 부처 장관이 [최종 수정안 저장]을 누르면, 대통령 모둠이 검토 후 [대통령 최종 승인]을 누릅니다.
+                                      - generic:
+                                        - button "최종 수정안 저장 (대통령 승인 대기)" [disabled]
+                                        - button "👑 대통령 최종 승인 (발표 확정)"
+                                  - generic:
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - generic: 🏢 내일의노동부
+                                          - generic: ✏️ 최종 수정 진행중
+                                        - heading "비빔나라 간식 제공 의무화" [level=3]
+                                      - generic:
+                                        - generic: 최종 청구 예산
+                                        - generic:
+                                          - generic: "69.6"
+                                          - generic: 억원
+                                    - generic:
+                                      - generic:
+                                        - heading "📌 정책 핵심 내용 (집행계획 고정)" [level=4]:
+                                          - generic: 📌
+                                          - generic: 정책 핵심 내용 (집행계획 고정)
+                                        - generic: 최초 작성된 정책 뼈대는 고정됩니다.
+                                      - generic:
+                                        - generic:
+                                          - text: 근거 법령
+                                          - paragraph: 간식시간을 주세요
+                                        - generic:
+                                          - text: 해결하려는 문제
+                                          - paragraph: 성장기 어린이 도움
+                                        - generic:
+                                          - text: 적용 대상
+                                          - paragraph: 초등학생 대상
+                                        - generic:
+                                          - text: 시행 절차 (집행계획)
+                                          - paragraph: 학교에서 수익자 부담으로 간식 신청 후 제공
+                                        - generic:
+                                          - text: 기대 효과
+                                          - paragraph: ㅇ
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📜
+                                              - generic: 시행령 초안 최종 수정
+                                          - paragraph: 국무회의 토론에서 합의된 조항이나 문구를 반영하여 시행령을 최종 확정해 주세요.
+                                          - textbox "최종 시행령 조문을 자연스러운 문장으로 다듬어 적어 주세요.": 넝ㄴㅇ너ㅏ어
+                                        - generic:
+                                          - generic:
+                                            - generic: 💡
+                                            - generic: 토의 및 국무회의 토론 반영 사항
+                                          - paragraph: 온라인 토의와 국무회의 토론을 거치며 예산이나 정책 내용 중 어떤 부분을 수정했는지 요약해 적어 주세요.
+                                          - 'textbox "예: 국무회의 토론 결과, 홍보비를 2억 감액하고 바우처 발급 대상을 500명 늘리기로 합의함."'
+                                      - complementary:
+                                        - generic:
+                                          - generic:
+                                            - heading "📊 예산 항목 최종 수정" [level=4]:
+                                              - generic: 📊
+                                              - generic: 예산 항목 최종 수정
+                                            - generic:
+                                              - button "산출 예시 보기"
+                                              - button "항목 추가"
+                                          - paragraph: "항목별로 `예산 항목 / 산출내역 / 금액`을 정리하면 합계가 자동으로 최종 청구 예산에 반영됩니다."
+                                          - generic:
+                                            - generic:
+                                              - generic:
+                                                - button "1. 간식비"
+                                                - button "232,000명 x 10,000원 x 3번"
+                                                - generic:
+                                                  - spinbutton "억": "69.6"
+                                                  - generic: 억
+                                                - button "삭제"
+                                              - generic:
+                                                - 'textbox "예산 항목 (예: 체험학습 바우처 발급비, 홍보물 제작비)"': 간식비
+                                                - 'textbox "산출내역 (예: 5,000명 x 30만원 x 1회)"': 232,000명 x 10,000원 x 3번
+                                            - generic:
+                                              - generic:
+                                                - button "2. 예산 항목 2"
+                                                - button "산출내역 입력"
+                                                - generic:
+                                                  - spinbutton "억": "0"
+                                                  - generic: 억
+                                                - button "삭제"
+                                          - generic:
+                                            - generic:
+                                              - generic: 항목 합계
+                                              - generic: 69.6 억원
+                                            - generic:
+                                              - generic: 최종 청구 예산
+                                              - spinbutton [disabled]: "69.6"
+                                              - text: 억
+                                    - generic:
+                                      - generic:
+                                        - paragraph: 총예산에 맞게 각 부처와 대통령 모둠이 상호 조율 후 최종 승인합니다.
+                                        - paragraph: 부처 장관이 [최종 수정안 저장]을 누르면, 대통령 모둠이 검토 후 [대통령 최종 승인]을 누릅니다.
+                                      - generic:
+                                        - button "최종 수정안 저장 (대통령 승인 대기)" [disabled]
+                                        - button "👑 대통령 최종 승인 (발표 확정)"
+                                  - generic:
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - generic: 🏢 함께마을(지역)부
+                                          - generic: ✏️ 최종 수정 진행중
+                                        - heading "청년주거안정정책" [level=3]
+                                      - generic:
+                                        - generic: 최종 청구 예산
+                                        - generic:
+                                          - generic: "30"
+                                          - generic: 억원
+                                    - generic:
+                                      - generic:
+                                        - heading "📌 정책 핵심 내용 (집행계획 고정)" [level=4]:
+                                          - generic: 📌
+                                          - generic: 정책 핵심 내용 (집행계획 고정)
+                                        - generic: 최초 작성된 정책 뼈대는 고정됩니다.
+                                      - generic:
+                                        - generic:
+                                          - text: 해결하려는 문제
+                                          - paragraph: 보건복지부
+                                        - generic:
+                                          - text: 적용 대상
+                                          - paragraph: 만34세미만청년
+                                        - generic:
+                                          - text: 시행 절차 (집행계획)
+                                          - paragraph: 냠냠
+                                        - generic:
+                                          - text: 기대 효과
+                                          - paragraph: 미입력
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📜
+                                              - generic: 시행령 초안 최종 수정
+                                          - paragraph: 국무회의 토론에서 합의된 조항이나 문구를 반영하여 시행령을 최종 확정해 주세요.
+                                          - textbox "최종 시행령 조문을 자연스러운 문장으로 다듬어 적어 주세요.": 제1조 (목적) 집집 제2조 (대상) 만34세미만청년 제3조 (시행 절차) 냠냠 제4조 (지원 및 예산) 쩝쩝 제5조 (점검 및 예외) 꿀꺽
+                                        - generic:
+                                          - generic:
+                                            - generic: 💡
+                                            - generic: 토의 및 국무회의 토론 반영 사항
+                                          - paragraph: 온라인 토의와 국무회의 토론을 거치며 예산이나 정책 내용 중 어떤 부분을 수정했는지 요약해 적어 주세요.
+                                          - 'textbox "예: 국무회의 토론 결과, 홍보비를 2억 감액하고 바우처 발급 대상을 500명 늘리기로 합의함."'
+                                      - complementary:
+                                        - generic:
+                                          - generic:
+                                            - heading "📊 예산 항목 최종 수정" [level=4]:
+                                              - generic: 📊
+                                              - generic: 예산 항목 최종 수정
+                                            - generic:
+                                              - button "산출 예시 보기"
+                                              - button "항목 추가"
+                                          - paragraph: "항목별로 `예산 항목 / 산출내역 / 금액`을 정리하면 합계가 자동으로 최종 청구 예산에 반영됩니다."
+                                          - generic:
+                                            - generic:
+                                              - generic:
+                                                - button "1. 청년 주택 예산 항목 1"
+                                                - button "10,000명 x 300,000원 x 1번"
+                                                - generic:
+                                                  - spinbutton "억": "30"
+                                                  - generic: 억
+                                              - generic:
+                                                - 'textbox "예산 항목 (예: 체험학습 바우처 발급비, 홍보물 제작비)"': 청년 주택 예산 항목 1
+                                                - 'textbox "산출내역 (예: 5,000명 x 30만원 x 1회)"': 10,000명 x 300,000원 x 1번
+                                          - generic:
+                                            - generic:
+                                              - generic: 항목 합계
+                                              - generic: 30 억원
+                                            - generic:
+                                              - generic: 최종 청구 예산
+                                              - spinbutton [disabled]: "30"
+                                              - text: 억
+                                    - generic:
+                                      - generic:
+                                        - paragraph: 총예산에 맞게 각 부처와 대통령 모둠이 상호 조율 후 최종 승인합니다.
+                                        - paragraph: 부처 장관이 [최종 수정안 저장]을 누르면, 대통령 모둠이 검토 후 [대통령 최종 승인]을 누릅니다.
+                                      - generic:
+                                        - button "최종 수정안 저장 (대통령 승인 대기)" [disabled]
+                                        - button "👑 대통령 최종 승인 (발표 확정)"
+                                  - generic:
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - generic: 🏢 여성가족인권부
+                                          - generic: ✏️ 최종 수정 진행중
+                                        - heading "정책명이 입력되지 않았습니다." [level=3]
+                                      - generic:
+                                        - generic: 최종 청구 예산
+                                        - generic:
+                                          - generic: "2.3"
+                                          - generic: 억원
+                                    - generic:
+                                      - generic:
+                                        - heading "📌 정책 핵심 내용 (집행계획 고정)" [level=4]:
+                                          - generic: 📌
+                                          - generic: 정책 핵심 내용 (집행계획 고정)
+                                        - generic: 최초 작성된 정책 뼈대는 고정됩니다.
+                                      - generic:
+                                        - generic:
+                                          - text: 근거 법령
+                                          - paragraph: 간식시간을 주세요
+                                        - generic:
+                                          - text: 해결하려는 문제
+                                          - paragraph: 미입력
+                                        - generic:
+                                          - text: 적용 대상
+                                          - paragraph: 미입력
+                                        - generic:
+                                          - text: 시행 절차 (집행계획)
+                                          - paragraph: 미입력
+                                        - generic:
+                                          - text: 기대 효과
+                                          - paragraph: 미입력
+                                    - generic:
+                                      - generic:
+                                        - generic:
+                                          - generic:
+                                            - generic:
+                                              - generic: 📜
+                                              - generic: 시행령 초안 최종 수정
+                                          - paragraph: 국무회의 토론에서 합의된 조항이나 문구를 반영하여 시행령을 최종 확정해 주세요.
+                                          - textbox "최종 시행령 조문을 자연스러운 문장으로 다듬어 적어 주세요.": 제1조 (목적) 이 시행령은 간식시간을 주세요에 따라 [정책 목적]을 실제로 시행하는 데 필요한 사항을 정한다. 제2조 (대상) 이 시행령의 적용 대상은 [대상 시민/기관/장소]로 한다. 제3조 (시행 절차) 여성가족인권부는 [언제/어디서/어떻게] 정책을 시행한다. 제4조 (지원 및 예산) 정부는 [예산 항목]에 배정된 예산을 [지원 방식]으로 사용한다. 제5조 (점검 및 예외) [점검 방법]으로 시행 상황을 확인하며, [예외 상황]에는 별도 기준을 적용한다.
+                                        - generic:
+                                          - generic:
+                                            - generic: 💡
+                                            - generic: 토의 및 국무회의 토론 반영 사항
+                                          - paragraph: 온라인 토의와 국무회의 토론을 거치며 예산이나 정책 내용 중 어떤 부분을 수정했는지 요약해 적어 주세요.
+                                          - 'textbox "예: 국무회의 토론 결과, 홍보비를 2억 감액하고 바우처 발급 대상을 500명 늘리기로 합의함."'
+                                      - complementary:
+                                        - generic:
+                                          - generic:
+                                            - heading "📊 예산 항목 최종 수정" [level=4]:
+                                              - generic: 📊
+                                              - generic: 예산 항목 최종 수정
+                                            - generic:
+                                              - button "산출 예시 보기"
+                                              - button "항목 추가"
+                                          - paragraph: "항목별로 `예산 항목 / 산출내역 / 금액`을 정리하면 합계가 자동으로 최종 청구 예산에 반영됩니다."
+                                          - generic:
+                                            - generic:
+                                              - generic:
+                                                - button "1. 예산 항목 2"
+                                                - button "232,000명 x 1,000원 x 1번"
+                                                - generic:
+                                                  - spinbutton "억": "2.3"
+                                                  - generic: 억
+                                              - generic:
+                                                - 'textbox "예산 항목 (예: 체험학습 바우처 발급비, 홍보물 제작비)"': 예산 항목 2
+                                                - 'textbox "산출내역 (예: 5,000명 x 30만원 x 1회)"': 232,000명 x 1,000원 x 1번
+                                          - generic:
+                                            - generic:
+                                              - generic: 항목 합계
+                                              - generic: 2.3 억원
+                                            - generic:
+                                              - generic: 최종 청구 예산
+                                              - spinbutton [disabled]: "2.3"
+                                              - text: 억
+                                    - generic:
+                                      - generic:
+                                        - paragraph: 총예산에 맞게 각 부처와 대통령 모둠이 상호 조율 후 최종 승인합니다.
+                                        - paragraph: 부처 장관이 [최종 수정안 저장]을 누르면, 대통령 모둠이 검토 후 [대통령 최종 승인]을 누릅니다.
+                                      - generic:
+                                        - button "최종 수정안 저장 (대통령 승인 대기)" [disabled]
+                                        - button "👑 대통령 최종 승인 (발표 확정)"
+                                  - generic: 아직 작성된 정책 초안이 없습니다.
+                            - generic:
+                              - generic:
+                                - heading "⑦ 최종 예산안 발표" [level=2]:
+                                  - generic: ⑦
+                                  - text: 최종 예산안 발표
+                                - paragraph: 최종 정책·배정 예산·조정 이유를 확인합니다. 행정 결과 기사는 다음 활동에서 따로 작성합니다.
+                                - generic:
+                                  - generic:
+                                    - generic:
+                                      - paragraph: 정부 전체 예산
+                                      - paragraph: 100억
+                                    - generic:
+                                      - paragraph: 총 청구액
+                                      - paragraph: 69.6억
+                                      - paragraph: "30.4억 잔여: 더 배정할 곳을 찾아야 합니다."
+                                    - generic:
+                                      - paragraph: 최종 배정 합계
+                                      - paragraph: 69.6억
+                                      - paragraph: 30.4억 잔여
+                                  - generic:
+                                    - heading "토의 결과·예산 조정 메모 작성" [level=3]
+                                    - textbox "온라인 정책토의 결과를 요약해 주세요. 가장 논쟁적인 정책, 높은 평가를 받은 정책, 예산 조정 쟁점을 정리합니다."
+                                    - textbox "국무회의 질문을 줄바꿈으로 적어 주세요."
+                                    - 'textbox "권고: 유지 / 증액 / 감액 / 재검토 등"'
+                                    - button "조정 메모 저장" [disabled]
+                                  - generic:
+                                    - article:
+                                      - generic:
+                                        - generic:
+                                          - heading "내일의노동부 — 비빔나라 간식 제공 의무화" [level=3]
+                                          - paragraph: 찬성 0 · 반대 0 · 중립 0 · 평가 0개
+                                        - generic:
+                                          - paragraph:
+                                            - text: 청구
+                                            - generic: 69.6억
+                                          - paragraph:
+                                            - text: 최종
+                                            - generic: 69.6억
+                                      - generic:
+                                        - generic: 관련성 0
+                                        - generic: 실행가능성 0
+                                        - generic: 공익성 0
+                                      - paragraph:
+                                        - text: 근거 법령
+                                        - text: 간식시간을 주세요
+                                      - paragraph:
+                                        - text: 집행계획
+                                        - text: 학교에서 수익자 부담으로 간식 신청 후 제공
+                                      - paragraph:
+                                        - text: 시행령 초안
+                                        - text: 넝ㄴㅇ너ㅏ어
+                                      - paragraph:
+                                        - text: 기대효과
+                                        - text: ㅇ
+                                      - generic:
+                                        - text: 예산 항목
+                                        - list:
+                                          - listitem:
+                                            - text: "- 간식비:"
+                                            - generic: 69.6억
+                                            - text: · 232,000명 x 10,000원 x 3번
+                                          - listitem:
+                                            - text: "- 예산 항목 2:"
+                                            - generic: 0억
+                                      - generic:
+                                        - generic: 최종 배정 예산
+                                        - spinbutton: "69.6"
+                                        - generic: 억 원
+                                        - button "최종안 확정"
+            - generic [ref=e272]: "* Phase 3 학생 화면 (50% 축소)"
+      - generic [ref=e273]:
+        - generic [ref=e274]:
+          - button "✓ 첫 번째 여정 시민 광장 — 시민단체 결성·캠페인·1차 여론조사" [ref=e275]:
+            - generic [ref=e277]: ✓ 첫 번째 여정
+            - paragraph [ref=e278]: 시민 광장 — 시민단체 결성·캠페인·1차 여론조사
+          - generic [ref=e280]:
+            - generic [ref=e281]:
+              - heading "📋 첫 번째 여정 진행 가이드(참고)" [level=2] [ref=e282]
+              - generic [ref=e283]: 8단계
+            - list [ref=e284]:
+              - listitem [ref=e285]:
+                - generic [ref=e286]: "1"
+                - generic [ref=e288]:
+                  - generic [ref=e289]: 오프닝 멘트 ("우리의 턴이 왔다")
+                  - generic [ref=e290]: 1차시
+              - listitem [ref=e291]:
+                - generic [ref=e292]: "2"
+                - generic [ref=e294]:
+                  - generic [ref=e295]: 우리 동네·학교·사회 문제 발굴 및 주제 선정
+                  - generic [ref=e296]: 1차시
+              - listitem [ref=e297]:
+                - generic [ref=e298]: "3"
+                - generic [ref=e300]:
+                  - generic [ref=e301]: 시민단체 결성 및 슬로건 입력 + 사전 여론조사 (번호별 지정 모드)
+                  - generic [ref=e302]: 2차시
+              - listitem [ref=e303]:
+                - generic [ref=e304]: "4"
+                - generic [ref=e306]:
+                  - generic [ref=e307]: 캠페인 포스터·주장글·링크 제출 안내
+                  - generic [ref=e308]: 3차시
+              - listitem [ref=e309]:
+                - generic [ref=e310]: "5"
+                - generic [ref=e312]:
+                  - generic [ref=e313]: 포스터 댓글 + 다축 평가 시간
+                  - generic [ref=e314]: 4차시
+              - listitem [ref=e315]:
+                - generic [ref=e316]: "6"
+                - generic [ref=e318]:
+                  - generic [ref=e319]: 사후 여론조사 1 및 최우선 과제 선정
+                  - generic [ref=e320]: 5차시
+              - listitem [ref=e321]:
+                - generic [ref=e322]: "7"
+                - generic [ref=e323]:
+                  - generic [ref=e324]:
+                    - generic [ref=e325]: 기사 작성 — 시민단체 활동 결과를 기사로
+                    - generic [ref=e326]: 5차시
+                  - generic [ref=e327]: 작성 후 교사 승인 → 여론판 게시
+              - listitem [ref=e328]:
+                - generic [ref=e329]: "8"
+                - generic [ref=e331]:
+                  - generic [ref=e332]: 최우선 과제 잠금 + 두 번째 여정 안내
+                  - generic [ref=e333]: 5차시
+        - generic [ref=e334]:
+          - button "✓ 두 번째 여정 선거 — 후보 등록·토론·투표·결과 발표" [ref=e335]:
+            - generic [ref=e337]: ✓ 두 번째 여정
+            - paragraph [ref=e338]: 선거 — 후보 등록·토론·투표·결과 발표
+          - generic [ref=e340]:
+            - generic [ref=e341]:
+              - heading "📋 두 번째 여정 진행 가이드(참고)" [level=2] [ref=e342]
+              - generic [ref=e343]: 9단계
+            - list [ref=e344]:
+              - listitem [ref=e345]:
+                - generic [ref=e346]: "1"
+                - generic [ref=e348]:
+                  - generic [ref=e349]: 후보 캠프 구성 및 공약 개발용 자료 수집
+                  - generic [ref=e350]: 6차시
+              - listitem [ref=e351]:
+                - generic [ref=e352]: "2"
+                - generic [ref=e354]:
+                  - generic [ref=e355]: 후보 등록 및 지지 선언문 작성
+                  - generic [ref=e356]: 6차시
+              - listitem [ref=e357]:
+                - generic [ref=e358]: "3"
+                - generic [ref=e360]:
+                  - generic [ref=e361]: 후보 비교 및 아고라 찬반 의견
+                  - generic [ref=e362]: 7차시
+              - listitem [ref=e363]:
+                - generic [ref=e364]: "4"
+                - generic [ref=e365]:
+                  - generic [ref=e366]:
+                    - generic [ref=e367]: 사전 선거 여론조사 (이유 쓰기)
+                    - generic [ref=e368]: 8차시
+                  - generic [ref=e369]: 현재 지지하는 후보와 그 이유를 여론조사로 응답합니다.
+              - listitem [ref=e370]:
+                - generic [ref=e371]: "5"
+                - generic [ref=e373]:
+                  - generic [ref=e374]: 토론 준비 — 아래 선거토론 빠른제어에서 토론 설정
+                  - generic [ref=e375]: 8차시
+              - listitem [ref=e376]:
+                - generic [ref=e377]: "6"
+                - generic [ref=e379]:
+                  - generic [ref=e380]: 토론 결과 평가 및 기사 작성
+                  - generic [ref=e381]: 9차시
+              - listitem [ref=e382]:
+                - generic [ref=e383]: "7"
+                - generic [ref=e385]:
+                  - generic [ref=e386]: 투표 시작 및 결과 확인 (선거 4원칙 준수)
+                  - generic [ref=e387]: 9차시
+              - listitem [ref=e388]:
+                - generic [ref=e389]: "8"
+                - generic [ref=e391]:
+                  - generic [ref=e392]: 선거 결과 기사 작성
+                  - generic [ref=e393]: 9차시
+              - listitem [ref=e394]:
+                - generic [ref=e395]: "9"
+                - generic [ref=e397]:
+                  - generic [ref=e398]: 다음 여정 안내 (직책 및 순서)
+                  - generic [ref=e399]: 9차시
+        - generic [ref=e400]:
+          - button "▶ 세 번째 여정 진행 중 국정 포털 — 입법·행정·사법부 활동" [ref=e401]:
+            - generic [ref=e402]:
+              - generic [ref=e403]: ▶ 세 번째 여정
+              - generic [ref=e404]: 진행 중
+            - paragraph [ref=e405]: 국정 포털 — 입법·행정·사법부 활동
+          - generic [ref=e406]:
+            - generic [ref=e407]:
+              - generic [ref=e408]:
+                - heading "📋 세 번째 여정 진행 가이드" [level=2] [ref=e409]
+                - generic [ref=e410]: 11 / 26
+              - list [ref=e411]:
+                - listitem [ref=e412]:
+                  - generic [ref=e413]: "1"
+                  - generic [ref=e415]:
+                    - generic [ref=e416]: 최우선 과제 다시 보여주기
+                    - generic [ref=e417]: 10차시
+                - listitem [ref=e418]:
+                  - generic [ref=e419]: ✓
+                  - generic [ref=e421]:
+                    - generic [ref=e422]: 🏛️ 입법부 활동 진행
+                    - generic [ref=e423]: 10~12차시
+                - listitem [ref=e424]:
+                  - generic [ref=e425]: "8"
+                  - generic [ref=e427]:
+                    - generic [ref=e428]: 기사 작성 — 입법 결과를 기사로
+                    - generic [ref=e429]: 12차시
+                - listitem [ref=e430]:
+                  - generic [ref=e431]: "9"
+                  - generic [ref=e433]:
+                    - generic [ref=e434]: 사전 여론조사 3-1 — 입법 결과에 대한 시민 반응
+                    - generic [ref=e435]: 12차시
+                - listitem [ref=e436]:
+                  - generic [ref=e437]: ▶
+                  - generic [ref=e438]:
+                    - generic [ref=e439]:
+                      - generic [ref=e440]: 🏢 행정부 활동 진행
+                      - generic [ref=e441]: 13~15차시
+                    - generic [ref=e442]: 👉 행정부 탭의 [상태바]에서 이전/다음 단계를 제어하세요.
+                - listitem [ref=e443]:
+                  - generic [ref=e444]: "17"
+                  - generic [ref=e446]:
+                    - generic [ref=e447]: 기사 작성 — 행정 결과를 기사로
+                    - generic [ref=e448]: 15차시
+                - listitem [ref=e449]:
+                  - generic [ref=e450]: "18"
+                  - generic [ref=e452]:
+                    - generic [ref=e453]: 사전 여론조사 3-2 — 예산 편성 평가
+                    - generic [ref=e454]: 15차시
+                - listitem [ref=e455]:
+                  - generic [ref=e456]: "19"
+                  - generic [ref=e458]:
+                    - generic [ref=e459]: ⚖️ 사법부 활동 진행
+                    - generic [ref=e460]: 16~18차시
+                - listitem [ref=e461]:
+                  - generic [ref=e462]: "25"
+                  - generic [ref=e464]:
+                    - generic [ref=e465]: 기사 작성 — 판결 결과를 기사로
+                    - generic [ref=e466]: 18차시
+                - listitem [ref=e467]:
+                  - generic [ref=e468]: "26"
+                  - generic [ref=e470]:
+                    - generic [ref=e471]: 사전 여론조사 3-3 — 판결에 대한 평가
+                    - generic [ref=e472]: 18차시
+              - generic [ref=e473]:
+                - button "← 이전" [ref=e474]
+                - button "다음 →" [ref=e475]
+            - generic [ref=e477]:
+              - heading "Phase 3 운영" [level=2] [ref=e478]
+              - generic [ref=e479]:
+                - button "⏱️ 야당 연합 1분 타이머" [ref=e480]
+                - button "타이머 종료" [ref=e481]
+              - button "📂 NPC 사건 투입 ▼ 펼치기" [ref=e483]:
+                - generic [ref=e484]: 📂 NPC 사건 투입
+                - generic [ref=e485]: ▼ 펼치기
+        - generic [ref=e486]:
+          - button "네 번째 여정 시사회 — 정리글·갤러리 워크" [ref=e487]:
+            - generic [ref=e489]: 네 번째 여정
+            - paragraph [ref=e490]: 시사회 — 정리글·갤러리 워크
+          - generic [ref=e492]:
+            - generic [ref=e493]:
+              - heading "📋 네 번째 여정 진행 가이드(참고)" [level=2] [ref=e494]
+              - generic [ref=e495]: 4단계
+            - list [ref=e496]:
+              - listitem [ref=e497]:
+                - generic [ref=e498]: "1"
+                - generic [ref=e499]:
+                  - generic [ref=e500]:
+                    - generic [ref=e501]: 학생 정리글 작성 안내
+                    - generic [ref=e502]: 19차시
+                  - generic [ref=e503]: 5박스 + 마치며
+              - listitem [ref=e504]:
+                - generic [ref=e505]: "2"
+                - generic [ref=e507]:
+                  - generic [ref=e508]: 정리글 승인 큐 처리
+                  - generic [ref=e509]: 19~20차시
+              - listitem [ref=e510]:
+                - generic [ref=e511]: "3"
+                - generic [ref=e513]:
+                  - generic [ref=e514]: 갤러리 워크 — 친구들 글에 공감
+                  - generic [ref=e515]: 20차시
+              - listitem [ref=e516]:
+                - generic [ref=e517]: "4"
+                - generic [ref=e519]:
+                  - generic [ref=e520]: 디브리핑·역할 배지 반납
+                  - generic [ref=e521]: 20차시
+      - button "네 번째 여정으로 이동 →" [ref=e523]
+      - generic [ref=e524]:
+        - generic [ref=e525]:
+          - heading "🏢 Phase 3 행정부 — 빠른 제어" [level=2] [ref=e526]
+          - generic [ref=e527]: 공개 1 / 5 · 청구 0 / 5
+        - generic [ref=e529]:
+          - generic [ref=e530]:
+            - generic [ref=e531]: ✓
+            - generic [ref=e532]: 준비
+          - generic [ref=e534]:
+            - generic [ref=e535]: ▶
+            - generic [ref=e536]: 초안작성
+          - generic [ref=e538]:
+            - generic [ref=e539]: "3"
+            - generic [ref=e540]: 예산검토
+          - generic [ref=e542]:
+            - generic [ref=e543]: "4"
+            - generic [ref=e544]: 토의·평가
+          - generic [ref=e546]:
+            - generic [ref=e547]: "5"
+            - generic [ref=e548]: 국무회의
+          - generic [ref=e550]:
+            - generic [ref=e551]: "6"
+            - generic [ref=e552]: 최종수정
+          - generic [ref=e554]:
+            - generic [ref=e555]: "7"
+            - generic [ref=e556]: 발표
+        - generic [ref=e557]:
+          - generic [ref=e558]:
+            - generic [ref=e559]:
+              - paragraph [ref=e560]: ② 정책 및 예산 초안 작성
+              - paragraph [ref=e561]: 👩‍🏫 각 부처가 정책 초안을 제출(공개)할 때까지 대기 (1/5 제출)
+            - generic [ref=e562]:
+              - generic [ref=e563]: 📺 교실 TV/프로젝터 송출용 전광판
+              - button "🎬 전광판 띄우기 (새 창)" [ref=e564]:
+                - generic [ref=e565]: 🎬 전광판 띄우기 (새 창)
+          - generic [ref=e566]:
+            - button "← 이전 단계 (① 준비)" [ref=e567]:
+              - text: ← 이전 단계
+              - generic [ref=e568]: (① 준비)
+            - button "다음 단계 → (③ 예산 초안 검토)" [ref=e569]:
+              - text: 다음 단계 →
+              - generic [ref=e570]: (③ 예산 초안 검토)
+      - generic [ref=e571]:
+        - generic [ref=e572]:
+          - generic [ref=e573]:
+            - paragraph [ref=e574]: 제출 확인 빠른보기
+            - heading "3-10 정책·예산안 제출 확인" [level=2] [ref=e575]
+            - paragraph [ref=e576]: 모둠 제출 · 제출자 이름을 누르면 제출 내용을 확인할 수 있습니다.
+          - generic [ref=e577]:
+            - generic [ref=e578]: 1/6
+            - generic [ref=e579]: 제출 완료
+        - generic [ref=e580]:
+          - button "그린피스(환경) 미제출 0명 아직 없음" [ref=e581] [cursor=pointer]:
+            - generic [ref=e582]:
+              - generic [ref=e583]: 그린피스(환경)
+              - generic [ref=e584]: 미제출
+            - generic [ref=e585]:
+              - generic [ref=e586]: 0명
+              - generic [ref=e587]: 아직 없음
+          - button "내일의노동 1건 2명 5/18 15:48" [ref=e588] [cursor=pointer]:
+            - generic [ref=e589]:
+              - generic [ref=e590]: 내일의노동
+              - generic [ref=e591]: 1건
+            - generic [ref=e592]:
+              - generic [ref=e593]: 2명
+              - generic [ref=e594]: 5/18 15:48
+          - button "마음의집(주거) 미제출 1명 아직 없음" [ref=e595] [cursor=pointer]:
+            - generic [ref=e596]:
+              - generic [ref=e597]: 마음의집(주거)
+              - generic [ref=e598]: 미제출
+            - generic [ref=e599]:
+              - generic [ref=e600]: 1명
+              - generic [ref=e601]: 아직 없음
+          - button "평등사회(인권) 미제출 3명 아직 없음" [ref=e602] [cursor=pointer]:
+            - generic [ref=e603]:
+              - generic [ref=e604]: 평등사회(인권)
+              - generic [ref=e605]: 미제출
+            - generic [ref=e606]:
+              - generic [ref=e607]: 3명
+              - generic [ref=e608]: 아직 없음
+          - button "함께마을(지역) 미제출 3명 아직 없음" [ref=e609] [cursor=pointer]:
+            - generic [ref=e610]:
+              - generic [ref=e611]: 함께마을(지역)
+              - generic [ref=e612]: 미제출
+            - generic [ref=e613]:
+              - generic [ref=e614]: 3명
+              - generic [ref=e615]: 아직 없음
+          - button "함께살기(복지) 미제출 1명 아직 없음" [ref=e616] [cursor=pointer]:
+            - generic [ref=e617]:
+              - generic [ref=e618]: 함께살기(복지)
+              - generic [ref=e619]: 미제출
+            - generic [ref=e620]:
+              - generic [ref=e621]: 1명
+              - generic [ref=e622]: 아직 없음
+    - generic [ref=e624]:
+      - generic [ref=e625]:
+        - heading "📞 전문가 호출" [level=3] [ref=e626]
+        - generic [ref=e627]:
+          - button "진행 중" [ref=e628]
+          - button "전체" [ref=e629]
+      - list [ref=e630]:
+        - listitem [ref=e631]: 대기 중인 전문가 호출이 없어요.

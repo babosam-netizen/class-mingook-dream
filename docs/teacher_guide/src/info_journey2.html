@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { font-family:'Apple SD Gothic Neo','Pretendard',sans-serif; }
+  .page {
+    width:1240px; padding:56px 60px 48px;
+    background:linear-gradient(160deg,#fff1f2 0%,#ffe4e6 55%,#fecdd3 100%);
+    color:#4c1d24;
+  }
+  .top { display:flex; align-items:flex-start; justify-content:space-between; gap:24px; }
+  .badge { display:inline-flex; align-items:center; gap:8px; background:#e11d48; color:#fff;
+    font-weight:800; font-size:20px; padding:8px 18px; border-radius:999px; letter-spacing:.5px; }
+  .title { font-size:66px; font-weight:900; color:#9f1239; margin-top:14px; line-height:1.05; }
+  .subtitle { font-size:23px; color:#9f4256; margin-top:14px; font-weight:600; line-height:1.5; max-width:780px; }
+  .sessions { text-align:right; flex-shrink:0; }
+  .sessions .lab { font-size:16px; color:#be123c; font-weight:700; }
+  .sessions .val { font-size:40px; font-weight:900; color:#be123c; }
+  .meaning { margin-top:26px; background:#fff5f6; border:2px solid #fda4af; border-radius:20px;
+    padding:20px 26px; font-size:21px; line-height:1.55; color:#88333f; }
+  .meaning b { color:#be123c; }
+  .flow { margin-top:28px; display:flex; flex-direction:column; gap:12px; }
+  .step { display:flex; align-items:stretch; gap:18px; background:#ffffff; border-radius:18px;
+    box-shadow:0 4px 14px rgba(190,30,60,.12); overflow:hidden; }
+  .num { flex-shrink:0; width:78px; background:linear-gradient(160deg,#fb7185,#e11d48);
+    color:#fff; font-size:36px; font-weight:900; display:flex; align-items:center; justify-content:center; }
+  .body { flex:1; padding:14px 22px; display:flex; align-items:center; gap:18px; }
+  .ico { font-size:40px; flex-shrink:0; width:52px; text-align:center; }
+  .txt { flex:1; }
+  .st-head { display:flex; align-items:center; gap:10px; }
+  .st-title { font-size:24px; font-weight:800; color:#4c1d24; }
+  .tag { font-size:14px; font-weight:800; color:#9f1239; background:#ffe4e6; border:1px solid #fda4af;
+    padding:3px 11px; border-radius:999px; }
+  .st-desc { font-size:17.5px; color:#86545e; margin-top:4px; line-height:1.4; }
+  .footer { margin-top:28px; display:flex; gap:18px; }
+  .fcard { flex:1; border-radius:18px; padding:20px 24px; }
+  .fcard.out { background:#fff5f6; border:2px solid #e11d48; }
+  .fcard.next { background:#eef2ff; border:2px solid #818cf8; }
+  .fcard .h { font-size:17px; font-weight:800; margin-bottom:7px; }
+  .fcard.out .h { color:#be123c; }
+  .fcard.next .h { color:#4f46e5; }
+  .fcard .d { font-size:19px; line-height:1.5; color:#4c1d24; }
+  .fcard.next .d { color:#3730a3; }
+  .principle { display:inline-block; background:#9f1239; color:#fff; font-size:15px; font-weight:800;
+    padding:2px 10px; border-radius:7px; margin-left:4px; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="top">
+      <div>
+        <span class="badge">🗳️ 두 번째 여정</span>
+        <div class="title">선거</div>
+        <div class="subtitle">최우선 과제를 해결할 <b>대표(대통령)</b>를 뽑는다.<br>공약 개발 · 후보 검증(아고라·토론) · 책임 있는 한 표로 대의 민주주의를 체험한다.</div>
+      </div>
+      <div class="sessions">
+        <div class="lab">차시</div>
+        <div class="val">6~9</div>
+      </div>
+    </div>
+
+    <div class="meaning">
+      🧭 <b>여정의 의미</b> — 좋은 대표는 ‘인기’가 아니라 <b>공약과 검증</b>으로 가려집니다.
+      후보를 비교·토론하고 신중히 투표하는 경험으로, 당선된 대표가 다음 ‘국정 운영’ 여정을 이끕니다.
+    </div>
+
+    <div class="flow">
+      <div class="step"><div class="num">1</div><div class="body"><div class="ico">📚</div><div class="txt">
+        <div class="st-head"><span class="st-title">캠프 구성 · 공약 자료 수집</span><span class="tag">6차시</span></div>
+        <div class="st-desc">후보 캠프를 꾸리고, 관련 기사·자료를 모아 공약을 준비합니다.</div></div></div></div>
+
+      <div class="step"><div class="num">2</div><div class="body"><div class="ico">📝</div><div class="txt">
+        <div class="st-head"><span class="st-title">후보 등록 · 지지 선언문</span><span class="tag">6차시</span></div>
+        <div class="st-desc">후보는 공약을 등록하고, 모둠원은 지지 선언문을 작성합니다.</div></div></div></div>
+
+      <div class="step"><div class="num">3</div><div class="body"><div class="ico">💬</div><div class="txt">
+        <div class="st-head"><span class="st-title">후보 비교 · 아고라 찬반 토론</span><span class="tag">7차시</span></div>
+        <div class="st-desc">후보별 공약을 비교하고 아고라에서 찬반 의견을 나눕니다. (아직 투표 전)</div></div></div></div>
+
+      <div class="step"><div class="num">4</div><div class="body"><div class="ico">📊</div><div class="txt">
+        <div class="st-head"><span class="st-title">사전 선거 여론조사 (이유 쓰기)</span><span class="tag">8차시</span></div>
+        <div class="st-desc">현재 지지하는 후보와 <b>그 이유</b>를 함께 응답합니다.</div></div></div></div>
+
+      <div class="step"><div class="num">5</div><div class="body"><div class="ico">🎤</div><div class="txt">
+        <div class="st-head"><span class="st-title">토론 준비</span><span class="tag">8차시</span></div>
+        <div class="st-desc">교사가 참여 후보를 정해 선거 토론 세션을 엽니다. (선거토론 빠른제어)</div></div></div></div>
+
+      <div class="step"><div class="num">6</div><div class="body"><div class="ico">⚖️</div><div class="txt">
+        <div class="st-head"><span class="st-title">토론 평가 · 기사 작성</span><span class="tag">9차시</span></div>
+        <div class="st-desc">토론을 지켜보며 평가하고, 토론 내용을 기사로 정리합니다.</div></div></div></div>
+
+      <div class="step"><div class="num">7</div><div class="body"><div class="ico">✅</div><div class="txt">
+        <div class="st-head"><span class="st-title">본 투표 · 결과 확인</span><span class="tag">9차시</span></div>
+        <div class="st-desc">1인 1표로 투표합니다.<span class="principle">선거 4원칙</span> 보통·평등·직접·비밀</div></div></div></div>
+
+      <div class="step"><div class="num">8</div><div class="body"><div class="ico">📰</div><div class="txt">
+        <div class="st-head"><span class="st-title">선거 결과 기사</span><span class="tag">9차시</span></div>
+        <div class="st-desc">최종 당선 결과를 기사로 정리해 여론판에 올립니다.</div></div></div></div>
+
+      <div class="step"><div class="num">9</div><div class="body"><div class="ico">🏛️</div><div class="txt">
+        <div class="st-head"><span class="st-title">다음 여정 안내 (직책 · 순서)</span><span class="tag">9차시</span></div>
+        <div class="st-desc">대통령·국회의장 등 직책과 세 번째 여정(국정 포털) 일정을 안내합니다.</div></div></div></div>
+    </div>
+
+    <div class="footer">
+      <div class="fcard out"><div class="h">📌 이 여정의 산출물</div>
+        <div class="d">당선된 <b>대표(대통령)</b> + 후보 공약·지지문 + 토론·결과 기사</div></div>
+      <div class="fcard next"><div class="h">➡️ 다음 여정으로</div>
+        <div class="d">당선자가 이끄는 <b>국정 운영(입법·행정·사법)</b> 여정으로 이어집니다.</div></div>
+    </div>
+  </div>
+</body>
+</html>

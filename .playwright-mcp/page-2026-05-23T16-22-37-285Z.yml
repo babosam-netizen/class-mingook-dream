@@ -1,0 +1,13 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - heading "민국이의 꿈" [level=1] [ref=e6]
+    - paragraph [ref=e7]: 우리의 턴(Turn)이 왔다 — 작은 대한민국 시뮬레이션
+  - generic [ref=e20]:
+    - generic [ref=e21]:
+      - paragraph [ref=e22]: 🔑 반 코드로 입장
+      - paragraph [ref=e23]: 다른 기기(학교 PC·집 PC)에서 만든 방에 들어갈 때 사용하세요. 코드만 알면 교사로 다시 입장할 수 있어요.
+      - generic [ref=e24]:
+        - 'textbox "예: AB3C5K" [ref=e25]'
+        - button "입장" [disabled] [ref=e26]
+    - button "+ 새 방 만들기" [ref=e27]
+    - button "← 뒤로" [ref=e28]

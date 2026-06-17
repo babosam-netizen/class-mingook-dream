@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { font-family:'Apple SD Gothic Neo','Pretendard',sans-serif; }
+  .page {
+    width:1240px; padding:56px 60px 48px;
+    background:linear-gradient(160deg,#fffbeb 0%,#fef3c7 55%,#fde68a 100%);
+    color:#4b3a13;
+  }
+  .top { display:flex; align-items:flex-start; justify-content:space-between; gap:24px; }
+  .badge { display:inline-flex; align-items:center; gap:8px; background:#f59e0b; color:#fff;
+    font-weight:800; font-size:20px; padding:8px 18px; border-radius:999px; letter-spacing:.5px; }
+  .title { font-size:66px; font-weight:900; color:#92400e; margin-top:14px; line-height:1.05; }
+  .title .emoji { font-size:60px; }
+  .subtitle { font-size:23px; color:#7c5b16; margin-top:14px; font-weight:600; line-height:1.5; max-width:760px; }
+  .sessions { text-align:right; flex-shrink:0; }
+  .sessions .lab { font-size:16px; color:#a16207; font-weight:700; }
+  .sessions .val { font-size:40px; font-weight:900; color:#b45309; }
+  .meaning { margin-top:26px; background:#fff7e6; border:2px solid #fcd34d; border-radius:20px;
+    padding:20px 26px; font-size:21px; line-height:1.55; color:#78481a; }
+  .meaning b { color:#b45309; }
+  .flow { margin-top:30px; display:flex; flex-direction:column; gap:14px; }
+  .step { display:flex; align-items:stretch; gap:18px; background:#ffffff; border-radius:18px;
+    box-shadow:0 4px 14px rgba(180,120,20,.12); overflow:hidden; }
+  .num { flex-shrink:0; width:78px; background:linear-gradient(160deg,#fbbf24,#f59e0b);
+    color:#fff; font-size:38px; font-weight:900; display:flex; align-items:center; justify-content:center; }
+  .body { flex:1; padding:16px 22px; display:flex; align-items:center; gap:18px; }
+  .ico { font-size:42px; flex-shrink:0; width:54px; text-align:center; }
+  .txt { flex:1; }
+  .st-head { display:flex; align-items:center; gap:10px; }
+  .st-title { font-size:25px; font-weight:800; color:#3f3010; }
+  .tag { font-size:14px; font-weight:800; color:#92400e; background:#fef3c7; border:1px solid #fcd34d;
+    padding:3px 11px; border-radius:999px; }
+  .st-desc { font-size:18px; color:#7a6634; margin-top:5px; line-height:1.45; }
+  .footer { margin-top:30px; display:flex; gap:18px; }
+  .fcard { flex:1; border-radius:18px; padding:20px 24px; }
+  .fcard.out { background:#fff7e6; border:2px solid #f59e0b; }
+  .fcard.next { background:#eef2ff; border:2px solid #818cf8; }
+  .fcard .h { font-size:17px; font-weight:800; margin-bottom:7px; }
+  .fcard.out .h { color:#b45309; }
+  .fcard.next .h { color:#4f46e5; }
+  .fcard .d { font-size:19px; line-height:1.5; color:#4b3a13; }
+  .fcard.next .d { color:#3730a3; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="top">
+      <div>
+        <span class="badge">🌱 첫 번째 여정</span>
+        <div class="title">시민 광장 <span class="emoji"></span></div>
+        <div class="subtitle">교실을 ‘작은 대한민국’으로. 우리 동네·학교의 문제를 직접 발굴하고,<br>시민단체로 목소리를 모아 <b>가장 시급한 ‘최우선 과제’</b>를 정한다.</div>
+      </div>
+      <div class="sessions">
+        <div class="lab">차시</div>
+        <div class="val">1~5</div>
+      </div>
+    </div>
+
+    <div class="meaning">
+      🧭 <b>여정의 의미</b> — 민주주의의 출발점은 ‘시민이 문제를 발견하고 의제를 설정’하는 것.
+      여기서 정한 <b>최우선 과제 1개</b>가 이후 선거·입법·행정·사법 모든 여정의 중심 주제가 됩니다.
+    </div>
+
+    <div class="flow">
+      <div class="step"><div class="num">1</div><div class="body"><div class="ico">📣</div><div class="txt">
+        <div class="st-head"><span class="st-title">오프닝 — “우리의 턴이 왔다”</span><span class="tag">1차시</span></div>
+        <div class="st-desc">프로젝트 세계관을 안내하고, 우리가 나라를 바꿀 주인공임을 선언합니다.</div></div></div></div>
+
+      <div class="step"><div class="num">2</div><div class="body"><div class="ico">🔍</div><div class="txt">
+        <div class="st-head"><span class="st-title">문제 발굴 · 청원</span><span class="tag">1차시</span></div>
+        <div class="st-desc">우리 동네·학교·사회의 문제를 학생이 직접 제안하고 서로 공감(추천)을 모읍니다.</div></div></div></div>
+
+      <div class="step"><div class="num">3</div><div class="body"><div class="ico">🤝</div><div class="txt">
+        <div class="st-head"><span class="st-title">시민단체 결성 · 슬로건 + 사전 여론조사</span><span class="tag">2차시</span></div>
+        <div class="st-desc">관심 분야로 모둠(시민단체)을 만들고 슬로건을 정한 뒤, 첫 여론조사로 관심 분야를 확인합니다.</div></div></div></div>
+
+      <div class="step"><div class="num">4</div><div class="body"><div class="ico">🎨</div><div class="txt">
+        <div class="st-head"><span class="st-title">캠페인 제작 — 포스터 · 주장글 · 자료</span><span class="tag">3차시</span></div>
+        <div class="st-desc">모둠 의제를 캠페인 포스터(이미지)·주장글·참고 링크로 표현해 제출합니다.</div></div></div></div>
+
+      <div class="step"><div class="num">5</div><div class="body"><div class="ico">⭐</div><div class="txt">
+        <div class="st-head"><span class="st-title">포스터 댓글 · 다축 평가</span><span class="tag">4차시</span></div>
+        <div class="st-desc">서로의 포스터에 댓글을 달고 <b>논리 · 실현 가능성 · 주제 적합성</b> 3축 별점으로 평가합니다.</div></div></div></div>
+
+      <div class="step"><div class="num">6</div><div class="body"><div class="ico">🗳️</div><div class="txt">
+        <div class="st-head"><span class="st-title">사후 여론조사 · 최우선 과제 선정</span><span class="tag">5차시</span></div>
+        <div class="st-desc">여론조사 1위 모둠의 주제가 우리 반의 <b>‘최우선 과제’</b>로 결정됩니다.</div></div></div></div>
+
+      <div class="step"><div class="num">7</div><div class="body"><div class="ico">📰</div><div class="txt">
+        <div class="st-head"><span class="st-title">기사 작성</span><span class="tag">5차시</span></div>
+        <div class="st-desc">시민단체 활동 결과를 기사로 작성 → 교사 승인 → 여론판에 게시됩니다.</div></div></div></div>
+
+      <div class="step"><div class="num">8</div><div class="body"><div class="ico">🔒</div><div class="txt">
+        <div class="st-head"><span class="st-title">최우선 과제 잠금 · 다음 여정 안내</span><span class="tag">5차시</span></div>
+        <div class="st-desc">최우선 과제를 확정(잠금)하고, 이어질 ‘선거’ 여정을 안내합니다.</div></div></div></div>
+    </div>
+
+    <div class="footer">
+      <div class="fcard out"><div class="h">📌 이 여정의 산출물</div>
+        <div class="d">우리 반 <b>최우선 과제 1개</b> + 시민단체(모둠) + 캠페인 자료 + 활동 기사</div></div>
+      <div class="fcard next"><div class="h">➡️ 다음 여정으로</div>
+        <div class="d">최우선 과제를 해결할 <b>대표를 뽑는 ‘선거’</b>로 이어집니다.</div></div>
+    </div>
+  </div>
+</body>
+</html>

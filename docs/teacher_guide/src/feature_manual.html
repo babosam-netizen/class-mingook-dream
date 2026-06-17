@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{font-family:'Apple SD Gothic Neo','Pretendard',sans-serif;}
+  .page{width:1240px;padding:50px 56px 44px;background:#f8fafc;color:#1e293b;}
+  .h1{font-size:46px;font-weight:900;color:#4338ca;}
+  .sub{font-size:21px;color:#64748b;margin-top:8px;font-weight:600;}
+  .sec{margin-top:34px;}
+  .sec-h{display:flex;align-items:center;gap:10px;font-size:25px;font-weight:800;color:#334155;margin-bottom:14px;}
+  .sec-h .dot{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:#4338ca;color:#fff;font-size:19px;font-weight:900;}
+
+  /* 재현된 상단바 */
+  .bar{background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 3px 10px rgba(0,0,0,.06);
+       padding:14px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .brand{font-weight:900;color:#4338ca;font-size:20px;}
+  .pill{font-size:14px;padding:4px 11px;border-radius:999px;font-weight:700;}
+  .pill.gray{background:#f1f5f9;color:#475569;}
+  .pill.mono{background:#f1f5f9;color:#475569;font-family:monospace;}
+  .pill.green{background:#dcfce7;color:#15803d;font-family:monospace;}
+  .spacer{flex:1;}
+  .navbtn{position:relative;font-size:16px;font-weight:700;padding:8px 14px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;color:#334155;}
+  .navbtn.amber{background:#f59e0b;color:#fff;border-color:#f59e0b;}
+  .navbtn.indigo{background:#4f46e5;color:#fff;border-color:#4f46e5;}
+  .badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+         width:26px;height:26px;border-radius:50%;background:#e11d48;color:#fff;font-size:15px;font-weight:900;
+         display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(0,0,0,.2);}
+  .toolbtn{position:relative;font-size:15px;font-weight:700;padding:9px 14px;border-radius:10px;color:#fff;}
+
+  /* 범례 */
+  .legend{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:12px 26px;}
+  .leg{display:flex;gap:12px;align-items:flex-start;}
+  .leg .n{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#e11d48;color:#fff;
+          font-size:15px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+  .leg .c .t{font-size:19px;font-weight:800;color:#1e293b;}
+  .leg .c .d{font-size:16.5px;color:#64748b;line-height:1.4;margin-top:2px;}
+
+  .note{margin-top:22px;background:#eef2ff;border:2px solid #c7d2fe;border-radius:14px;padding:16px 22px;
+        font-size:18px;color:#3730a3;line-height:1.55;}
+  .note b{color:#4338ca;}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="h1">기능 설명서 — 상단 버튼 & 도구</div>
+  <div class="sub">‘민국이의 꿈’ 화면 위쪽 버튼들의 역할 한눈에 보기 (교사 화면 기준)</div>
+
+  <!-- A. 공통 상단바 -->
+  <div class="sec">
+    <div class="sec-h"><span class="dot">A</span> 공통 상단바 — 모든 화면 맨 위</div>
+    <div class="bar">
+      <span class="brand">민국이의 꿈</span>
+      <span class="pill gray">학급명</span>
+      <span class="pill mono">반코드</span>
+      <span class="pill green">버전</span>
+      <span class="spacer"></span>
+      <span class="navbtn"><span class="badge">1</span>시민광장</span>
+      <span class="navbtn"><span class="badge">2</span>선거</span>
+      <span class="navbtn"><span class="badge">3</span>국정포털</span>
+      <span class="navbtn"><span class="badge">4</span>여론판</span>
+      <span class="navbtn"><span class="badge">5</span>정리글벽</span>
+      <span class="navbtn amber"><span class="badge">6</span>⚡여론조사</span>
+      <span class="navbtn indigo"><span class="badge">7</span>👩‍🏫교사실</span>
+    </div>
+    <div class="legend">
+      <div class="leg"><span class="n">1</span><div class="c"><div class="t">시민광장</div><div class="d">첫 번째 여정으로 전환 — 클릭 시 학생 화면도 함께 이동</div></div></div>
+      <div class="leg"><span class="n">2</span><div class="c"><div class="t">선거</div><div class="d">두 번째 여정으로 전환 (+ 학생 자동 이동)</div></div></div>
+      <div class="leg"><span class="n">3</span><div class="c"><div class="t">국정포털</div><div class="d">세 번째 여정(입법·행정·사법)으로 전환</div></div></div>
+      <div class="leg"><span class="n">4</span><div class="c"><div class="t">여론판</div><div class="d">게시된 기사를 여정별로 모아보기 (여정 전환은 안 함)</div></div></div>
+      <div class="leg"><span class="n">5</span><div class="c"><div class="t">정리글벽</div><div class="d">네 번째 여정 — 학생 정리글(패들렛형)을 모아보기</div></div></div>
+      <div class="leg"><span class="n">6</span><div class="c"><div class="t">⚡ 여론조사</div><div class="d">여론조사를 만들고 실시·종료 — 어느 화면에서나 바로 실행</div></div></div>
+      <div class="leg"><span class="n">7</span><div class="c"><div class="t">👩‍🏫 교사실</div><div class="d">교사 대시보드(단계 진행·승인·모니터링)로 이동</div></div></div>
+    </div>
+    <div class="note">💡 <b>학생 화면에는 이 메뉴가 없습니다.</b> 교사가 여정 탭을 누르면 학생들은 자동으로 그 화면으로 따라옵니다. 왼쪽 ‘학급명·반코드·버전’ 표시는 현재 방 정보입니다.</div>
+  </div>
+
+  <!-- B. 교사실 도구 바 -->
+  <div class="sec">
+    <div class="sec-h"><span class="dot">B</span> 교사실 도구 바 — 교사 대시보드 상단</div>
+    <div class="bar">
+      <span class="toolbtn" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;"><span class="badge">1</span>🔗 링크 (대기·승인·전체)</span>
+      <span class="toolbtn" style="background:#ea580c;"><span class="badge">2</span>📋 청원</span>
+      <span class="toolbtn" style="background:#7c3aed;"><span class="badge">3</span>📖 토론 도구</span>
+      <span class="toolbtn" style="background:#0891b2;"><span class="badge">4</span>🔍 제출물 열람</span>
+      <span class="toolbtn" style="background:#16a34a;"><span class="badge">5</span>⚙️ 학급 설정</span>
+      <span class="toolbtn" style="background:#0d9488;"><span class="badge">6</span>📲 입장 QR</span>
+      <span class="toolbtn" style="background:#ea580c;"><span class="badge">7</span>📷 갤러리</span>
+      <span class="toolbtn" style="background:#2563eb;"><span class="badge">8</span>📊 학생 분석</span>
+      <span class="toolbtn" style="background:#dc2626;"><span class="badge">9</span>🗑️ 영구 삭제</span>
+    </div>
+    <div class="legend">
+      <div class="leg"><span class="n">1</span><div class="c"><div class="t">🔗 링크</div><div class="d">학생이 제출한 참고 링크를 검토·승인 (대기/승인/전체 개수 표시)</div></div></div>
+      <div class="leg"><span class="n">2</span><div class="c"><div class="t">📋 청원</div><div class="d">1여정 ‘문제 발굴’ 단계의 학생 청원을 모아 확인</div></div></div>
+      <div class="leg"><span class="n">3</span><div class="c"><div class="t">📖 토론 도구</div><div class="d">오프라인 선거토론·본회의·모의재판 진행을 돕는 도구 묶음</div></div></div>
+      <div class="leg"><span class="n">4</span><div class="c"><div class="t">🔍 제출물 열람</div><div class="d">포스터·기사·법안 등 학생 제출물을 한곳에서 열람</div></div></div>
+      <div class="leg"><span class="n">5</span><div class="c"><div class="t">⚙️ 학급 설정</div><div class="d">인원·베네핏 카드·부서 단위 등 학급 환경 설정(config)</div></div></div>
+      <div class="leg"><span class="n">6</span><div class="c"><div class="t">📲 입장 QR</div><div class="d">학생이 방에 입장할 수 있는 QR 코드를 띄움</div></div></div>
+      <div class="leg"><span class="n">7</span><div class="c"><div class="t">📷 갤러리</div><div class="d">제출된 캠페인 포스터를 갤러리로 모아보기</div></div></div>
+      <div class="leg"><span class="n">8</span><div class="c"><div class="t">📊 학생 분석</div><div class="d">학생별 참여·활동 현황을 분석해서 보기</div></div></div>
+      <div class="leg"><span class="n">9</span><div class="c"><div class="t">🗑️ 영구 삭제</div><div class="d">방(데이터)을 완전히 삭제 — 사용 주의</div></div></div>
+    </div>
+    <div class="note">💡 교사 대시보드(👩‍🏫교사실)에는 <b>왼쪽: 학급·시민단체 요약 / 오른쪽: 학생 화면 실시간 미리보기</b>가 함께 표시되어, 학생들이 지금 보는 화면을 그대로 모니터링할 수 있습니다.</div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+/* 슬로건 등 가로 흐름(마퀴) — 콘텐츠를 두 번 복제해 -50% 시점에 끊김 없이 루프 */
+@keyframes slogan-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.slogan-marquee {
+  animation: slogan-marquee linear infinite;
+}
+.slogan-marquee:hover {
+  animation-play-state: paused;
+}

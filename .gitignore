@@ -1,0 +1,35 @@
+# 환경변수 (각자 환경의 Firebase 키 등 — 커밋 금지)
+.env
+.env.local
+.env.*.local
+
+# 의존성
+app/node_modules/
+
+# 빌드 결과물
+app/dist/
+
+# 시스템
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Firebase 보안 규칙 (각자 환경의 uid 포함 — 커밋 금지)
+docs/firebase-rules.json
+
+# Claude Code 로컬 파일
+.playwright-mcp/
+app/.claude/
+
+# 로그
+*.log
+npm-debug.log*
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example

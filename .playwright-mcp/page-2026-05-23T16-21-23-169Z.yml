@@ -1,0 +1,7 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - heading "민국이의 꿈" [level=1] [ref=e6]
+    - paragraph [ref=e7]: 우리의 턴(Turn)이 왔다 — 작은 대한민국 시뮬레이션
+  - generic [ref=e8]:
+    - button "🔒 선생님 — 방 만들기 / 입장" [ref=e9]
+    - button "학생 — 방 입장" [ref=e10]

@@ -1,0 +1,53 @@
+{
+  "_설명": "실제 규칙 적용 시 YOUR_TEACHER_UID를 Firebase Console → Authentication → Users에서 확인한 교사 계정 UID로 교체하세요.",
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "roomsIndex": {
+      ".read": true,
+      "$roomCode": {
+        ".write": "auth != null && auth.uid === 'YOUR_TEACHER_UID' || !data.exists()",
+        ".validate": "newData.hasChildren(['className', 'createdAt']) && $roomCode.length == 6"
+      }
+    },
+
+    "rooms": {
+      "$roomCode": {
+        ".read": "auth != null",
+        "currentPhase": {
+          ".write": "auth != null && auth.uid === 'YOUR_TEACHER_UID'",
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 4"
+        },
+        "config": { ".write": "auth != null && auth.uid === 'YOUR_TEACHER_UID'" },
+        "students": { ".write": "auth != null" },
+        "groups": { ".write": "auth != null" },
+        "posters": { ".write": "auth != null" },
+        "comments": { ".write": "auth != null" },
+        "articles": { ".write": "auth != null" },
+        "reflections": { ".write": "auth != null" },
+        "bills": { ".write": "auth != null" },
+        "timers": { ".write": "auth != null" },
+        "alliances": { ".write": "auth != null" },
+        "activityLog": {
+          "$logId": { ".write": "auth != null && !data.exists()" }
+        },
+        "electionVotes": {
+          "$studentId": { ".write": "auth != null && !data.exists()" }
+        },
+        "billVotes": {
+          "$billId": {
+            "$studentId": { ".write": "auth != null && !data.exists()" }
+          }
+        },
+        "polls": {
+          "$pollId": {
+            "votes": {
+              "$studentId": { ".write": "auth != null && !data.exists()" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

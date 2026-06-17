@@ -1,0 +1,9 @@
+- generic [ref=e2]:
+  - generic [ref=e3]: 연결 확인 중...
+  - generic [ref=e6]:
+    - generic [ref=e7]:
+      - heading "민국이의 꿈" [level=1] [ref=e8]
+      - paragraph [ref=e9]: 우리의 턴(Turn)이 왔다 — 작은 대한민국 시뮬레이션
+    - generic [ref=e10]:
+      - button "🔒 선생님 — 방 만들기 / 입장" [ref=e11]
+      - button "학생 — 방 입장" [ref=e12]

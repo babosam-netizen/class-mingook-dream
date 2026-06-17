@@ -1,0 +1,683 @@
+- generic [ref=e2]:
+  - generic [ref=e24]:
+    - generic [ref=e25]:
+      - generic "드래그로 이동" [ref=e26]:
+        - img [ref=e27]
+        - generic [ref=e34]: 한눈에 여론
+      - button [ref=e35]:
+        - img [ref=e36]
+    - generic [ref=e42]:
+      - button "🔥 인기 첫번째여정기사화하다 함께살기(복지)" [ref=e43]:
+        - generic [ref=e44]:
+          - img [ref=e46]
+          - generic [ref=e49]: 🔥 인기
+        - generic [ref=e50]:
+          - heading "첫번째여정기사화하다" [level=3] [ref=e51]
+          - generic [ref=e52]:
+            - img [ref=e53]
+            - generic [ref=e55]: 함께살기(복지)
+      - button "🔥 인기 이 안건에 반대하오 내일의노동" [ref=e56]:
+        - generic [ref=e57]:
+          - img [ref=e59]
+          - generic [ref=e62]: 🔥 인기
+        - generic [ref=e63]:
+          - heading "이 안건에 반대하오" [level=3] [ref=e64]
+          - generic [ref=e65]:
+            - img [ref=e66]
+            - generic [ref=e68]: 내일의노동
+      - button "🔥 인기 충격! 북극곰에게도 곰권이 생기나... 평등사회(인권)" [ref=e69]:
+        - generic [ref=e70]:
+          - img [ref=e72]
+          - generic [ref=e75]: 🔥 인기
+        - generic [ref=e76]:
+          - heading "충격! 북극곰에게도 곰권이 생기나..." [level=3] [ref=e77]
+          - generic [ref=e78]:
+            - img [ref=e79]
+            - generic [ref=e81]: 평등사회(인권)
+      - button "📰 최근 토론 성황리에 진행되어 내일의노동" [ref=e82]:
+        - generic [ref=e83]:
+          - img [ref=e85]
+          - generic [ref=e88]: 📰 최근
+        - generic [ref=e89]:
+          - heading "토론 성황리에 진행되어" [level=3] [ref=e90]
+          - generic [ref=e91]:
+            - img [ref=e92]
+            - generic [ref=e94]: 내일의노동
+      - button "🔥 인기 첫번째여정기사화하다 함께살기(복지)" [ref=e95]:
+        - generic [ref=e96]:
+          - img [ref=e98]
+          - generic [ref=e101]: 🔥 인기
+        - generic [ref=e102]:
+          - heading "첫번째여정기사화하다" [level=3] [ref=e103]
+          - generic [ref=e104]:
+            - img [ref=e105]
+            - generic [ref=e107]: 함께살기(복지)
+      - button "🔥 인기 이 안건에 반대하오 내일의노동" [ref=e108]:
+        - generic [ref=e109]:
+          - img [ref=e111]
+          - generic [ref=e114]: 🔥 인기
+        - generic [ref=e115]:
+          - heading "이 안건에 반대하오" [level=3] [ref=e116]
+          - generic [ref=e117]:
+            - img [ref=e118]
+            - generic [ref=e120]: 내일의노동
+      - button "🔥 인기 충격! 북극곰에게도 곰권이 생기나... 평등사회(인권)" [ref=e121]:
+        - generic [ref=e122]:
+          - img [ref=e124]
+          - generic [ref=e127]: 🔥 인기
+        - generic [ref=e128]:
+          - heading "충격! 북극곰에게도 곰권이 생기나..." [level=3] [ref=e129]
+          - generic [ref=e130]:
+            - img [ref=e131]
+            - generic [ref=e133]: 평등사회(인권)
+      - button "📰 최근 토론 성황리에 진행되어 내일의노동" [ref=e134]:
+        - generic [ref=e135]:
+          - img [ref=e137]
+          - generic [ref=e140]: 📰 최근
+        - generic [ref=e141]:
+          - heading "토론 성황리에 진행되어" [level=3] [ref=e142]
+          - generic [ref=e143]:
+            - img [ref=e144]
+            - generic [ref=e146]: 내일의노동
+      - button "🔥 인기 첫번째여정기사화하다 함께살기(복지)" [ref=e147]:
+        - generic [ref=e148]:
+          - img [ref=e150]
+          - generic [ref=e153]: 🔥 인기
+        - generic [ref=e154]:
+          - heading "첫번째여정기사화하다" [level=3] [ref=e155]
+          - generic [ref=e156]:
+            - img [ref=e157]
+            - generic [ref=e159]: 함께살기(복지)
+      - button "🔥 인기 이 안건에 반대하오 내일의노동" [ref=e160]:
+        - generic [ref=e161]:
+          - img [ref=e163]
+          - generic [ref=e166]: 🔥 인기
+        - generic [ref=e167]:
+          - heading "이 안건에 반대하오" [level=3] [ref=e168]
+          - generic [ref=e169]:
+            - img [ref=e170]
+            - generic [ref=e172]: 내일의노동
+      - button "🔥 인기 충격! 북극곰에게도 곰권이 생기나... 평등사회(인권)" [ref=e173]:
+        - generic [ref=e174]:
+          - img [ref=e176]
+          - generic [ref=e179]: 🔥 인기
+        - generic [ref=e180]:
+          - heading "충격! 북극곰에게도 곰권이 생기나..." [level=3] [ref=e181]
+          - generic [ref=e182]:
+            - img [ref=e183]
+            - generic [ref=e185]: 평등사회(인권)
+      - button "📰 최근 토론 성황리에 진행되어 내일의노동" [ref=e186]:
+        - generic [ref=e187]:
+          - img [ref=e189]
+          - generic [ref=e192]: 📰 최근
+        - generic [ref=e193]:
+          - heading "토론 성황리에 진행되어" [level=3] [ref=e194]
+          - generic [ref=e195]:
+            - img [ref=e196]
+            - generic [ref=e198]: 내일의노동
+      - button "🔥 인기 첫번째여정기사화하다 함께살기(복지)" [ref=e199]:
+        - generic [ref=e200]:
+          - img [ref=e202]
+          - generic [ref=e205]: 🔥 인기
+        - generic [ref=e206]:
+          - heading "첫번째여정기사화하다" [level=3] [ref=e207]
+          - generic [ref=e208]:
+            - img [ref=e209]
+            - generic [ref=e211]: 함께살기(복지)
+      - button "🔥 인기 이 안건에 반대하오 내일의노동" [ref=e212]:
+        - generic [ref=e213]:
+          - img [ref=e215]
+          - generic [ref=e218]: 🔥 인기
+        - generic [ref=e219]:
+          - heading "이 안건에 반대하오" [level=3] [ref=e220]
+          - generic [ref=e221]:
+            - img [ref=e222]
+            - generic [ref=e224]: 내일의노동
+      - button "🔥 인기 충격! 북극곰에게도 곰권이 생기나... 평등사회(인권)" [ref=e225]:
+        - generic [ref=e226]:
+          - img [ref=e228]
+          - generic [ref=e231]: 🔥 인기
+        - generic [ref=e232]:
+          - heading "충격! 북극곰에게도 곰권이 생기나..." [level=3] [ref=e233]
+          - generic [ref=e234]:
+            - img [ref=e235]
+            - generic [ref=e237]: 평등사회(인권)
+      - button "📰 최근 토론 성황리에 진행되어 내일의노동" [ref=e238]:
+        - generic [ref=e239]:
+          - img [ref=e241]
+          - generic [ref=e244]: 📰 최근
+        - generic [ref=e245]:
+          - heading "토론 성황리에 진행되어" [level=3] [ref=e246]
+          - generic [ref=e247]:
+            - img [ref=e248]
+            - generic [ref=e250]: 내일의노동
+      - button "🔥 인기 첫번째여정기사화하다 함께살기(복지)" [ref=e251]:
+        - generic [ref=e252]:
+          - img [ref=e254]
+          - generic [ref=e257]: 🔥 인기
+        - generic [ref=e258]:
+          - heading "첫번째여정기사화하다" [level=3] [ref=e259]
+          - generic [ref=e260]:
+            - img [ref=e261]
+            - generic [ref=e263]: 함께살기(복지)
+      - button "🔥 인기 이 안건에 반대하오 내일의노동" [ref=e264]:
+        - generic [ref=e265]:
+          - img [ref=e267]
+          - generic [ref=e270]: 🔥 인기
+        - generic [ref=e271]:
+          - heading "이 안건에 반대하오" [level=3] [ref=e272]
+          - generic [ref=e273]:
+            - img [ref=e274]
+            - generic [ref=e276]: 내일의노동
+      - button "🔥 인기 충격! 북극곰에게도 곰권이 생기나... 평등사회(인권)" [ref=e277]:
+        - generic [ref=e278]:
+          - img [ref=e280]
+          - generic [ref=e283]: 🔥 인기
+        - generic [ref=e284]:
+          - heading "충격! 북극곰에게도 곰권이 생기나..." [level=3] [ref=e285]
+          - generic [ref=e286]:
+            - img [ref=e287]
+            - generic [ref=e289]: 평등사회(인권)
+      - button "📰 최근 토론 성황리에 진행되어 내일의노동" [ref=e290]:
+        - generic [ref=e291]:
+          - img [ref=e293]
+          - generic [ref=e296]: 📰 최근
+        - generic [ref=e297]:
+          - heading "토론 성황리에 진행되어" [level=3] [ref=e298]
+          - generic [ref=e299]:
+            - img [ref=e300]
+            - generic [ref=e302]: 내일의노동
+      - button "🔥 인기 첫번째여정기사화하다 함께살기(복지)" [ref=e303]:
+        - generic [ref=e304]:
+          - img [ref=e306]
+          - generic [ref=e309]: 🔥 인기
+        - generic [ref=e310]:
+          - heading "첫번째여정기사화하다" [level=3] [ref=e311]
+          - generic [ref=e312]:
+            - img [ref=e313]
+            - generic [ref=e315]: 함께살기(복지)
+      - button "🔥 인기 이 안건에 반대하오 내일의노동" [ref=e316]:
+        - generic [ref=e317]:
+          - img [ref=e319]
+          - generic [ref=e322]: 🔥 인기
+        - generic [ref=e323]:
+          - heading "이 안건에 반대하오" [level=3] [ref=e324]
+          - generic [ref=e325]:
+            - img [ref=e326]
+            - generic [ref=e328]: 내일의노동
+      - button "🔥 인기 충격! 북극곰에게도 곰권이 생기나... 평등사회(인권)" [ref=e329]:
+        - generic [ref=e330]:
+          - img [ref=e332]
+          - generic [ref=e335]: 🔥 인기
+        - generic [ref=e336]:
+          - heading "충격! 북극곰에게도 곰권이 생기나..." [level=3] [ref=e337]
+          - generic [ref=e338]:
+            - img [ref=e339]
+            - generic [ref=e341]: 평등사회(인권)
+      - button "📰 최근 토론 성황리에 진행되어 내일의노동" [ref=e342]:
+        - generic [ref=e343]:
+          - img [ref=e345]
+          - generic [ref=e348]: 📰 최근
+        - generic [ref=e349]:
+          - heading "토론 성황리에 진행되어" [level=3] [ref=e350]
+          - generic [ref=e351]:
+            - img [ref=e352]
+            - generic [ref=e354]: 내일의노동
+      - button "🔥 인기 첫번째여정기사화하다 함께살기(복지)" [ref=e355]:
+        - generic [ref=e356]:
+          - img [ref=e358]
+          - generic [ref=e361]: 🔥 인기
+        - generic [ref=e362]:
+          - heading "첫번째여정기사화하다" [level=3] [ref=e363]
+          - generic [ref=e364]:
+            - img [ref=e365]
+            - generic [ref=e367]: 함께살기(복지)
+      - button "🔥 인기 이 안건에 반대하오 내일의노동" [ref=e368]:
+        - generic [ref=e369]:
+          - img [ref=e371]
+          - generic [ref=e374]: 🔥 인기
+        - generic [ref=e375]:
+          - heading "이 안건에 반대하오" [level=3] [ref=e376]
+          - generic [ref=e377]:
+            - img [ref=e378]
+            - generic [ref=e380]: 내일의노동
+      - button "🔥 인기 충격! 북극곰에게도 곰권이 생기나... 평등사회(인권)" [ref=e381]:
+        - generic [ref=e382]:
+          - img [ref=e384]
+          - generic [ref=e387]: 🔥 인기
+        - generic [ref=e388]:
+          - heading "충격! 북극곰에게도 곰권이 생기나..." [level=3] [ref=e389]
+          - generic [ref=e390]:
+            - img [ref=e391]
+            - generic [ref=e393]: 평등사회(인권)
+      - button "📰 최근 토론 성황리에 진행되어 내일의노동" [ref=e394]:
+        - generic [ref=e395]:
+          - img [ref=e397]
+          - generic [ref=e400]: 📰 최근
+        - generic [ref=e401]:
+          - heading "토론 성황리에 진행되어" [level=3] [ref=e402]
+          - generic [ref=e403]:
+            - img [ref=e404]
+            - generic [ref=e406]: 내일의노동
+      - button "🔥 인기 첫번째여정기사화하다 함께살기(복지)" [ref=e407]:
+        - generic [ref=e408]:
+          - img [ref=e410]
+          - generic [ref=e413]: 🔥 인기
+        - generic [ref=e414]:
+          - heading "첫번째여정기사화하다" [level=3] [ref=e415]
+          - generic [ref=e416]:
+            - img [ref=e417]
+            - generic [ref=e419]: 함께살기(복지)
+      - button "🔥 인기 이 안건에 반대하오 내일의노동" [ref=e420]:
+        - generic [ref=e421]:
+          - img [ref=e423]
+          - generic [ref=e426]: 🔥 인기
+        - generic [ref=e427]:
+          - heading "이 안건에 반대하오" [level=3] [ref=e428]
+          - generic [ref=e429]:
+            - img [ref=e430]
+            - generic [ref=e432]: 내일의노동
+      - button "🔥 인기 충격! 북극곰에게도 곰권이 생기나... 평등사회(인권)" [ref=e433]:
+        - generic [ref=e434]:
+          - img [ref=e436]
+          - generic [ref=e439]: 🔥 인기
+        - generic [ref=e440]:
+          - heading "충격! 북극곰에게도 곰권이 생기나..." [level=3] [ref=e441]
+          - generic [ref=e442]:
+            - img [ref=e443]
+            - generic [ref=e445]: 평등사회(인권)
+      - button "📰 최근 토론 성황리에 진행되어 내일의노동" [ref=e446]:
+        - generic [ref=e447]:
+          - img [ref=e449]
+          - generic [ref=e452]: 📰 최근
+        - generic [ref=e453]:
+          - heading "토론 성황리에 진행되어" [level=3] [ref=e454]
+          - generic [ref=e455]:
+            - img [ref=e456]
+            - generic [ref=e458]: 내일의노동
+      - button "🔥 인기 첫번째여정기사화하다 함께살기(복지)" [ref=e459]:
+        - generic [ref=e460]:
+          - img [ref=e462]
+          - generic [ref=e465]: 🔥 인기
+        - generic [ref=e466]:
+          - heading "첫번째여정기사화하다" [level=3] [ref=e467]
+          - generic [ref=e468]:
+            - img [ref=e469]
+            - generic [ref=e471]: 함께살기(복지)
+      - button "🔥 인기 이 안건에 반대하오 내일의노동" [ref=e472]:
+        - generic [ref=e473]:
+          - img [ref=e475]
+          - generic [ref=e478]: 🔥 인기
+        - generic [ref=e479]:
+          - heading "이 안건에 반대하오" [level=3] [ref=e480]
+          - generic [ref=e481]:
+            - img [ref=e482]
+            - generic [ref=e484]: 내일의노동
+      - button "🔥 인기 충격! 북극곰에게도 곰권이 생기나... 평등사회(인권)" [ref=e485]:
+        - generic [ref=e486]:
+          - img [ref=e488]
+          - generic [ref=e491]: 🔥 인기
+        - generic [ref=e492]:
+          - heading "충격! 북극곰에게도 곰권이 생기나..." [level=3] [ref=e493]
+          - generic [ref=e494]:
+            - img [ref=e495]
+            - generic [ref=e497]: 평등사회(인권)
+      - button "📰 최근 토론 성황리에 진행되어 내일의노동" [ref=e498]:
+        - generic [ref=e499]:
+          - img [ref=e501]
+          - generic [ref=e504]: 📰 최근
+        - generic [ref=e505]:
+          - heading "토론 성황리에 진행되어" [level=3] [ref=e506]
+          - generic [ref=e507]:
+            - img [ref=e508]
+            - generic [ref=e510]: 내일의노동
+      - button "🔥 인기 첫번째여정기사화하다 함께살기(복지)" [ref=e511]:
+        - generic [ref=e512]:
+          - img [ref=e514]
+          - generic [ref=e517]: 🔥 인기
+        - generic [ref=e518]:
+          - heading "첫번째여정기사화하다" [level=3] [ref=e519]
+          - generic [ref=e520]:
+            - img [ref=e521]
+            - generic [ref=e523]: 함께살기(복지)
+      - button "🔥 인기 이 안건에 반대하오 내일의노동" [ref=e524]:
+        - generic [ref=e525]:
+          - img [ref=e527]
+          - generic [ref=e530]: 🔥 인기
+        - generic [ref=e531]:
+          - heading "이 안건에 반대하오" [level=3] [ref=e532]
+          - generic [ref=e533]:
+            - img [ref=e534]
+            - generic [ref=e536]: 내일의노동
+      - button "🔥 인기 충격! 북극곰에게도 곰권이 생기나... 평등사회(인권)" [ref=e537]:
+        - generic [ref=e538]:
+          - img [ref=e540]
+          - generic [ref=e543]: 🔥 인기
+        - generic [ref=e544]:
+          - heading "충격! 북극곰에게도 곰권이 생기나..." [level=3] [ref=e545]
+          - generic [ref=e546]:
+            - img [ref=e547]
+            - generic [ref=e549]: 평등사회(인권)
+      - button "📰 최근 토론 성황리에 진행되어 내일의노동" [ref=e550]:
+        - generic [ref=e551]:
+          - img [ref=e553]
+          - generic [ref=e556]: 📰 최근
+        - generic [ref=e557]:
+          - heading "토론 성황리에 진행되어" [level=3] [ref=e558]
+          - generic [ref=e559]:
+            - img [ref=e560]
+            - generic [ref=e562]: 내일의노동
+      - button "🔥 인기 첫번째여정기사화하다 함께살기(복지)" [ref=e563]:
+        - generic [ref=e564]:
+          - img [ref=e566]
+          - generic [ref=e569]: 🔥 인기
+        - generic [ref=e570]:
+          - heading "첫번째여정기사화하다" [level=3] [ref=e571]
+          - generic [ref=e572]:
+            - img [ref=e573]
+            - generic [ref=e575]: 함께살기(복지)
+      - button "🔥 인기 이 안건에 반대하오 내일의노동" [ref=e576]:
+        - generic [ref=e577]:
+          - img [ref=e579]
+          - generic [ref=e582]: 🔥 인기
+        - generic [ref=e583]:
+          - heading "이 안건에 반대하오" [level=3] [ref=e584]
+          - generic [ref=e585]:
+            - img [ref=e586]
+            - generic [ref=e588]: 내일의노동
+      - button "🔥 인기 충격! 북극곰에게도 곰권이 생기나... 평등사회(인권)" [ref=e589]:
+        - generic [ref=e590]:
+          - img [ref=e592]
+          - generic [ref=e595]: 🔥 인기
+        - generic [ref=e596]:
+          - heading "충격! 북극곰에게도 곰권이 생기나..." [level=3] [ref=e597]
+          - generic [ref=e598]:
+            - img [ref=e599]
+            - generic [ref=e601]: 평등사회(인권)
+      - button "📰 최근 토론 성황리에 진행되어 내일의노동" [ref=e602]:
+        - generic [ref=e603]:
+          - img [ref=e605]
+          - generic [ref=e608]: 📰 최근
+        - generic [ref=e609]:
+          - heading "토론 성황리에 진행되어" [level=3] [ref=e610]
+          - generic [ref=e611]:
+            - img [ref=e612]
+            - generic [ref=e614]: 내일의노동
+      - button "🔥 인기 첫번째여정기사화하다 함께살기(복지)" [ref=e615]:
+        - generic [ref=e616]:
+          - img [ref=e618]
+          - generic [ref=e621]: 🔥 인기
+        - generic [ref=e622]:
+          - heading "첫번째여정기사화하다" [level=3] [ref=e623]
+          - generic [ref=e624]:
+            - img [ref=e625]
+            - generic [ref=e627]: 함께살기(복지)
+      - button "🔥 인기 이 안건에 반대하오 내일의노동" [ref=e628]:
+        - generic [ref=e629]:
+          - img [ref=e631]
+          - generic [ref=e634]: 🔥 인기
+        - generic [ref=e635]:
+          - heading "이 안건에 반대하오" [level=3] [ref=e636]
+          - generic [ref=e637]:
+            - img [ref=e638]
+            - generic [ref=e640]: 내일의노동
+      - button "🔥 인기 충격! 북극곰에게도 곰권이 생기나... 평등사회(인권)" [ref=e641]:
+        - generic [ref=e642]:
+          - img [ref=e644]
+          - generic [ref=e647]: 🔥 인기
+        - generic [ref=e648]:
+          - heading "충격! 북극곰에게도 곰권이 생기나..." [level=3] [ref=e649]
+          - generic [ref=e650]:
+            - img [ref=e651]
+            - generic [ref=e653]: 평등사회(인권)
+      - button "📰 최근 토론 성황리에 진행되어 내일의노동" [ref=e654]:
+        - generic [ref=e655]:
+          - img [ref=e657]
+          - generic [ref=e660]: 📰 최근
+        - generic [ref=e661]:
+          - heading "토론 성황리에 진행되어" [level=3] [ref=e662]
+          - generic [ref=e663]:
+            - img [ref=e664]
+            - generic [ref=e666]: 내일의노동
+    - button "여론판 바로가기" [ref=e667]:
+      - generic [ref=e668]: 여론판 바로가기
+      - img [ref=e669]
+  - generic [ref=e671]:
+    - banner [ref=e672]:
+      - generic [ref=e673]:
+        - generic [ref=e674]:
+          - generic "✓ 접속 중" [ref=e675]
+          - generic [ref=e676]: 민국이의 꿈
+          - generic [ref=e677]: 꿈꾸는 대한민국 (시연용)
+          - generic [ref=e678]: DEMO24
+          - generic [ref=e679]: v1.2.202
+        - navigation
+        - generic [ref=e680]:
+          - link "세 번째 여정 — 국정 포털" [ref=e681] [cursor=pointer]:
+            - /url: "#/phase3"
+          - generic [ref=e682]: 4번 최지우
+          - button "나가기" [ref=e683]
+    - main [ref=e684]:
+      - generic [ref=e685]:
+        - generic [ref=e686]:
+          - paragraph [ref=e687]: 📋 지금 진행 중 (11/26)
+          - paragraph [ref=e688]: 행정 ② 정책 및 예산 초안
+        - list [ref=e689]:
+          - listitem "최우선 과제 다시 보여주기" [ref=e690]: ✓. 최우선 과제 확인
+          - listitem "└ 입법 ① 준비" [ref=e691]: ✓. 입법 ① 준비
+          - listitem "└ 입법 ② 법안 발의" [ref=e692]: ✓. 입법 ② 법안 발의
+          - listitem "└ 입법 ③ 토의 및 평가" [ref=e693]: ✓. 입법 ③ 토의 및 평가
+          - listitem "└ 입법 ④ 상정 토론" [ref=e694]: ✓. 입법 ④ 상정 토론
+          - listitem "└ 입법 ⑤ 표결" [ref=e695]: ✓. 입법 ⑤ 표결
+          - listitem "└ 입법 ⑥ 발표" [ref=e696]: ✓. 입법 ⑥ 발표
+          - listitem "기사 작성 — 입법 결과를 기사로" [ref=e697]: ✓. 기사 작성 (입법부 활동)
+          - listitem "사전 여론조사 3-1 — 입법 결과에 대한 시민 반응" [ref=e698]: ✓. 사전 여론조사 3-1
+          - listitem "행정 ① 준비" [ref=e699]: ✓. 행정 ① 준비
+          - listitem "└ 행정 ② 정책 및 예산 초안" [ref=e700]: 11. 행정 ② 정책 및 예산 초안
+          - listitem "└ 행정 ③ 예산 초안 검토" [ref=e701]: 12. 행정 ③ 예산 초안 검토
+          - listitem "└ 행정 ④ 토의 및 평가" [ref=e702]: 13. 행정 ④ 토의 및 평가
+          - listitem "└ 행정 ⑤ 다자간 토론(국무회의)" [ref=e703]: 14. 행정 ⑤ 다자간 토론(국무회의)
+          - listitem "└ 행정 ⑥ 정책 및 예산안 최종 수정" [ref=e704]: 15. 행정 ⑥ 정책 및 예산안 최종 수정
+          - listitem "└ 행정 ⑦ 최종 발표" [ref=e705]: 16. 행정 ⑦ 최종 발표
+          - listitem "기사 작성 — 행정 결과를 기사로" [ref=e706]: 17. 기사 작성 (행정부 활동)
+          - listitem "사전 여론조사 3-2 — 예산 편성 평가" [ref=e707]: 18. 사전 여론조사 3-2
+          - listitem "사법 ① 준비 및 역할 배정" [ref=e708]: 19. 사법 ① 준비 및 역할 배정
+          - listitem "└ 사법 ② 주장 및 변론서 작성" [ref=e709]: 20. 사법 ② 주장 및 변론서 작성
+          - listitem "└ 사법 ③ 증거 제출 및 검토" [ref=e710]: 21. 사법 ③ 증거 제출 및 검토
+          - listitem "└ 사법 ④ 모의재판 진행 (토론)" [ref=e711]: 22. 사법 ④ 모의재판 진행 (토론)
+          - listitem "└ 사법 ⑤ 최종 변론 및 구형" [ref=e712]: 23. 사법 ⑤ 최종 변론 및 구형
+          - listitem "└ 사법 ⑥ 배심원 평결 및 선고" [ref=e713]: 24. 사법 ⑥ 배심원 평결 및 선고
+          - listitem "기사 작성 — 판결 결과를 기사로" [ref=e714]: 25. 기사 작성 (사법부 활동)
+          - listitem "사전 여론조사 3-3 — 판결에 대한 평가" [ref=e715]: 26. 사전 여론조사 3-3
+      - generic [ref=e716]:
+        - heading "국정 포털" [level=1] [ref=e717]
+        - generic [ref=e718]:
+          - paragraph [ref=e719]: 🎯 National Agenda
+          - 'heading "최우선 과제: 그린피스(환경)" [level=2] [ref=e720]'
+        - generic [ref=e721]:
+          - strong [ref=e722]: 🥈 2라운드 — 행정부 (13~15차시)
+          - text: · 활동 끝에 기사 작성 → 교사 승인 → 여론판 게시 → N차 여론조사
+        - generic [ref=e723]:
+          - generic [ref=e724]: 💬 오늘의 토론 주제
+          - paragraph [ref=e725]: 어디에 예산을 많이 사용해야 하는가? (공약대로 잘하고 있는가?)
+          - paragraph [ref=e726]: 제한된 예산을 어디에 우선 배정할지 토론하고 결정합니다. 시민들은 행정부의 시행을 감시하고 기사로 비판합니다.
+        - generic [ref=e727]:
+          - button "📖 5분 브리핑 카드 보기" [ref=e728]
+          - generic [ref=e729]: 차시 시작 5분에 함께 읽어요
+      - generic [ref=e730]:
+        - generic [ref=e731]:
+          - button "🔒 입법부 · 의사당10~12차시" [disabled] [ref=e732]
+          - button "행정부 · 대시보드13~15차시" [ref=e733]
+          - button "🔒 사법부 · 법원16~18차시" [disabled] [ref=e734]
+        - generic [ref=e735]:
+          - generic [ref=e736]:
+            - generic [ref=e737]:
+              - heading "🏢 행정부 진행 단계" [level=3] [ref=e738]
+              - generic [ref=e739]: 부처 6개 · 제출 1개
+            - generic [ref=e740]:
+              - generic [ref=e743]: ✓준비
+              - generic [ref=e746]: ▶초안작성
+              - generic [ref=e749]: 초안검토
+              - generic [ref=e752]: 토의·평가
+              - generic [ref=e755]: 국무회의
+              - generic [ref=e758]: 최종수정
+              - generic [ref=e761]: 발표
+            - generic [ref=e763]:
+              - paragraph [ref=e764]: ② 정책 및 예산 초안 작성
+              - paragraph [ref=e765]: "👥 다음 행동: 📈 집행계획과 시행령 초안, 예산 항목을 함께 작성하고 예산 계산기로 산출식을 만들어 보세요. 저장 시 평가단 열람 가능, 제출 시 공식 공개됩니다."
+          - generic [ref=e766]:
+            - generic [ref=e767]:
+              - generic [ref=e768]:
+                - generic [ref=e769]: 📋
+                - generic [ref=e770]: 행정부 참여 모둠 (6개 정책)
+              - generic [ref=e771]:
+                - generic [ref=e772]:
+                  - generic [ref=e773]: 🏠
+                  - generic [ref=e774]: 마음의집(주거)
+                  - generic [ref=e775]: — 보건복지부
+                - generic [ref=e776]:
+                  - generic [ref=e777]: 🤝
+                  - generic [ref=e778]: 평등사회(인권)
+                  - generic [ref=e779]: — 여성가족인권부
+                - generic [ref=e780]:
+                  - generic [ref=e781]: 🛠️
+                  - generic [ref=e782]: 내일의노동
+                  - generic [ref=e783]: — 정책
+                - generic [ref=e784]:
+                  - generic [ref=e785]: 🌱
+                  - generic [ref=e786]: 그린피스(환경)
+                  - generic [ref=e787]: — 정책
+                - generic [ref=e788]:
+                  - generic [ref=e789]: 🗺️
+                  - generic [ref=e790]: 함께마을(지역)
+                  - generic [ref=e791]: — 정책
+                  - generic [ref=e792]: ✓
+                - generic [ref=e793]:
+                  - generic [ref=e794]: 💰
+                  - generic [ref=e795]: 함께살기(복지)
+                  - generic [ref=e796]: — 정책
+              - generic [ref=e797]: 내 모둠이 이 행정부에 참여합니다. 담당 섹션을 작성하세요.
+            - group [ref=e799]:
+              - generic "📚 집행계획 근거 자료실 — 펼치기/접기" [ref=e800] [cursor=pointer]
+              - generic [ref=e802]:
+                - generic [ref=e803]:
+                  - generic [ref=e804]:
+                    - heading "📚 집행계획 근거 자료실" [level=2] [ref=e805]
+                    - paragraph [ref=e806]: 가결 법령을 실제로 집행하기 위해 필요한 자료 목록을 정하고, 정책·예산 근거가 될 기사 자료를 수집하세요.
+                    - generic [ref=e807]:
+                      - generic [ref=e808]: "현재 모둠: 함께마을(지역)"
+                      - generic [ref=e809]: "현재 준비: 정책 준비자료"
+                      - generic [ref=e810]: "역할 관점: 정부/장관"
+                    - paragraph [ref=e811]: 정책을 실제로 실행할 수 있는지 예산, 인력, 장애물을 따져 봅니다.
+                  - generic [ref=e812]: 자료 0개 수집
+                - generic [ref=e813]:
+                  - generic [ref=e814]:
+                    - heading "🔍 어떤 자료를 찾으실건가요?" [level=3] [ref=e815]
+                    - generic [ref=e816]:
+                      - 'textbox "예: 환경 오염 관련 통계, 전문가 의견..." [ref=e817]'
+                      - button "추가" [ref=e818]
+                    - paragraph [ref=e819]: 아직 아무도 찾을 자료를 입력하지 않았어요. 먼저 입력해 보세요!
+                  - generic [ref=e820]:
+                    - heading "📰 기사자료수집" [level=3] [ref=e821]
+                    - generic [ref=e822]:
+                      - paragraph [ref=e823]: 위에서 입력한 항목 중 어느 것과 관련된 기사인가요?
+                      - combobox [disabled] [ref=e824]:
+                        - option "먼저 위에서 찾을 자료를 입력해주세요" [selected]
+                    - generic [ref=e825]:
+                      - generic [ref=e826]:
+                        - textbox "기사 링크 붙여넣기" [ref=e827]
+                        - button "불러오기" [disabled] [ref=e828]
+                      - generic [ref=e829]:
+                        - link "🔗 네이버뉴스" [ref=e830] [cursor=pointer]:
+                          - /url: https://news.naver.com
+                        - link "🔗 선생님 자료" [ref=e831] [cursor=pointer]:
+                          - /url: https://padlet.com/appletree128909/padlet-1vb4794g2zw7acy7
+                        - link "🔗 한국 부정적 이슈" [ref=e832] [cursor=pointer]:
+                          - /url: https://www.triplelight.co/insight/2024-korean-social-problems-report-58di01
+                    - textbox "기사 제목" [ref=e833]
+                    - 'textbox "출처 예: 신문사, 기관명" [ref=e834]'
+                    - generic [ref=e835]:
+                      - generic [ref=e836]:
+                        - generic [ref=e837]: 📌 이 자료의 성격
+                        - generic [ref=e838]:
+                          - button "사실·통계" [ref=e839]
+                          - button "사례·인터뷰" [ref=e840]
+                          - button "전문가 의견" [ref=e841]
+                          - button "찬반 주장" [ref=e842]
+                          - button "법·제도 사례" [ref=e843]
+                      - generic [ref=e844]:
+                        - generic [ref=e845]: ⚖️ 우리 주장과 관계
+                        - generic [ref=e846]:
+                          - button "긍정적" [ref=e847]
+                          - button "부정적" [ref=e848]
+                          - button "중립적" [ref=e849]
+                    - textbox "정책을 실행할 때 준비할 점이나 장애물은 무엇인가요?" [ref=e850]
+                    - button "기사 자료 저장" [disabled] [ref=e851]
+                - generic [ref=e853]: 아직 수집된 자료가 없습니다. 위에서 찾을 자료를 입력하고 기사를 추가해 보세요.
+            - generic [ref=e854]:
+              - paragraph [ref=e855]: 🏢 행정부 — 법률 집행계획·시행령·예산안 작성과 국무회의 조정
+              - paragraph [ref=e856]: 🤝 모둠원들과 함께 가결 법령을 바탕으로 집행계획, 시행령 초안, 여러 예산 항목을 작성합니다.
+            - generic [ref=e859]:
+              - generic [ref=e860]:
+                - heading "② 공동 정책·시행령·예산 템플릿 작성" [level=2] [ref=e861]:
+                  - generic [ref=e862]: ②
+                  - text: 공동 정책·시행령·예산 템플릿 작성
+                - paragraph [ref=e863]: 공동작업 모드는 역할별 초안을 따로 만들지 않고, 아래 최종 템플릿을 부처 구성원이 함께 상의하며 직접 완성합니다. 기존 저장 정책이 있으면 자동으로 불러와 이어서 보여줍니다.
+              - article [ref=e865]:
+                - generic [ref=e866]:
+                  - heading "🏢 함께마을(지역)" [level=3] [ref=e867]
+                  - generic [ref=e868]: 공동작업 템플릿
+                - generic [ref=e869]:
+                  - generic [ref=e870]:
+                    - paragraph [ref=e871]: 🤝 공동작업 모드 — 최종 템플릿 직접 작성
+                    - paragraph [ref=e872]: 역할별 초안을 따로 모으지 않고, 이 최종 정책·시행령·예산 템플릿을 함께 상의하며 바로 완성합니다. 기존 정책 저장본을 불러와 이어서 보여주고 있습니다.
+                  - generic [ref=e873]:
+                    - generic [ref=e874]:
+                      - heading "📄 정책 집행 보고서 작성" [level=4] [ref=e875]
+                      - generic [ref=e876]:
+                        - text: 정책 이름
+                        - textbox "정책 이름" [ref=e877]:
+                          - /placeholder: 정책명을 입력하세요
+                          - text: 청년주거안정정책
+                      - generic [ref=e878]:
+                        - text: 제1조~제5조 시행령 초안
+                        - textbox "제1조~제5조 시행령 초안" [ref=e879]:
+                          - /placeholder: 시행령 조항을 작성하세요
+                          - text: 제1조 (목적) 집집 제2조 (대상) 만34세미만청년 제3조 (시행 절차) 냠냠 제4조 (지원 및 예산) 쩝쩝 제5조 (점검 및 예외) 꿀꺽
+                      - generic [ref=e880]:
+                        - text: 필요 근거 및 사례
+                        - textbox "필요 근거 및 사례" [ref=e881]:
+                          - /placeholder: 정책의 필요성을 보여주는 통계나 뉴스 근거를 기재하세요
+                      - generic [ref=e882]:
+                        - text: 온라인 정책토의 의견 반영
+                        - textbox "온라인 정책토의 의견 반영" [ref=e883]:
+                          - /placeholder: 시민 의견 중 반영할 점을 정리하세요
+                      - generic [ref=e884]:
+                        - text: 예상 기대 효과
+                        - textbox "예상 기대 효과" [ref=e885]:
+                          - /placeholder: 이 정책이 시행된 후 달라질 점을 서술하세요
+                    - generic [ref=e886]:
+                      - heading "💰 예산안 작성" [level=4] [ref=e887]
+                      - generic [ref=e888]:
+                        - generic [ref=e889]:
+                          - heading "💰 관련 예산 편성" [level=5] [ref=e890]
+                          - generic [ref=e891]:
+                            - button "예산 계산기" [ref=e892]
+                            - button "+ 항목 추가" [ref=e893]
+                        - generic [ref=e895]:
+                          - generic [ref=e896]: "1"
+                          - textbox "항목명" [ref=e897]: 청년 주택 예산 항목 1
+                          - textbox "산출식" [ref=e898]: 10,000명 x 300,000원 x 1번
+                          - generic [ref=e899]:
+                            - spinbutton "억" [ref=e900]: "30"
+                            - generic [ref=e901]: 억
+                          - button "✕" [ref=e902]
+                        - generic [ref=e903]:
+                          - generic [ref=e904]: "역할 예산 소계:"
+                          - generic [ref=e905]:
+                            - text: 30억
+                            - generic [ref=e906]: (총 100억)
+                  - generic [ref=e907]:
+                    - button "💾 초안 저장" [ref=e908]
+                    - button "🚀 정책·예산안 최종 제출" [ref=e909]
+    - button "✓ 이 차시 끝냈어요" [ref=e911]

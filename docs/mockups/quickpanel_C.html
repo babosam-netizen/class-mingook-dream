@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>QuickPanel 패턴 C — 절충형 (가로 progress bar)</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Apple SD Gothic Neo", "Pretendard", sans-serif;
+    background: #f8fafc;
+    margin: 0;
+    padding: 24px;
+    color: #1e293b;
+  }
+  .label {
+    max-width: 720px;
+    margin: 0 auto 12px;
+    font-size: 13px;
+    color: #64748b;
+  }
+  .panel {
+    max-width: 720px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .header {
+    padding: 12px 18px;
+    background: linear-gradient(90deg, #4f46e5, #6366f1);
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .progress-text {
+    font-size: 12px;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  /* 가로 progress bar */
+  .progress-bar {
+    padding: 18px 18px 14px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .progress-track {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 0 12px;
+  }
+  .progress-track::before {
+    content: "";
+    position: absolute;
+    top: 14px;
+    left: 12px;
+    right: 12px;
+    height: 2px;
+    background: #e2e8f0;
+    z-index: 0;
+  }
+  .progress-track::after {
+    content: "";
+    position: absolute;
+    top: 14px;
+    left: 12px;
+    width: 50%;  /* 진행률 — ②까지 완료 */
+    height: 2px;
+    background: linear-gradient(90deg, #10b981, #6366f1);
+    z-index: 0;
+  }
+  .step {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+  }
+  .step .dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    transition: all .2s;
+  }
+  .step.done .dot { background: #10b981; }
+  .step.current .dot {
+    background: #6366f1;
+    box-shadow: 0 0 0 5px #c7d2fe;
+    transform: scale(1.15);
+  }
+  .step .name {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+  .step.done .name { color: #047857; }
+  .step.current .name { color: #4338ca; font-weight: 800; }
+
+  /* 현재 단계 액션 박스 */
+  .current-box {
+    padding: 16px 18px;
+  }
+  .stage-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .stage-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #4338ca;
+  }
+  .session-tag {
+    font-size: 11px;
+    background: #ddd6fe;
+    color: #5b21b6;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-family: monospace;
+  }
+  .stage-meta {
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 14px;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border-left: 3px solid #6366f1;
+    border-radius: 0 6px 6px 0;
+  }
+  .stage-meta b { color: #4338ca; }
+
+  .actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    padding: 12px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
+    text-align: center;
+  }
+  .action-btn:hover { background: #4f46e5; transform: translateY(-1px); }
+  .action-btn.secondary {
+    background: #fff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
+  }
+  .action-btn.secondary:hover { background: #eef2ff; }
+  .action-btn .icon { font-size: 20px; line-height: 1; }
+  .action-btn .small {
+    font-size: 10px;
+    opacity: 0.85;
+    font-weight: 600;
+  }
+  .action-btn.secondary .small { color: #6366f1; }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .nav-btn {
+    flex: 1;
+    padding: 9px 12px;
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #475569;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+  }
+  .nav-btn:hover { background: #f1f5f9; }
+  .nav-btn b { color: #1e293b; }
+</style>
+</head>
+<body>
+
+<div class="label">📋 QuickPanel 패턴 C — 절충형 (가로 progress bar + 현재 단계 액션 박스)</div>
+
+<div class="panel">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <h2>🏛️ 입법부 라운드</h2>
+    <div class="progress-text">진행 2/5</div>
+  </div>
+
+  <!-- 가로 progress bar -->
+  <div class="progress-bar">
+    <div class="progress-track">
+      <div class="step done">
+        <div class="dot">✓</div>
+        <div class="name">①발의</div>
+      </div>
+      <div class="step done">
+        <div class="dot">✓</div>
+        <div class="name">②토의</div>
+      </div>
+      <div class="step current">
+        <div class="dot">▶</div>
+        <div class="name">③상정</div>
+      </div>
+      <div class="step">
+        <div class="dot">4</div>
+        <div class="name">④표결</div>
+      </div>
+      <div class="step">
+        <div class="dot">5</div>
+        <div class="name">⑤종료</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 현재 단계 액션 박스 -->
+  <div class="current-box">
+    <div class="stage-head">
+      <div class="stage-title">③ 법안 상정 및 토론</div>
+      <span class="session-tag">11차시 · 현재</span>
+    </div>
+
+    <div class="stage-meta">
+      1등 법안: <b>"플라스틱 쓰레기 줄이기 법안"</b> (4.7/5점)
+    </div>
+
+    <div class="actions-grid">
+      <button class="action-btn">
+        <span class="icon">✓</span>
+        정식 상정
+        <span class="small">1등 법안으로</span>
+      </button>
+      <button class="action-btn secondary">
+        <span class="icon">🎙️</span>
+        토론 시작
+        <span class="small">토론 도구 띄우기</span>
+      </button>
+      <button class="action-btn secondary">
+        <span class="icon">🎬</span>
+        전광판 띄우기
+        <span class="small">→ 표결 단계로</span>
+      </button>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn">◀ 이전 단계 (<b>②토의</b>)</button>
+      <button class="nav-btn">다음 단계 (<b>④표결</b>) ▶</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

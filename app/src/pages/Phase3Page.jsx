@@ -231,6 +231,9 @@ function Phase3Page({ previewMode = false, forcedTab = null }) {
   const sessionId = `${effectiveTab}-default`
   const isRoundCollaborative =
     effectiveTab === 'executive' && config?.branchConfig?.executive?.mode === 'collaborative'
+  // 사법부 판결중심(verdict)은 학생별 4역할 개념이 없으므로 역할 카드/배정 버튼을 숨긴다.
+  const isJudicialVerdict =
+    effectiveTab === 'judicial' && (config?.branchConfig?.judicial?.workMode || 'role') === 'verdict'
 
   const { TabComponent, ProgressGuide, useCustomTab = true } = currentRound
 
@@ -420,7 +423,7 @@ function Phase3Page({ previewMode = false, forcedTab = null }) {
             )}
 
             {/* 학생 — 내 역할 카드 (미리보기 모드 포함) */}
-            {isStudent && myGroupId && !lockToArticle && !lockToPoll && !isRoundCollaborative && (
+            {isStudent && myGroupId && !lockToArticle && !lockToPoll && !isRoundCollaborative && !isJudicialVerdict && (
               <div className="mb-4">
                 <RoleCard sessionId={sessionId} kind={effectiveTab} />
                 <button

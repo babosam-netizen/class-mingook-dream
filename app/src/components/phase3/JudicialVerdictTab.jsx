@@ -11,6 +11,7 @@ import ArticleSection from '../news/ArticleSection'
 import PollFeed from '../shared/PollFeed'
 import { getJudicialAssignmentSummary, getStudentJudicialSide } from '../../lib/judicial-teams'
 import JudicialCaseRoomButton from './JudicialCaseRoomButton'
+import LawDecreeButton from './LawDecreeButton'
 import { EVAL_AXES } from '../debate/tools/SpeechEval'
 
 // 연기 3팀이 화면에서 보는 자기 대사(speaker) 매핑.
@@ -294,9 +295,10 @@ function JudicialVerdictTab({ previewMode = false }) {
                   재판을 더 날카롭게 볼 수 있어요. <b>사건 자료실</b>에서 사건 내용을 다시 확인할 수 있습니다.
                 </p>
               </div>
-              {/* ① 사건 자료실 — 모든 역할 공통 */}
-              <div className="shrink-0">
+              {/* ① 사건 자료실 + 법·시행령 — 모든 역할 공통 */}
+              <div className="shrink-0 flex flex-col gap-1.5 items-end">
                 <JudicialCaseRoomButton currentStage={2} />
+                <LawDecreeButton />
               </div>
             </div>
           </div>
@@ -329,8 +331,9 @@ function JudicialVerdictTab({ previewMode = false }) {
                   나머지 모둠은 토론도구에서 메모하고 모둠 판결문을 작성·게시하세요.
                 </p>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
                 <JudicialCaseRoomButton currentStage={3} />
+                <LawDecreeButton />
                 {trialDebate && (
                   <button
                     onClick={() => updateAt(roomCode, `debateSessions/${trialDebate.id}`, { isPopupOpen: true })}

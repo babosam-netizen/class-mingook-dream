@@ -1183,7 +1183,7 @@ function Phase3JudicialQuickPanel({ onOpenDebateTool }) {
 
           {/* ════ 판결중심 — 쟁점 메모·판결문 내용 모니터링 (모든 단계 공통) ════ */}
           {isVerdict && (
-            <JudicialContentReview issuesNode={issuesNode} verdictNode={verdictNode} students={students} groups={groups} />
+            <JudicialContentReview issuesNode={issuesNode} verdictNode={verdictNode} draftsNode={trialDebate?.verdictDrafts} students={students} groups={groups} />
           )}
 
           {/* ════ 판결중심 재판하기(stage 2) — 대본·연기팀 점검 ════ */}
@@ -1435,8 +1435,24 @@ function Phase3JudicialQuickPanel({ onOpenDebateTool }) {
  * 저장된 draft는 `judicialTrialDraft/{caseId}` 에 들어가고 startJudicialDebate가 우선 사용.
  */
 // 판결중심 모니터링 — 쟁점 메모(학생별)·판결문(모둠별)을 간략 표시, 누르면 펼침
-function JudicialContentReview({ issuesNode, verdictNode, students, groups }) {
+function JudicialContentReview({ issuesNode, verdictNode, draftsNode, students, groups }) {
   const [openId, setOpenId] = useState(null)
+
+  // ③ 작성 중(초안) 판결문 — 교사가 제출 전 내용 검토용 (debateSessions/{id}/verdictDrafts)
+  const draftRows = Object.entries(draftsNode || {})
+    .map(([gid, d]) => {
+      const td = d?.templateData || {}
+      const body = Object.values(td).filter((v) => typeof v === 'string' && v.trim()).join('\n')
+      if (!d?.decision && !body.trim()) return null
+      return {
+        id: `dft_${gid}`,
+        name: `${groups?.[gid]?.name || gid}${d?.writerName ? ` · ✍️${d.writerName}` : ''}`,
+        decision: d?.decision,
+        body: body || '(작성 시작 전)',
+        at: 0,
+      }
+    })
+    .filter(Boolean)
 
   const memoRows = Object.entries(issuesNode || {})
     .filter(([, m]) => m?.body && String(m.body).trim())
@@ -1493,7 +1509,7 @@ function JudicialContentReview({ issuesNode, verdictNode, students, groups }) {
   return (
     <details className="pt-2 border-t border-rose-200/50">
       <summary className="text-xs font-bold text-rose-850 cursor-pointer select-none">
-        🔎 쟁점 메모 · 📜 판결문 내용 보기 ({memoRows.length} · {verdictRows.length})
+        🔎 쟁점 메모 · ✍️ 작성 중 · 📜 게시 판결문 보기 ({memoRows.length} · {draftRows.length} · {verdictRows.length})
       </summary>
       <div className="mt-2 space-y-3">
         <div>
@@ -1502,6 +1518,14 @@ function JudicialContentReview({ issuesNode, verdictNode, students, groups }) {
             <p className="text-[10px] text-gray-400">아직 작성된 쟁점 메모가 없습니다.</p>
           ) : (
             <ul className="space-y-1">{memoRows.map((r) => Row(r, 'text-amber-700'))}</ul>
+          )}
+        </div>
+        <div>
+          <p className="text-[11px] font-black text-sky-700 mb-1">✍️ 작성 중 판결문 (초안 {draftRows.length}모둠) — 제출 전 검토</p>
+          {draftRows.length === 0 ? (
+            <p className="text-[10px] text-gray-400">아직 작성 중인 초안이 없습니다.</p>
+          ) : (
+            <ul className="space-y-1">{draftRows.map((r) => Row(r, 'text-sky-700'))}</ul>
           )}
         </div>
         <div>

@@ -12,6 +12,7 @@ import DebateScriptEditor from './tools/DebateScriptEditor'
 import DebateScriptPrompter from './tools/DebateScriptPrompter'
 import ArticleSection from '../news/ArticleSection'
 import JudicialCaseRoomButton from '../phase3/JudicialCaseRoomButton'
+import LawDecreeButton from '../phase3/LawDecreeButton'
 import JudicialActivityMemo from '../phase3/JudicialActivityMemo'
 import PlaceholderField, { isFieldComplete } from '../scaffolding/PlaceholderField'
 
@@ -240,13 +241,40 @@ function DebateRefPanel() {
 
 function VerdictTrialDraftPanel({ session, groupId, groups, sections, myStudentId, myNickname }) {
   const roomCode = useGameStore((s) => s.roomCode)
+  const role = useGameStore((s) => s.role)
   const students = useGameStore((s) => s.students)
   const draft = groupId ? session?.verdictDrafts?.[groupId] || {} : {}
   const [values, setValues] = useState(draft.templateData || {})
   const [decision, setDecision] = useState(draft.decision || '')
   const [busy, setBusy] = useState(false)
   const [done, setDone] = useState(false)
+  const [checklistOpen, setChecklistOpen] = useState(false)
+  const [checks, setChecks] = useState([false, false, false])
   const saveTimerRef = useRef(null)
+
+  // ②(a) 작성자 선정 — 모둠 판결문은 1명이 대표로 작성, 나머지는 읽기 모드. 작성자 본인·교사만 변경.
+  const isTeacher = role === 'teacher'
+  const writerId = draft.writerStudentId || ''
+  const isWriter = !!writerId && writerId === myStudentId
+  const canEdit = isTeacher || isWriter
+  const writerName = writerId ? (draft.writerName || students?.[writerId]?.nickname || '작성자') : ''
+
+  const claimWriter = () => {
+    if (!roomCode || !session?.id || !groupId || !myStudentId) return
+    updateAt(roomCode, `debateSessions/${session.id}/verdictDrafts/${groupId}`, {
+      writerStudentId: myStudentId, writerName: myNickname || '', groupId,
+    }).catch(() => {})
+  }
+  const releaseWriter = () => {
+    if (!roomCode || !session?.id || !groupId) return
+    updateAt(roomCode, `debateSessions/${session.id}/verdictDrafts/${groupId}`, {
+      writerStudentId: null, writerName: null,
+    }).catch(() => {})
+  }
+
+  // 읽기 모드(비작성자)는 로컬 편집값이 아니라 실시간 draft 값을 표시
+  const dispValues = canEdit ? values : (draft.templateData || {})
+  const dispDecision = canEdit ? decision : (draft.decision || '')
 
   const memberIds = useMemo(
     () => new Set(Object.keys(groups?.[groupId]?.members || {})),
@@ -315,6 +343,8 @@ function VerdictTrialDraftPanel({ session, groupId, groups, sections, myStudentI
         sourceDebateSessionId: session.id,
       })
       setDone(true)
+      setChecklistOpen(false)
+      setChecks([false, false, false])
       setTimeout(() => setDone(false), 2500)
     } catch (err) {
       alert('판결문 게시 실패: ' + (err?.message || err))
@@ -323,11 +353,26 @@ function VerdictTrialDraftPanel({ session, groupId, groups, sections, myStudentI
     }
   }
 
+  const CHECK_ITEMS = [
+    '판결의 구형·벌금이 통과된 법안·시행령의 벌칙 범위를 넘지 않는다.',
+    '유죄/무죄 결론과 판단 이유(근거)가 서로 일치한다.',
+    '재판에서 나온 증거·증언에 근거해 판단했다.',
+  ]
+  const allChecked = checks.every(Boolean)
+
   useEffect(() => {
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     }
   }, [])
+
+  // 비작성자는 로컬 편집값을 실시간 draft로 맞춰둔다 → 나중에 작성자를 맡아도 최신본에서 이어 씀
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+    if (canEdit) return
+    setValues(draft.templateData || {})
+    setDecision(draft.decision || '')
+  }, [canEdit, draft.templateData, draft.decision])
 
   if (!groupId) {
     return (
@@ -340,11 +385,33 @@ function VerdictTrialDraftPanel({ session, groupId, groups, sections, myStudentI
   return (
     <section className="bg-white border-2 border-rose-200 rounded-2xl p-4 space-y-4">
       <header>
-        <h3 className="text-sm font-black text-rose-900">📜 우리 모둠 판결문 공동 작성</h3>
+        <h3 className="text-sm font-black text-rose-900">📜 우리 모둠 판결문 (대표 1명 작성)</h3>
         <p className="text-[11px] text-rose-600 mt-0.5">
-          모둠원 누구나 함께 작성할 수 있어요. 아래 <b>모둠원 종합평가</b>와 판결문 참고 메모를 보며 작성하고, 완성하면 게시하세요. (자동저장)
+          아래 <b>모둠원 종합평가</b>를 함께 보고, 대표 1명이 모둠 판결문을 작성·게시합니다. (자동저장)
         </p>
       </header>
+
+      {/* ②(a) 작성자 선정 / 상태 배너 */}
+      {!writerId ? (
+        <div className="rounded-xl border-2 border-amber-200 bg-amber-50 p-3 flex items-center justify-between gap-2">
+          <p className="text-xs font-bold text-amber-800">아직 작성자가 정해지지 않았어요. 모둠에서 한 명이 대표로 작성합니다.</p>
+          {role === 'student' && myStudentId && (
+            <button onClick={claimWriter} className="shrink-0 px-3 py-1.5 rounded-lg bg-amber-600 text-white text-xs font-black hover:bg-amber-700">✍️ 내가 작성자 맡기</button>
+          )}
+        </div>
+      ) : (
+        <div className={`rounded-xl border-2 p-3 flex items-center justify-between gap-2 ${isWriter ? 'border-emerald-300 bg-emerald-50' : 'border-slate-200 bg-slate-50'}`}>
+          <p className="text-xs font-bold text-slate-700">
+            ✍️ 작성자: <b className={isWriter ? 'text-emerald-700' : 'text-slate-800'}>{writerName}{isWriter ? ' (나)' : ''}</b>
+            {!canEdit && <span className="ml-1 text-slate-400 font-normal">— 읽기 전용</span>}
+          </p>
+          {(isWriter || isTeacher) && (
+            <button onClick={releaseWriter} className="shrink-0 px-2.5 py-1 rounded-lg border border-slate-300 text-slate-600 text-[11px] font-bold bg-white hover:bg-slate-50">
+              {isTeacher && !isWriter ? '작성자 초기화' : '작성 권한 넘기기'}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* ② 모둠원 개인 종합평가 카드 */}
       <div className="rounded-xl border border-violet-200 bg-violet-50/60 p-3 space-y-2">
@@ -371,9 +438,10 @@ function VerdictTrialDraftPanel({ session, groupId, groups, sections, myStudentI
           <button
             key={value}
             type="button"
+            disabled={!canEdit}
             onClick={() => updateDecision(value)}
-            className={`rounded-xl border-2 px-3 py-2 text-sm font-black ${
-              decision === value
+            className={`rounded-xl border-2 px-3 py-2 text-sm font-black disabled:opacity-60 disabled:cursor-not-allowed ${
+              dispDecision === value
                 ? value === 'guilty'
                   ? 'bg-rose-600 border-rose-600 text-white'
                   : 'bg-emerald-600 border-emerald-600 text-white'
@@ -386,30 +454,84 @@ function VerdictTrialDraftPanel({ session, groupId, groups, sections, myStudentI
       </div>
 
       <div className="space-y-3">
-        {sections.map((section) => (
-          <PlaceholderField
-            key={section.id}
-            label={section.label}
-            placeholder={section.placeholder}
-            value={values[section.id] || ''}
-            onChange={(value) => updateValue(section.id, value)}
-            rows={section.rows}
-            maxLength={section.maxLength}
-          />
-        ))}
+        {canEdit ? (
+          sections.map((section) => (
+            <PlaceholderField
+              key={section.id}
+              label={section.label}
+              placeholder={section.placeholder}
+              value={values[section.id] || ''}
+              onChange={(value) => updateValue(section.id, value)}
+              rows={section.rows}
+              maxLength={section.maxLength}
+            />
+          ))
+        ) : (
+          // 읽기 모드 — 작성자가 쓰는 내용을 실시간으로 보여줌
+          sections.map((section) => (
+            <div key={section.id} className="rounded-xl border border-slate-200 bg-slate-50 p-2.5">
+              <p className="text-[11px] font-black text-slate-500 mb-0.5">{section.label}</p>
+              <p className="text-xs text-slate-800 whitespace-pre-wrap leading-relaxed">
+                {(dispValues[section.id] || '').trim() || <span className="text-slate-300 italic">작성자가 작성 중…</span>}
+              </p>
+            </div>
+          ))
+        )}
       </div>
 
       {done && (
         <p className="text-sm text-emerald-700 bg-emerald-50 px-2 py-1 rounded">✓ 판결문 게시 완료.</p>
       )}
-      <button
-        type="button"
-        disabled={!allComplete || busy}
-        onClick={submitVerdict}
-        className="w-full py-3 rounded-xl bg-rose-700 text-white font-black disabled:opacity-40 hover:bg-rose-800"
-      >
-        {busy ? '게시 중...' : allComplete ? '판결문 게시' : '결론과 빈칸을 모두 채워 주세요'}
-      </button>
+
+      {/* ④ 제출 전 확인 체크리스트 — 작성자/교사만 */}
+      {canEdit && (
+        checklistOpen ? (
+          <div className="rounded-xl border-2 border-rose-300 bg-rose-50 p-3 space-y-2">
+            <p className="text-xs font-black text-rose-900">제출 전 확인 — 아래를 모두 점검하세요</p>
+            <ul className="space-y-1.5">
+              {CHECK_ITEMS.map((label, i) => (
+                <li key={i}>
+                  <label className="flex items-start gap-2 text-[11px] text-slate-700 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={checks[i]}
+                      onChange={(e) => setChecks((prev) => prev.map((c, idx) => (idx === i ? e.target.checked : c)))}
+                      className="mt-0.5 w-4 h-4 accent-rose-600 shrink-0"
+                    />
+                    <span>{label}</span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+            <div className="flex gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => { setChecklistOpen(false); setChecks([false, false, false]) }}
+                className="flex-1 py-2 rounded-lg border border-slate-300 bg-white text-slate-600 text-xs font-bold hover:bg-slate-50"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                disabled={!allChecked || busy}
+                onClick={submitVerdict}
+                className="flex-1 py-2 rounded-lg bg-rose-700 text-white text-xs font-black disabled:opacity-40 hover:bg-rose-800"
+              >
+                {busy ? '게시 중...' : allChecked ? '확인했어요 · 판결문 게시' : '항목을 모두 체크하세요'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            disabled={!allComplete}
+            onClick={() => setChecklistOpen(true)}
+            className="w-full py-3 rounded-xl bg-rose-700 text-white font-black disabled:opacity-40 hover:bg-rose-800"
+          >
+            {allComplete ? '판결문 게시 (제출 전 확인)' : '결론과 빈칸을 모두 채워 주세요'}
+          </button>
+        )
+      )}
     </section>
   )
 }
@@ -865,6 +987,7 @@ const lastSessionIdRef = useRef(null)
                   </span>
                 )}
                 {type === 'trial' && <JudicialCaseRoomButton currentStage={5} label="📖 사건" />}
+                {type === 'trial' && <LawDecreeButton label="⚖️ 법·시행령" />}
               </div>
               <button
                 onClick={() => setDismissedKey(toolSignature)}

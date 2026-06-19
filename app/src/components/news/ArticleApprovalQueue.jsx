@@ -15,6 +15,7 @@ function ArticleApprovalQueue() {
 
   const [articlesMap, setArticlesMap] = useState({})
   const [filter, setFilter] = useState('pending')
+  const [openBodyId, setOpenBodyId] = useState(null) // 본문 전체 펼쳐보기
 
   // 인라인 수정 상태
   const [editingId, setEditingId]       = useState(null)
@@ -181,9 +182,19 @@ function ArticleApprovalQueue() {
                 )}
               </div>
 
-              {/* 본문 (수정 모드가 아닐 때) */}
+              {/* 본문 (수정 모드가 아닐 때) — 누르면 전체 펼침 */}
               {!isEditing && (
-                <p className="text-xs text-gray-600 line-clamp-3 whitespace-pre-wrap">{a.body}</p>
+                <button
+                  type="button"
+                  onClick={() => setOpenBodyId(openBodyId === a.id ? null : a.id)}
+                  className="w-full text-left"
+                  title={openBodyId === a.id ? '접기' : '전체 보기'}
+                >
+                  <p className={`text-xs text-gray-600 whitespace-pre-wrap ${openBodyId === a.id ? '' : 'line-clamp-3'}`}>{a.body}</p>
+                  {(a.body || '').length > 80 && (
+                    <span className="text-[10px] text-blue-500 font-bold">{openBodyId === a.id ? '▲ 접기' : '▼ 전체 보기'}</span>
+                  )}
+                </button>
               )}
 
               {/* 삭제 이유 표시 */}

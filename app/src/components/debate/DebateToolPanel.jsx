@@ -1109,6 +1109,10 @@ const lastSessionIdRef = useRef(null)
                           className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4"
                         />
                       )}
+                      {/* 참고 메모 바로 아래에 최종 종합평가 */}
+                      {isVerdictTrialSession && (
+                        <EvaluatorFinalCommentForm session={session} />
+                      )}
                       {timerStages.length > 0 && (
                         <EvaluatorStageNav
                           timerStages={timerStages}
@@ -1205,6 +1209,11 @@ const lastSessionIdRef = useRef(null)
                         />
                       )}
 
+                      {/* 참고 메모 바로 아래에 최종 종합평가 (연기팀 포함 전원) */}
+                      {isVerdictTrialSession && (
+                        <EvaluatorFinalCommentForm session={session} />
+                      )}
+
                       {isVerdictTrialSession && myStudentId && (
                         <VerdictTrialDraftPanel
                           session={session}
@@ -1268,9 +1277,6 @@ const lastSessionIdRef = useRef(null)
                         </div>
                       )}
                     </>
-                  )}
-                  {(mySideId === 'evaluator' || isVerdictTrialSession) && (
-                    <EvaluatorFinalCommentForm session={session} />
                   )}
                   {/* ③ 참관 판사도 모둠 판결문을 작성·게시할 수 있게 */}
                   {mySideId === 'evaluator' && isVerdictTrialSession && myStudentId && (

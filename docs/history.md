@@ -6,6 +6,11 @@
 
 ---
 
+## v1.7.47 (2026-06-19) [Claude] — 판결중심: 연기팀(역할 학생)도 종합평가 작성 가능
+- 기존엔 `EvaluatorFinalCommentForm`(최종 종합평가)이 `mySideId === 'evaluator'`(참관 판사)에게만 노출 → 연기팀(검사·변호·판사)은 종합평가를 못 써서 모둠원 종합평가 카드에 안 나타남.
+- 노출 조건을 `(mySideId === 'evaluator' || isVerdictTrialSession)`로 변경(토론 중·토론 후 탭 둘 다) → 판결중심 재판에선 **연기팀 포함 전원이 종합평가 작성** 가능. 작성하면 `VerdictTrialDraftPanel`의 모둠원 종합평가 카드에 함께 표시됨.
+- `APP_BUILD` v1.7.47.
+
 ## v1.7.46 (2026-06-19) [Claude] — 토론도구에서 판사팀(추가 진영) 배정 버튼 노출 수정
 - **증상**: 사법 재판(판결중심) 토론도구 통합 참가자 관리에서 **판사팀을 지정하는 칩이 없음**.
 - **원인**: `TeacherDebateControl` 참가자 배정의 추가 진영(`extraSides`, 판사) 칩이 `type === 'multi_party'`일 때만 렌더 → 재판 세션은 `type === 'trial'`이라 판사 칩 미노출. (검사=pro·변호=con·참관=evaluator는 나오지만 판사만 빠짐)

@@ -1269,7 +1269,7 @@ const lastSessionIdRef = useRef(null)
                       )}
                     </>
                   )}
-                  {mySideId === 'evaluator' && (
+                  {(mySideId === 'evaluator' || isVerdictTrialSession) && (
                     <EvaluatorFinalCommentForm session={session} />
                   )}
                   {/* ③ 참관 판사도 모둠 판결문을 작성·게시할 수 있게 */}
@@ -1435,7 +1435,7 @@ const lastSessionIdRef = useRef(null)
                       선생님이 토론 후 여론조사를 열면 위쪽에 표시됩니다.
                     </p>
                   )}
-                  {mySideId === 'evaluator' && (
+                  {(mySideId === 'evaluator' || isVerdictTrialSession) && (
                     <EvaluatorFinalCommentForm session={session} />
                   )}
                 </>

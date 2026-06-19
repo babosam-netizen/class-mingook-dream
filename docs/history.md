@@ -6,6 +6,12 @@
 
 ---
 
+## v1.7.46 (2026-06-19) [Claude] — 토론도구에서 판사팀(추가 진영) 배정 버튼 노출 수정
+- **증상**: 사법 재판(판결중심) 토론도구 통합 참가자 관리에서 **판사팀을 지정하는 칩이 없음**.
+- **원인**: `TeacherDebateControl` 참가자 배정의 추가 진영(`extraSides`, 판사) 칩이 `type === 'multi_party'`일 때만 렌더 → 재판 세션은 `type === 'trial'`이라 판사 칩 미노출. (검사=pro·변호=con·참관=evaluator는 나오지만 판사만 빠짐)
+- **수정**: 학생별·모둠별 추가 진영 칩 조건을 `type === 'multi_party'` → `extraSideEntries.length > 0`으로 변경 → 추가 진영(판사)이 있으면 재판 세션에서도 배정 칩 노출. 판사 라벨은 시드의 `extraSides.judge.label`('판사').
+- `APP_BUILD` v1.7.46.
+
 ## v1.7.45 (2026-06-19) [Claude] — 판결중심 학생 화면에서 4역할 카드/배정 버튼 숨김
 - 사법부 **판결중심(verdict)** 모드 학생 화면 상단의 `RoleCard`(“아직 이 차시 역할이 정해지지 않았어요…”)와 ‘🎭 모둠 4역할 배정/변경’ 버튼을 숨김. 판결중심은 학생별 4역할 개념이 없어 혼란만 줌.
 - `Phase3Page`에 `isJudicialVerdict`(effectiveTab==='judicial' && workMode==='verdict') 추가, 역할 카드 블록 노출 조건에 `&& !isJudicialVerdict` 추가. 역할중심 사법부·입법부·행정부는 그대로 유지.

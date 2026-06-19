@@ -1923,7 +1923,7 @@ function TeacherDebateControl() {
                             onClick={() => setStudentSide(s.id, side === 'con' ? 'none' : 'con')}
                           />
                         )}
-                        {type === 'multi_party' && extraSideEntries.map(([sideId, extraSide]) => (
+                        {extraSideEntries.length > 0 && extraSideEntries.map(([sideId, extraSide]) => (
                           <AssignmentChip
                             key={sideId}
                             label={extraSide.label || sideId}
@@ -2027,7 +2027,7 @@ function TeacherDebateControl() {
                             onClick={() => setGroupSide(group, 'con')}
                           />
                         )}
-                        {type === 'multi_party' && extraSideEntries.map(([sideId, extraSide]) => (
+                        {extraSideEntries.length > 0 && extraSideEntries.map(([sideId, extraSide]) => (
                           <AssignmentChip
                             key={sideId}
                             label={`${extraSide.label || sideId} 전체`}

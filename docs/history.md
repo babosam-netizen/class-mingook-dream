@@ -6,6 +6,13 @@
 
 ---
 
+## v1.7.43 (2026-06-17) [Claude] — 제출물 열람 스크롤 수정·여정별 보기 + 사법부 빠른제어 쟁점/판결문 모니터링
+- **제출물 열람 시간별 스크롤 버그 수정**: `SubmissionTimeline`이 `flex-1`인데 부모 높이 미지정으로 스크롤 불가 → 모달 밖 잘림. `SubmissionMonitor`의 타임라인 래퍼에 `flex-1 min-h-0`, 타임라인 루트 `h-full min-h-0`, 스크롤 영역 `min-h-0`로 교정.
+- **모든 제출물 모아보기 확장**: 타임라인 SOURCES에 `verdicts`(판결문)·`judicialIssues`(쟁점 메모)·`candidateSupportStatements`(지지선언) 추가.
+- **여정·단계별 보기 추가**: 타임라인에 [🕒 시간순 / 🗺️ 여정·단계별] 토글. 제출물 종류→페이즈(1 시민광장~4 시사회·정리) 매핑(`TYPE_PHASE`, 기사·링크는 `item.phase` 우선)으로 그룹화. 항목은 공용 `Row`로 간략→펼침.
+- **사법부 빠른제어 모니터링**: `Phase3JudicialQuickPanel`에 판결중심일 때 `JudicialContentReview`(접이식) 추가 — 학생별 쟁점 메모 + 모둠별 판결문을 간략 표시, 누르면 전문 펼침. `judicialIssues` 구독 추가.
+- `npm run build` 통과 + dev 부팅 스모크. `APP_BUILD` v1.7.43.
+
 ## v1.7.42 (2026-06-17) [Claude] — 사법부 활동 메모를 모둠 단위 → 개인 단위로 전환
 - **변경**: `JudicialActivityMemo`(쟁점·재판·참관 판사 메모) 저장 경로를 `judicialIssues/{caseId}/{groupId}`(모둠 공유) → **`judicialIssues/{caseId}/{studentId}`(개인)**. 학생마다 자기 메모를 따로 작성. 모둠 종합은 토론도구 종합판결문(모둠원 종합평가 카드 + 판결문 작성)에서 정리하는 흐름 유지.
 - **연동**: `EvaluatorFinalCommentForm`의 '메모+개별평가 불러오기'도 개인 메모(`{studentId}`)를 읽도록 수정. 문구 '우리 모둠 메모'→'내 메모', 쟁점 메모 안내에 "모둠 판결문은 종합판결문에서 정리" 명시.

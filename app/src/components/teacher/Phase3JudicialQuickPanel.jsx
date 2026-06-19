@@ -33,6 +33,7 @@ const VERDICT_SCRIPT_SPEAKER_LABEL = {
 function Phase3JudicialQuickPanel({ onOpenDebateTool }) {
   const roomCode = useGameStore((s) => s.roomCode)
   const groups = useGameStore((s) => s.groups)
+  const students = useGameStore((s) => s.students)
   const branchConfig = useGameStore((s) => s.config?.branchConfig)
 
   // 사법부 활동 방식: 'verdict'(판결중심) | 'role'(역할중심)
@@ -53,6 +54,7 @@ function Phase3JudicialQuickPanel({ onOpenDebateTool }) {
 
   const [events, setEvents] = useState({})
   const [verdicts, setVerdicts] = useState({})
+  const [issues, setIssues] = useState({})
   const [debateSessions, setDebateSessions] = useState({})
   const [juryVotes, setJuryVotes] = useState({})
   // 재판 미리 준비 (임시저장판) — judicialTrialDraft/{caseId}
@@ -89,11 +91,13 @@ function Phase3JudicialQuickPanel({ onOpenDebateTool }) {
     const u2 = subscribe(roomCode, 'verdicts', (d) => setVerdicts(d || {}))
     const u3 = subscribe(roomCode, 'debateSessions', (d) => setDebateSessions(d || {}))
     const u4 = subscribe(roomCode, 'judicialPresentation', (d) => setPresentation(d || null))
+    const u5 = subscribe(roomCode, 'judicialIssues', (d) => setIssues(d || {}))
     return () => {
       u1?.()
       u2?.()
       u3?.()
       u4?.()
+      u5?.()
     }
   }, [roomCode])
 
@@ -146,6 +150,8 @@ function Phase3JudicialQuickPanel({ onOpenDebateTool }) {
 
   // 판결문·변론서: activeCaseRelatedId 우선, 구 NPC ID 폴백 (하위호환)
   const verdictNode = verdicts[activeCaseRelatedId] || (npcCaseId ? verdicts[npcCaseId] : null) || null
+  // 쟁점·재판 메모(학생별): judicialIssues/{caseId}/{studentId}
+  const issuesNode = useMemo(() => issues?.[activeCaseRelatedId] || {}, [issues, activeCaseRelatedId])
 
   const judgeVerdict = useMemo(() => {
     if (!verdictNode) return null
@@ -1175,6 +1181,11 @@ function Phase3JudicialQuickPanel({ onOpenDebateTool }) {
             </div>
           )}
 
+          {/* ════ 판결중심 — 쟁점 메모·판결문 내용 모니터링 (모든 단계 공통) ════ */}
+          {isVerdict && (
+            <JudicialContentReview issuesNode={issuesNode} verdictNode={verdictNode} students={students} groups={groups} />
+          )}
+
           {/* ════ 판결중심 재판하기(stage 2) — 대본·연기팀 점검 ════ */}
           {isVerdict && stage === 2 && (
             <div className="pt-2 border-t border-rose-200/50 space-y-2">
@@ -1423,6 +1434,89 @@ function Phase3JudicialQuickPanel({ onOpenDebateTool }) {
  * 교사가 사회자·발언 진영 라벨·여론조사 항목을 미리 정해 두고 임시저장.
  * 저장된 draft는 `judicialTrialDraft/{caseId}` 에 들어가고 startJudicialDebate가 우선 사용.
  */
+// 판결중심 모니터링 — 쟁점 메모(학생별)·판결문(모둠별)을 간략 표시, 누르면 펼침
+function JudicialContentReview({ issuesNode, verdictNode, students, groups }) {
+  const [openId, setOpenId] = useState(null)
+
+  const memoRows = Object.entries(issuesNode || {})
+    .filter(([, m]) => m?.body && String(m.body).trim())
+    .map(([sid, m]) => {
+      const st = students?.[sid]
+      return { id: `iss_${sid}`, name: st ? `${st.number ? `${st.number}번 ` : ''}${st.nickname || ''}`.trim() : sid, body: m.body, at: Number(m.at) || 0 }
+    })
+    .sort((a, b) => b.at - a.at)
+
+  // 판결문: 모둠별 최신 1건
+  const verdictRows = (() => {
+    const byGroup = {}
+    Object.values(verdictNode || {}).forEach((v) => {
+      if (!v || !v.body) return
+      const gid = v.judgeGroupId || v.groupId
+      if (!gid) return
+      if (!byGroup[gid] || (v.createdAt || 0) > (byGroup[gid].createdAt || 0)) byGroup[gid] = v
+    })
+    return Object.entries(byGroup).map(([gid, v]) => ({
+      id: `vd_${gid}`,
+      name: groups?.[gid]?.name || gid,
+      decision: v.decision,
+      body: v.body,
+      at: Number(v.createdAt) || 0,
+    })).sort((a, b) => b.at - a.at)
+  })()
+
+  const Row = (r, accent) => {
+    const open = openId === r.id
+    return (
+      <li key={r.id}>
+        <button
+          onClick={() => setOpenId(open ? null : r.id)}
+          className="w-full text-left bg-white border border-slate-200 rounded-lg px-2 py-1 hover:bg-slate-50"
+        >
+          <div className="flex items-center gap-1.5">
+            <span className={`text-[10px] font-bold shrink-0 ${accent}`}>{r.name}</span>
+            {r.decision && (
+              <span className={`text-[9px] px-1 rounded font-bold shrink-0 ${r.decision === 'guilty' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                {r.decision === 'guilty' ? '유죄' : '무죄'}
+              </span>
+            )}
+            <span className="text-[10px] text-slate-500 truncate flex-1">{String(r.body || '').split('\n')[0]}</span>
+            <span className="text-[9px] text-slate-300 shrink-0">{open ? '▲' : '▼'}</span>
+          </div>
+          {open && (
+            <p className="mt-1 pt-1 border-t border-slate-100 text-[11px] text-slate-700 whitespace-pre-wrap leading-relaxed">{r.body}</p>
+          )}
+        </button>
+      </li>
+    )
+  }
+
+  return (
+    <details className="pt-2 border-t border-rose-200/50">
+      <summary className="text-xs font-bold text-rose-850 cursor-pointer select-none">
+        🔎 쟁점 메모 · 📜 판결문 내용 보기 ({memoRows.length} · {verdictRows.length})
+      </summary>
+      <div className="mt-2 space-y-3">
+        <div>
+          <p className="text-[11px] font-black text-amber-700 mb-1">🔎 쟁점·재판 메모 (학생별 {memoRows.length}명)</p>
+          {memoRows.length === 0 ? (
+            <p className="text-[10px] text-gray-400">아직 작성된 쟁점 메모가 없습니다.</p>
+          ) : (
+            <ul className="space-y-1">{memoRows.map((r) => Row(r, 'text-amber-700'))}</ul>
+          )}
+        </div>
+        <div>
+          <p className="text-[11px] font-black text-rose-700 mb-1">📜 게시된 판결문 (모둠별 {verdictRows.length}건)</p>
+          {verdictRows.length === 0 ? (
+            <p className="text-[10px] text-gray-400">아직 게시된 판결문이 없습니다.</p>
+          ) : (
+            <ul className="space-y-1">{verdictRows.map((r) => Row(r, 'text-rose-700'))}</ul>
+          )}
+        </div>
+      </div>
+    </details>
+  )
+}
+
 function TrialPrepModal({ roomCode, caseId, groups, students, existing, onClose }) {
   const [topic, setTopic] = useState(existing?.topic || '')
   const [chairId, setChairId] = useState(existing?.chairId || '')

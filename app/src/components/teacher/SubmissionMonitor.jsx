@@ -101,7 +101,11 @@ export default function SubmissionMonitor() {
         ))}
       </div>
 
-      {activeTab === 'timeline' && <SubmissionTimeline />}
+      {activeTab === 'timeline' && (
+        <div className="flex-1 min-h-0 flex flex-col">
+          <SubmissionTimeline />
+        </div>
+      )}
 
       {/* 보조 필터 — 토론 주제(세션)별 */}
       {activeTab !== 'timeline' && supportsTopicFilter && topicOptions.length > 0 && (

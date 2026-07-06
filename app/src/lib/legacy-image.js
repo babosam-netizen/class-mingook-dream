@@ -1,7 +1,7 @@
 /**
  * 레거시 이미지 URL 해석기.
  *
- * 과거 NAS 업로드(upload.php, v1.7.33에 폐지) 시절 저장된 이미지 주소는
+ * 과거 서버 업로드 방식(v1.7.33 폐지)으로 저장된 이미지 주소는
  * `<배포서버>/class_democra/uploads/<해시>.jpg` 같은 절대주소다.
  * 호스팅을 Cloudflare로 옮기면서 이미지 파일을 앱의 public/uploads/ 에 함께 배포하므로,
  * 렌더링 시점에 `.../uploads/<파일>` 형태 주소를 새 위치(VITE_UPLOADS_BASE, 기본 '/uploads')로

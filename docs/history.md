@@ -6,6 +6,16 @@
 
 ---
 
+## v1.7.43 (2026-07-06) [Antigravity] — 정리글 에디터 데이터 유지 개선 (뒤로가기·재진입 시 글 보존)
+
+- **핵심 버그 수정**: 정리글 작성 중 뒤로갔다 돌아오거나 페이지를 이탈하면 작성 내용이 사라지는 문제 해결.
+- **저장 레이어 이중화**: localStorage(`reflection_draft_{studentId}`) 동기 백업 + Firebase RTDB 비동기 저장.
+- **자동저장 2종**: ① 입력 후 2초 유휴 debounced 자동 저장, ② 언마운트(뒤로가기·이탈) 시 localStorage 즉시 백업 + Firebase fire-and-forget.
+- **복원 2단계**: 마운트 즉시 localStorage 동기 복원 → Firebase 더 최신이면 덮어씀(타임스탬프 비교).
+- **key 플리커 버그 수정**: `ReflectionPage`에 `reflectionsLoaded` 상태 추가 — Firebase 첫 응답 전 로딩 스피너, `key=new→실제ID` 전환으로 에디터 리셋 차단.
+- **stale 클로저 방지**: `stateRef`로 최신 상태값 항시 추적.
+- `npm run build` 통과. GitHub push 완료.
+
 ## v1.7.42 (2026-06-17) [Claude] — 사법부 활동 메모를 모둠 단위 → 개인 단위로 전환
 - **변경**: `JudicialActivityMemo`(쟁점·재판·참관 판사 메모) 저장 경로를 `judicialIssues/{caseId}/{groupId}`(모둠 공유) → **`judicialIssues/{caseId}/{studentId}`(개인)**. 학생마다 자기 메모를 따로 작성. 모둠 종합은 토론도구 종합판결문(모둠원 종합평가 카드 + 판결문 작성)에서 정리하는 흐름 유지.
 - **연동**: `EvaluatorFinalCommentForm`의 '메모+개별평가 불러오기'도 개인 메모(`{studentId}`)를 읽도록 수정. 문구 '우리 모둠 메모'→'내 메모', 쟁점 메모 안내에 "모둠 판결문은 종합판결문에서 정리" 명시.

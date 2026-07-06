@@ -276,32 +276,44 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
   }, [])
 
   // 마운트 시 복원:
-  //   1) localStorage 즉시(동기) 복원 → 화면 반응이 빠름
-  //   2) Firebase에서 비동기로 불러와 더 최신이면 덮어씀
+  //   - existingReflection(Firebase)과 localStorage를 타임스탬프 비교
+  //   - localStorage가 더 최신이면 localStorage로 덮어씀 (새로고침 직전 미저장분 복구)
+  //   - existingReflection이 없으면 Firebase 직접 조회 후 동일 비교
   const hasLoadedFromDB = useRef(false)
   useEffect(() => {
     if (hasLoadedFromDB.current) return
     if (!roomCode || !myStudentId) return
+    hasLoadedFromDB.current = true
 
-    // existingReflection(부모에서 이미 내려온 데이터)이 있으면 그걸 우선 사용
-    if (existing && existing.id) {
-      hasLoadedFromDB.current = true
-      return
-    }
-
-    // ── 1단계: localStorage에서 즉시 복원 (네트워크 지연과 무관하게 빠름)
     const lKey = `reflection_draft_${myStudentId}`
+    let localData = null
     let localTs = 0
     try {
       const raw = localStorage.getItem(lKey)
       if (raw) {
         const parsed = JSON.parse(raw)
         localTs = parsed.savedAt || 0
-        applyRecord(parsed.tempId || null, parsed)
+        localData = parsed
       }
-    } catch {/* localStorage 읽기 실패 무시 */}
+    } catch {/* 무시 */}
 
-    // ── 2단계: Firebase에서 비동기로 불러와 더 최신이면 덮어씀
+    if (existing && existing.id) {
+      // existingReflection이 이미 있음 (Firebase 구독에서 내려온 데이터)
+      // → localStorage와 타임스탬프 비교하여 더 최신을 사용
+      const dbTs = existing.updatedAt || existing.createdAt || 0
+      if (localData && localTs > dbTs) {
+        // 새로고침 직전 입력분이 localStorage에만 남아있는 경우
+        applyRecord(localData.tempId || existing.id, localData)
+      }
+      // dbTs >= localTs 면 existingReflection으로 초기화된 상태 그대로 유지
+      return
+    }
+
+    // existingReflection 없음 → localStorage 즉시 복원 후 Firebase에서 최신 확인
+    if (localData) {
+      applyRecord(localData.tempId || null, localData)
+    }
+
     getOnce(roomCode, 'reflections').then((all) => {
       if (!all) return
       const myEntry = Object.entries(all).find(
@@ -310,13 +322,10 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
       if (!myEntry) return
       const [id, r] = myEntry
       const dbTs = r.updatedAt || r.createdAt || 0
-      hasLoadedFromDB.current = true
-      // Firebase가 더 최신(또는 localStorage가 없었던 경우)이면 덮어씀
       if (dbTs >= localTs) {
         applyRecord(id, r)
       } else {
-        // localStorage가 더 최신 — tempId만 동기화 (Firebase 키 필요)
-        setTempId(id)
+        setTempId(id) // localStorage가 더 최신 — Firebase 키만 동기화
       }
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps

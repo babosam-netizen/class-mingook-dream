@@ -15,6 +15,7 @@ import { useState } from 'react'
 import useGameStore from '../../store/gameStore'
 import { JUDICIAL_PRESETS, PERSONA_LABEL } from '../../lib/judicial-case-data'
 import { formatCanvaEmbedUrl } from '../../lib/canva-embed'
+import { resolveImageUrl } from '../../lib/legacy-image'
 
 // 역할 key → 사법 역할 분류
 function classifyJudicialRole(roleKey) {
@@ -58,7 +59,7 @@ function EvidenceCard({ ev }) {
       ) : ev.imageUrl ? (
         <div className="overflow-hidden rounded-md border border-current/20 bg-white">
           <img
-            src={ev.imageUrl}
+            src={resolveImageUrl(ev.imageUrl)}
             alt={ev.title || '증거 사진'}
             className="w-full max-h-52 object-contain bg-white"
           />

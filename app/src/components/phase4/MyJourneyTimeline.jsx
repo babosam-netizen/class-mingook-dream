@@ -4,7 +4,13 @@ import { subscribe, updateAt, getOnce } from '../../lib/rtdb-helpers'
 import PosterMedia from '../phase1/PosterMedia'
 import { calculateRanks } from '../../lib/election'
 import { formatCanvaEmbedUrl } from '../../lib/canva-embed'
+import { resolveImageUrl } from '../../lib/legacy-image'
 import { getDebatePrepCardConfig } from '../debate/tools/DebatePrepCard'
+import { getStudentJudicialSide } from '../../lib/judicial-teams'
+
+// 사법 역할별 '내 대본' 발화자 (JudicialVerdictTab과 동일)
+const JUD_SCRIPT_SPEAKERS = { judge: ['judge'], prosecution: ['prosecution', 'witness'], defense: ['defense', 'defendant'] }
+const JUD_SPEAKER_LABEL = { judge: '⚖️ 판사', prosecution: '👨‍💼 검사', defense: '🛡️ 변호인', witness: '👤 증인', defendant: '🙍 피고인' }
 
 /**
  * 1단계: 민국에서 나의 발자취 돌아보기
@@ -18,6 +24,34 @@ const PHASE_META = {
   2: { label: '두 번째 여정', sub: '선거',      emoji: '🗳️', color: '#f43f5e', bg: '#fff1f2', border: '#fecdd3', text: '#9f1239' },
   3: { label: '세 번째 여정', sub: '국정 포털', emoji: '🏛️', color: '#64748b', bg: '#f8fafc', border: '#cbd5e1', text: '#1e293b' },
   4: { label: '네 번째 여정', sub: '시사회',    emoji: '🎬', color: '#ec4899', bg: '#fdf2f8', border: '#fbcfe8', text: '#9d174d' },
+}
+
+// 여정 섹션 — 3여정(국정포털)은 입법·행정·사법으로 나눠서 보여준다. 각 섹션에 간단한 설명 포함.
+const SECTIONS = [
+  { key: 'p1', phase: 1, ...PHASE_META[1], label: '첫번째 여정 - 시민광장', emoji: '🏙️',
+    desc: '우리 사회의 문제를 찾아 시민으로서 목소리를 내는 단계예요. 슬로건·주장하는 글·국민청원·포스터로 문제를 알리고, 함께 풀 핵심 의제를 정했습니다.' },
+  { key: 'p2', phase: 2, ...PHASE_META[2], label: '두번째 여정 - 선거', emoji: '🗳️',
+    desc: '우리를 대표할 대통령을 뽑는 단계. 후보 등록·공약·지지 선언·선거 보도를 하고, 한 표를 행사해 민주적 대표 선출을 경험했습니다.' },
+  { key: 'p3-leg', phase: 3, branch: 'legislative', ...PHASE_META[3], label: '세번째 여정1 - 입법부', sub: '국회', emoji: '🏛️',
+    color: '#0ea5e9', border: '#bae6fd', bg: '#f0f9ff', text: '#075985',
+    desc: '국회의 역할. 문제 해결을 위한 법안을 만들고, 본회의에서 토론·표결로 통과시키는 입법 활동입니다.' },
+  { key: 'p3-exe', phase: 3, branch: 'executive', ...PHASE_META[3], label: '세번째 여정2 - 행정부', sub: '정부', emoji: '🏢',
+    color: '#10b981', border: '#a7f3d0', bg: '#ecfdf5', text: '#065f46',
+    desc: '정부의 역할. 통과된 법을 실제로 집행할 정책·시행령·예산을 만들고, 부처끼리 조정했습니다.' },
+  { key: 'p3-jud', phase: 3, branch: 'judicial', ...PHASE_META[3], label: '세번째 여정3 - 사법부', sub: '법원', emoji: '⚖️',
+    color: '#f43f5e', border: '#fecdd3', bg: '#fff1f2', text: '#9f1239',
+    desc: '법원의 역할. 사건을 두고 재판하며 증거·변론·판결로 옳고 그름과 책임을 따져보았습니다.' },
+  { key: 'p4', phase: 4, ...PHASE_META[4], label: '네번째 여정 - 시사회', emoji: '🎬',
+    desc: '지나온 1~3여정을 돌아보며 내 활동을 정리하고, 카드뉴스로 우리의 이야기를 나누는 단계입니다.' },
+]
+
+// 작성 날짜 표기: 5/12(월)
+const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토']
+function fmtDate(ts) {
+  if (!ts || typeof ts !== 'number') return ''
+  const d = new Date(ts)
+  if (isNaN(d.getTime())) return ''
+  return `${d.getMonth() + 1}/${d.getDate()}(${WEEKDAY[d.getDay()]})`
 }
 
 const COLS = 4 // 한 행에 놓이는 노드 수
@@ -71,6 +105,9 @@ function ActivityModal({ activities, index, ratings, onRate, onClose, onPrev, on
                 style={{ background: meta.bg, borderColor: meta.color, color: meta.color }}>
                 ✨ 발자취 {act.globalStep} · {act.stepLabel}
               </span>
+              {fmtDate(act.ts) && (
+                <span className="text-[11px] font-bold text-gray-400">🗓 {fmtDate(act.ts)}</span>
+              )}
             </div>
             <h3 className="font-black text-base md:text-lg leading-snug text-gray-800">
               {act.title}
@@ -205,7 +242,7 @@ function ActivityModal({ activities, index, ratings, onRate, onClose, onPrev, on
                         />
                       </div>
                     ) : (
-                      <img src={c.posterUrl} alt="선거 포스터" className="w-full rounded-2xl border bg-white shadow-sm" />
+                      <img src={resolveImageUrl(c.posterUrl)} alt="선거 포스터" className="w-full rounded-2xl border bg-white shadow-sm" />
                     )}
                   </div>
                 )}
@@ -722,7 +759,7 @@ function ActivityModal({ activities, index, ratings, onRate, onClose, onPrev, on
               {act.content}
             </div>
           ) : (
-            !act.content && act.type !== 'candidate' && act.type !== 'comment' && act.type !== 'debate_prep' && act.type !== 'debate_final_eval' && (
+            !act.content && act.type !== 'candidate' && act.type !== 'comment' && act.type !== 'debate_prep' && act.type !== 'debate_final_eval' && act.type !== 'polls_group' && act.type !== 'comments_group' && (
               <div className="text-center py-8 text-gray-400 text-xs select-none">
                 상세 활동 내용이 없습니다.
               </div>
@@ -765,6 +802,68 @@ function ActivityModal({ activities, index, ratings, onRate, onClose, onPrev, on
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* 11. 설문·투표 모음 (여정별 한 묶음) */}
+          {act.type === 'polls_group' && Array.isArray(act.polls) && (
+            <div className="space-y-2">
+              {act.polls.map((p, i) => (
+                <div key={i} className="bg-white/85 border rounded-2xl p-3.5 shadow-sm">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-xs font-black text-slate-700">{p.title}</span>
+                    {typeof p.total === 'number' && <span className="text-[10px] text-slate-400 shrink-0">참여 {p.total}명</span>}
+                  </div>
+                  <div className="mt-1.5 flex items-center gap-1.5">
+                    <span className="text-[10px] bg-indigo-600 text-white px-2 py-0.5 rounded-full font-black">내 선택</span>
+                    <span className="text-sm font-bold text-indigo-800">{p.myChoice || '—'}</span>
+                  </div>
+                  {p.reason && (
+                    <p className="mt-1.5 text-xs text-slate-600 bg-slate-50 rounded-lg p-2 border">💡 {p.reason}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* 12. 댓글 모음 (여정별 한 묶음) — 원글 + 내 댓글 + 평가 */}
+          {act.type === 'comments_group' && Array.isArray(act.comments) && (
+            <div className="space-y-3">
+              {act.comments.map((c, i) => (
+                <div key={i} className="bg-white/90 border rounded-2xl p-3.5 shadow-sm space-y-2">
+                  {c.targetBody ? (
+                    <details className="bg-slate-50 border border-slate-150 rounded-xl px-3 py-2 group/og">
+                      <summary className="cursor-pointer list-none">
+                        <span className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">🔍 원글 (눌러서 내용 보기)</span>
+                        <p className="text-xs font-black text-slate-800 leading-snug">{c.targetTitle}</p>
+                      </summary>
+                      <p className="text-xs text-slate-600 whitespace-pre-wrap leading-relaxed mt-2 pt-2 border-t border-slate-200">{c.targetBody}</p>
+                    </details>
+                  ) : (
+                    <div className="bg-slate-50 border border-slate-150 rounded-xl px-3 py-2">
+                      <p className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider mb-0.5">🔍 원글</p>
+                      <p className="text-xs font-black text-slate-800 leading-snug">{c.targetTitle}</p>
+                    </div>
+                  )}
+                  <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl px-3 py-2">
+                    <p className="text-[9px] font-bold text-indigo-700 uppercase tracking-wider mb-0.5">✍️ 내 댓글</p>
+                    <p className="text-sm leading-relaxed text-indigo-950 font-semibold">"{c.body}"</p>
+                  </div>
+                  {c.ratings && Object.keys(c.ratings).length > 0 && (
+                    <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                      {Object.entries(c.ratings).map(([axis, val]) => {
+                        const labelMap = { relevance: '공익/정확', feasibility: '실행/배려', logic: '타당/설득' }
+                        return (
+                          <div key={axis} className="bg-slate-50 border p-1.5 rounded-lg">
+                            <span className="block text-[9px] text-gray-400 font-bold">{labelMap[axis] || axis}</span>
+                            <span className="font-mono text-amber-550 font-black text-sm">★ {val}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -857,6 +956,10 @@ function Node({ act, index, ratings, isActive, onClick }) {
       <span className="text-[10px] text-center text-gray-700 font-extrabold leading-tight max-w-[76px] line-clamp-2 px-0.5">
         {act.shortTitle}
       </span>
+      {/* 작성 날짜 */}
+      {fmtDate(act.ts) && (
+        <span className="text-[9px] text-gray-400 font-bold leading-none">{fmtDate(act.ts)}</span>
+      )}
     </div>
   )
 }
@@ -877,6 +980,7 @@ export default function MyJourneyTimeline() {
   const myStudentId = useGameStore((s) => s.myStudentId)
   const groups      = useGameStore((s) => s.groups)
   const candidatesMap = useGameStore((s) => s.candidates) || {}
+  const config      = useGameStore((s) => s.config)
 
   const myGroupId = useMemo(() => {
     for (const [gid, g] of Object.entries(groups || {})) {
@@ -891,6 +995,9 @@ export default function MyJourneyTimeline() {
   const [supports,        setSupports]        = useState({})
   const [articles,        setArticles]        = useState({})
   const [branchData,      setBranchData]      = useState({})
+  const [branchDrafts,    setBranchDrafts]    = useState({})
+  const [billsMap,        setBillsMap]        = useState({})
+  const [policiesMap,     setPoliciesMap]     = useState({})
   const [links,           setLinks]           = useState({})
   const [polls,           setPolls]           = useState({})
   const [pollReasons,     setPollReasons]     = useState({})
@@ -900,9 +1007,57 @@ export default function MyJourneyTimeline() {
   const [debateSessions,  setDebateSessions]  = useState({})
   const [commentsMap,     setCommentsMap]     = useState({})
   const [reflectionsMap,  setReflectionsMap]  = useState({})
+  const [petitions,       setPetitions]       = useState({})
+  const [verdicts,        setVerdicts]        = useState({})
   const [ratings,         setRatings]         = useState({})
+  const [groupHistory,    setGroupHistory]    = useState({})
   const [savingKey,  setSavingKey]  = useState(null)
   const [activeIdx,  setActiveIdx]  = useState(null)
+
+  // 내가 '그때' 속했던 모둠 id 집합 — 모둠 변경 이력 로그가 없으므로,
+  // 내가 직접 남긴 기록(포스터·슬로건·후보 등록·에세이·기사 등)의 모둠 스냅샷으로 역추론한다.
+  // 이렇게 하면 지금 모둠이 바뀌었어도 '이전 모둠'에서 한 모둠 활동까지 발자취에 함께 모인다.
+  // ⚠️ 반드시 위 useState 선언들 '아래'에 둔다(상태 변수 참조 → TDZ 방지).
+  const myGroupIds = useMemo(() => {
+    // ① 모둠 변경 이력(groupHistory)이 있으면 그것만 신뢰 — 추측 없이 정확.
+    //    내 from/to 모둠 + 현재 모둠의 합집합 = 내가 실제로 거쳐간 모둠 전부.
+    const myHist = groupHistory?.[myStudentId]
+    if (myHist && Object.keys(myHist).length > 0) {
+      const ids = new Set()
+      if (myGroupId) ids.add(myGroupId)
+      Object.values(myHist).forEach((h) => {
+        if (h?.from) ids.add(h.from)
+        if (h?.to) ids.add(h.to)
+      })
+      return ids
+    }
+    // ② 이력이 없으면(레거시) 기존 스냅샷 추론으로 폴백.
+    const ids = new Set()
+    if (myGroupId) ids.add(myGroupId)
+    // 현재 members에 내가 남아있는 모둠 전부 (이동 후 이전 모둠 members가 정리 안 된 경우 포함)
+    // + 슬로건(groups/{gid}/slogans) 작성한 모둠
+    Object.entries(groups || {}).forEach(([gid, g]) => {
+      if (g?.members?.[myStudentId]) ids.add(gid)
+      if (Object.values(g?.slogans || {}).some((s) => s?.authorStudentId === myStudentId)) ids.add(gid)
+    })
+    // 포스터 / 에세이 (내가 작성 → 그 groupId)
+    Object.values(posters || {}).forEach((p) => { if (p?.authorStudentId === myStudentId && p.groupId) ids.add(p.groupId) })
+    Object.values(essays || {}).forEach((e) => { if (e?.authorStudentId === myStudentId && e.groupId) ids.add(e.groupId) })
+    // 후보 등록 (내가 대표 leader인 모둠)
+    Object.entries(candidates || {}).forEach(([gid, c]) => { if (c?.leaderStudentId === myStudentId) ids.add(gid) })
+    // 기사 / 지지선언 (authorGroupId 스냅샷)
+    Object.values(articles || {}).forEach((a) => { if (a?.authorStudentId === myStudentId && a.authorGroupId) ids.add(a.authorGroupId) })
+    Object.values(supports || {}).forEach((s) => { if (s?.authorStudentId === myStudentId && s.authorGroupId) ids.add(s.authorGroupId) })
+    // 국정포털 단위(branchData)에서 내가 작성/대표인 경우 그 모둠
+    Object.values(branchData || {}).forEach((u) => {
+      if (!u?.groupId) return
+      const mine = u.representativeStudentId === myStudentId ||
+        Object.values(u.sections || {}).some((s) => s?.authorStudentId === myStudentId) ||
+        Boolean(u.memberNotes?.[myStudentId])
+      if (mine) ids.add(u.groupId)
+    })
+    return ids
+  }, [groups, posters, essays, candidates, articles, supports, branchData, groupHistory, myStudentId, myGroupId])
 
   useEffect(() => {
     if (!roomCode) return
@@ -913,6 +1068,9 @@ export default function MyJourneyTimeline() {
       subscribe(roomCode, 'supportStatements', (d) => setSupports(d || {})),
       subscribe(roomCode, 'articles',          (d) => setArticles(d || {})),
       subscribe(roomCode, 'branchUnits',       (d) => setBranchData(d || {})),
+      subscribe(roomCode, 'branchDrafts',      (d) => setBranchDrafts(d || {})),
+      subscribe(roomCode, 'bills',             (d) => setBillsMap(d || {})),
+      subscribe(roomCode, 'policies',          (d) => setPoliciesMap(d || {})),
       subscribe(roomCode, 'links',             (d) => setLinks(d || {})),
       subscribe(roomCode, 'polls',             (d) => setPolls(d || {})),
       subscribe(roomCode, 'polls/reasons',     (d) => setPollReasons(d || {})),
@@ -922,6 +1080,9 @@ export default function MyJourneyTimeline() {
       subscribe(roomCode, 'debateSessions',    (d) => setDebateSessions(d || {})),
       subscribe(roomCode, 'comments',          (d) => setCommentsMap(d || {})),
       subscribe(roomCode, 'reflections',       (d) => setReflectionsMap(d || {})),
+      subscribe(roomCode, 'groupHistory',      (d) => setGroupHistory(d || {})),
+      subscribe(roomCode, 'petitions',         (d) => setPetitions(d || {})),
+      subscribe(roomCode, 'verdicts',          (d) => setVerdicts(d || {})),
     ]
     return () => subs.forEach((u) => u?.())
   }, [roomCode])
@@ -944,6 +1105,49 @@ export default function MyJourneyTimeline() {
   // 전체 활동 목록 (순서: 1여정 → 2여정 → 3여정)
   const activities = useMemo(() => {
     const acts = []
+    // 댓글·투표(설문)는 개별로 흩뿌리지 않고 '여정(phase)별 한 묶음'으로 모은다.
+    // 섹션 키로 모음(3여정은 입법/행정/사법으로 분리)
+    const voteBuckets = {}
+    const commentBuckets = {}
+    const sectionKey = (phase, branch) => {
+      if (Number(phase) === 3) {
+        if (branch === 'executive') return 'p3-exe'
+        if (branch === 'judicial') return 'p3-jud'
+        return 'p3-leg'
+      }
+      return `p${phase}`
+    }
+    const pushVote = (sec, item) => { (voteBuckets[sec] = voteBuckets[sec] || []).push(item) }
+    const pushComment = (sec, item) => { (commentBuckets[sec] = commentBuckets[sec] || []).push(item) }
+    // 토론 세션 → 부(府) 추론
+    const sessionBranch = (s) => {
+      if (!s) return null
+      const sid = String(s.sourceStepId || '')
+      if (s.type === 'trial' || s.relatedCaseId || sid.startsWith('judicial') || sid.startsWith('verdict')) return 'judicial'
+      if (s.relatedExecutiveMeeting || s.type === 'multi_party' || sid.startsWith('executive')) return 'executive'
+      if (s.relatedBillId || sid.startsWith('legislative')) return 'legislative'
+      return null
+    }
+
+    // ── 모둠 변경 경계(컷오프) 기반 모둠 판정 ──
+    // 단계 랭크: 1여정=10, 2여정=20, 3여정 입법=31·행정=32·사법=33, 4여정=40
+    // groupHistory 항목 {from,to,cutoff}: 'cutoff 단계부터 to 모둠'. 그 이전 단계는 from 모둠.
+    const myTrans = Object.values(groupHistory?.[myStudentId] || {})
+      .filter((h) => h && typeof h.cutoff === 'number' && (h.from || h.to))
+      .sort((a, b) => a.cutoff - b.cutoff)
+    const studentGroupAt = (rank) => {
+      if (!myTrans.length) return null
+      let g = myTrans[0].from
+      for (const t of myTrans) { if (rank >= t.cutoff) g = t.to }
+      return g
+    }
+    // 모둠 결과물(내가 직접 작성 안 한 것)을 '그 단계에서 내 모둠이었는지'로 판정.
+    // 컷오프 이력이 있으면 단계 기준, 없으면 기존 합집합(myGroupIds) 폴백.
+    const groupOkAt = (gid, rank) => {
+      if (!gid) return false
+      if (myTrans.length) return studentGroupAt(rank) === gid
+      return myGroupIds.has(gid)
+    }
 
     // ── 1여정 (첫 번째 여정 - 시민 광장) ──
     
@@ -956,6 +1160,7 @@ export default function MyJourneyTimeline() {
             key: `phase1_slogan_${gid}_${sid}`,
             phase: 1,
             type: 'slogan',
+            ts: s.createdAt,
             icon: '💬',
             shortTitle: '슬로건',
             stepLabel: '슬로건 제출',
@@ -971,7 +1176,7 @@ export default function MyJourneyTimeline() {
       if (e.authorStudentId !== myStudentId) return
       acts.push({
         key: `phase1_essay_${id}`, phase: 1,
-        type: 'essay',
+        type: 'essay', ts: e.createdAt,
         icon: '📝', shortTitle: '주장글',
         stepLabel: '나의 주장글(에세이) 작성',
         title: e.title || '주장하는 글',
@@ -983,13 +1188,33 @@ export default function MyJourneyTimeline() {
       })
     })
 
-    // 1-3. 포스터
+    // 1-2b. 국민청원 (내가 올린 청원) — 1여정 시민광장
+    Object.entries(petitions).forEach(([id, p]) => {
+      if (p?.studentId !== myStudentId) return
+      acts.push({
+        key: `phase1_petition_${id}`, phase: 1,
+        type: 'petition', ts: p.createdAt,
+        icon: '📜', shortTitle: '국민청원',
+        stepLabel: '국민청원 작성',
+        title: `${p.prefixTag ? `[${p.prefixTag}] ` : ''}${p.title || '국민청원'}`,
+        content: [
+          p.claim ? `[주장] ${p.claim}` : '',
+          p.evidence ? `[근거] ${p.evidence}` : '',
+          p.mediaSummary ? `[미디어 요약] ${p.mediaSummary}` : '',
+          p.mediaUrl ? `[자료 링크] ${p.mediaUrl}` : '',
+          Array.isArray(p.hashTags) && p.hashTags.length ? `${p.hashTags.map((h) => `#${h}`).join(' ')}` : '',
+          typeof p.likeCount === 'number' ? `\n👍 공감 ${p.likeCount}` : '',
+        ].filter(Boolean).join('\n\n'),
+      })
+    })
+
+    // 1-3. 포스터 (모둠 결과물 → 1여정(랭크10) 단계 모둠 기준)
     Object.entries(posters).forEach(([id, p]) => {
-      if (p.authorStudentId !== myStudentId && (!myGroupId || p.groupId !== myGroupId)) return
+      if (p.authorStudentId !== myStudentId && !groupOkAt(p.groupId, 10)) return
       const isMyUpload = p.authorStudentId === myStudentId
       acts.push({
         key: `phase1_poster_${id}`, phase: 1,
-        type: 'poster',
+        type: 'poster', ts: p.createdAt,
         poster: p,
         icon: '🖼️', shortTitle: isMyUpload ? '내포스터' : '모둠포스터',
         stepLabel: isMyUpload ? '내 포스터 제작' : '모둠 포스터 제작',
@@ -1010,41 +1235,43 @@ export default function MyJourneyTimeline() {
       const label = typeof opt === 'string' ? opt : (opt?.label || opt?.id || v.optionId)
       const reason = pollReasons[pid]?.[myStudentId] || ''
 
-      acts.push({
-        key: `phase1_poll_${pid}`, phase: 1,
-        type: 'poll',
-        rawPoll: p,
-        icon: '📊', shortTitle: '설문투표',
-        stepLabel: '시민 여론조사 투표',
+      pushVote('p1', {
+        kind: 'poll',
         title: p.question || '시민광장 설문조사',
-        content: reason ? `[선택 이유]\n${reason}` : '',
+        myChoice: label,
+        reason,
+        total: Object.keys(p.votes || {}).length,
       })
     })
 
     // ── 2여정 (두 번째 여정 - 선거) ──
 
-    // 2-1. 후보 등록
-    if (myGroupId && candidates[myGroupId]) {
-      const c = candidates[myGroupId]
+    // 2-1. 후보 등록 — 내가 '직접 출마(leaderStudentId===나)'한 후보를 우선 포함하고,
+    //      그 외엔 내가 그때 속했던 모둠의 후보를 포함(모둠 변경 전 등록도 따라옴).
+    Object.entries(candidates).forEach(([gid, c]) => {
+      const isMine = c?.leaderStudentId === myStudentId   // 내가 후보 당사자
+      if (!isMine && !groupOkAt(gid, 20)) return           // 선거=2여정(랭크20)
       const candName = c.leaderNickname || c.candidateName
       acts.push({
-        key: 'phase2_candidate', phase: 2,
-        type: 'candidate',
+        key: `phase2_candidate_${gid}`, phase: 2,
+        type: 'candidate', ts: c.candidateSavedAt || c.registeredAt || c.updatedAt,
         candidate: c,
-        icon: '🗳️', 
-        shortTitle: candName ? `후보: ${candName}` : '후보등록',
-        stepLabel: '대통령 후보 등록',
-        title: candName ? `대통령 후보 등록 (${candName})` : '대통령 후보 등록',
+        icon: '🗳️',
+        shortTitle: isMine ? '내 후보등록' : (candName ? `후보: ${candName}` : '모둠 후보'),
+        stepLabel: isMine ? '내가 등록한 대통령 후보' : '우리 모둠 대통령 후보',
+        title: isMine
+          ? `내가 등록한 대통령 후보${candName ? ` (${candName})` : ''}`
+          : (candName ? `우리 모둠 대통령 후보 (${candName})` : '우리 모둠 대통령 후보'),
         content: c.pamphlet ? `[출마선언문]\n${c.pamphlet}` : '대통령 후보 등록 완료',
       })
-    }
+    })
 
     // 2-2. 지지 선언문
     Object.entries(supports).forEach(([id, s]) => {
       if (s.authorStudentId !== myStudentId) return
       acts.push({
         key: `phase2_support_${id}`, phase: 2,
-        type: 'support',
+        type: 'support', ts: s.createdAt || s.updatedAt,
         icon: '📣', shortTitle: '지지선언',
         stepLabel: '대통령 후보 지지선언문',
         title: '대통령 후보 지지 선언문',
@@ -1057,24 +1284,24 @@ export default function MyJourneyTimeline() {
       if (a.authorStudentId !== myStudentId || a.phase !== 2) return
       acts.push({
         key: `phase2_article_${id}`, phase: 2,
-        type: 'article',
+        type: 'article', ts: a.createdAt || a.updatedAt,
         icon: '📰', shortTitle: '선거기사',
         stepLabel: '선거 보도 기사 작성',
-        title: a.title || '선거 기사',
+        title: a.headline || a.title || '선거 기사',
         content: a.headline ? `[헤드라인] ${a.headline}\n\n${a.body}` : a.body || a.content || '',
       })
     })
 
-    // 2-4. 대통령 선거 투표 참여
+    // 2-4. 대통령 선거 투표 참여 → 설문모음으로
     if (electionVotes[myStudentId]) {
-      acts.push({
-        key: 'phase2_election', phase: 2,
-        type: 'election',
-        rawVotes: electionVotes,
-        icon: '🗳️', shortTitle: '대선투표',
-        stepLabel: '대통령 선거 투표',
-        title: '대통령 선거 투표 참여',
-        content: '대한민국 제1대 대통령 선거 투표에 참여하였습니다.',
+      const votedGid = electionVotes[myStudentId]?.candidateGroupId
+      const votedCand = votedGid ? candidates[votedGid] : null
+      const votedName = votedCand ? (votedCand.leaderNickname || votedCand.candidateName || '후보') : null
+      pushVote('p2', {
+        kind: 'election',
+        title: '대통령 선거 투표',
+        myChoice: votedName ? `${votedName} 후보` : '투표함',
+        total: Object.keys(electionVotes || {}).length,
       })
     }
 
@@ -1092,98 +1319,194 @@ export default function MyJourneyTimeline() {
       })
     })
 
-    // ── 3여정 (세 번째 여정 - 국정 포털) ──
+    // ── 3여정 (세 번째 여정 - 국정 포털) — 실제 데이터(branchDrafts/policies/bills/verdicts) ──
+    const bc = config?.branchConfig || {}
+    const sectionText = (content) =>
+      typeof content === 'object' ? (content?.policyFields?.text || content?.text || '') : (content || '')
+    const budgetLines = (items) => {
+      const arr = Array.isArray(items) ? items : Object.values(items || {})
+      return arr.filter(Boolean).map((it) => `${it.name || it.label || '항목'}: ${it.amount ?? it.budget ?? 0}억`)
+    }
 
-    // 3-1. 입법 법안
-    Object.entries(branchData).forEach(([unitId, unit]) => {
-      if (!unit || unit.groupId !== myGroupId || unit.type !== 'legislative') return
-      const bills = Object.values(unit.bills || {})
-      bills.forEach((bill, i) => {
+    // 3-1. 입법부 — 내 조항 초안 + 우리 모둠 법안
+    ;(bc.legislative?.units || []).forEach((unit) => {
+      if (!unit?.unitId || !groupOkAt(unit.groupId, 31)) return
+      const draft = branchDrafts?.[unit.unitId]
+      Object.entries(draft?.sections || {}).forEach(([sk, s]) => {
+        if (s?.authorStudentId !== myStudentId) return
+        const txt = sectionText(s.content)
+        if (!txt.trim()) return
         acts.push({
-          key: `phase3_bill_${unitId}_${i}`, phase: 3,
-          type: 'bill',
-          icon: '🏛️', shortTitle: '제안법안',
-          stepLabel: '의회 법안 발의',
-          title: bill.title || '입법부 제안 법안',
-          content: bill.content || bill.body || '',
+          key: `phase3_legsec_${unit.unitId}_${sk}`, phase: 3, section: 'p3-leg', ts: s.updatedAt,
+          type: 'legdraft', icon: '✍️', shortTitle: '내 조항초안',
+          stepLabel: '입법 — 내 조항(역할) 초안 작성',
+          title: `내 입법 초안 · ${sk}`,
+          content: txt,
         })
       })
     })
-
-    // 3-2. 행정 정책
-    Object.entries(branchData).forEach(([unitId, unit]) => {
-      if (!unit || unit.groupId !== myGroupId || unit.type !== 'executive') return
+    Object.entries(billsMap || {}).forEach(([bid, b]) => {
+      if (!groupOkAt(b?.proposerGroupId, 31)) return
+      const statusKo = b.status === 'passed' ? '✅ 통과' : '❌ 부결'
       acts.push({
-        key: `phase3_executive_${unitId}`, phase: 3,
-        type: 'policy',
-        icon: '🏢', shortTitle: '행정정책',
-        stepLabel: '행정부 국정 정책 수립',
-        title: unit.ministryName || '행정부 정책 수립',
-        content: `[수립 정책]\n${unit.policyDraft || unit.finalPolicy || ''}`,
+        key: `phase3_bill_${bid}`, phase: 3, section: 'p3-leg', ts: b.updatedAt || b.createdAt,
+        type: 'bill', icon: '🏛️', shortTitle: '모둠법안',
+        stepLabel: '우리 모둠 법안',
+        title: `${b.title || '법안'} (${statusKo})`,
+        content: `${b.body || ''}${b.voteResult ? `\n\n[표결] 찬성 ${b.voteResult.yesCount ?? b.voteResult.yes} · 반대 ${b.voteResult.noCount ?? b.voteResult.no}` : ''}`,
       })
     })
 
-    // 3-3. 사법 활동
-    Object.entries(branchData).forEach(([unitId, unit]) => {
-      if (!unit || unit.groupId !== myGroupId || unit.type !== 'judicial') return
+    // 3-2. 행정부 — 내 시행령·예산 초안(역할별) + 우리 부처 정책 완성본
+    const exeUnits = [...(bc.executive?.units || [])]
+    if (bc.executive?.presidentGroupId) exeUnits.push({ unitId: 'exe-president', groupId: bc.executive.presidentGroupId, ministryName: '대통령실' })
+    exeUnits.forEach((unit) => {
+      if (!unit?.unitId || !groupOkAt(unit.groupId, 32)) return
+      const draft = branchDrafts?.[unit.unitId]
+      Object.entries(draft?.sections || {}).forEach(([sk, s]) => {
+        if (s?.authorStudentId !== myStudentId) return
+        const txt = sectionText(s.content)
+        const budget = budgetLines(s?.content?.budgetItems)
+        if (!txt.trim() && budget.length === 0) return
+        acts.push({
+          key: `phase3_exesec_${unit.unitId}_${sk}`, phase: 3, section: 'p3-exe', ts: s.updatedAt,
+          type: 'exedraft', icon: '✍️', shortTitle: '내 시행령',
+          stepLabel: '행정 — 내 시행령·예산(역할) 작성',
+          title: `내 시행령·예산 · ${sk}`,
+          content: `${txt}${budget.length ? `\n\n[예산]\n${budget.join('\n')}` : ''}`,
+        })
+      })
+    })
+    Object.entries(policiesMap || {}).forEach(([gid, p]) => {
+      if (!groupOkAt(gid, 32)) return
+      const arr = Array.isArray(p?.budgetItems) ? p.budgetItems : Object.values(p?.budgetItems || {})
+      const sum = Number(p?.requestedBudget) || arr.reduce((s, it) => s + (Number(it?.amount) || Number(it?.total) || 0), 0)
       acts.push({
-        key: `phase3_judicial_${unitId}`, phase: 3,
-        type: 'judicial',
-        icon: '⚖️', shortTitle: '사법활동',
-        stepLabel: '사법부 재판/활동',
-        title: unit.role ? `사법부 활동 (${unit.role})` : '사법부 재판/활동',
-        content: unit.submission || unit.verdict || '',
+        key: `phase3_policy_${gid}`, phase: 3, section: 'p3-exe', ts: p.updatedAt || p.policySubmittedAt,
+        type: 'policy', icon: '🏢', shortTitle: '모둠정책',
+        stepLabel: '우리 부처 정책 완성본(시행령·예산)',
+        title: `${p.policyFields?.title || p.policyName || '정책'}${sum ? ` · ${sum}억` : ''}`,
+        content: `${p.policyFields?.ordinance || p.ordinance || p.impact || ''}`,
       })
     })
 
-    // 3-4. 국정 기사
+    // 3-3. 사법부 — 우리 모둠 판결문
+    {
+      const byGroup = {}
+      for (const byCase of Object.values(verdicts || {})) {
+        if (typeof byCase !== 'object') continue
+        for (const v of Object.values(byCase)) {
+          if (!v?.body) continue
+          const g = v.judgeGroupId || v.groupId
+          if (!g || !groupOkAt(g, 33)) continue
+          if (!byGroup[g] || (v.createdAt || 0) > (byGroup[g].createdAt || 0)) byGroup[g] = v
+        }
+      }
+      Object.entries(byGroup).forEach(([g, v]) => {
+        acts.push({
+          key: `phase3_verdict_${g}`, phase: 3, section: 'p3-jud', ts: v.createdAt,
+          type: 'judicial', icon: '⚖️', shortTitle: '모둠판결문',
+          stepLabel: '우리 모둠 판결문',
+          title: `우리 모둠 판결 — ${v.decision === 'guilty' ? '유죄' : '무죄'}`,
+          content: `${v.sentence ? `[선고] ${v.sentence}\n\n` : ''}${v.body || ''}`,
+        })
+      })
+    }
+
+    // 3-3b. 재판 전 대본 — 내 역할(검사/변호/판사)이 맡은 대본 라인
+    {
+      const jc = bc.judicial
+      const activeCase = jc?.activeCase
+      const side = getStudentJudicialSide(myStudentId, jc, groups)
+      const allow = JUD_SCRIPT_SPEAKERS[side] || []
+      const script = Array.isArray(activeCase?.trialScript) ? activeCase.trialScript : []
+      const myLines = allow.length
+        ? [...script].filter((l) => allow.includes(l?.speaker)).sort((a, b) => (a.order || 0) - (b.order || 0))
+        : []
+      if (myLines.length) {
+        acts.push({
+          key: 'phase3_jud_script', phase: 3, section: 'p3-jud',
+          type: 'judscript', icon: '🎭', shortTitle: '재판 대본',
+          stepLabel: '재판 전 — 내 역할 대본',
+          title: `내 역할 대본 (${myLines.length}줄)`,
+          content: myLines.map((l) => `[${JUD_SPEAKER_LABEL[l.speaker] || l.speaker}${l.scene ? ` · ${l.scene}` : ''}]\n${l.text || ''}`).join('\n\n'),
+        })
+      }
+    }
+
+    // 3-3c. 재판 중 연설 평가 — 내가 매긴 speechEvals 결과
+    {
+      const evalLines = []
+      Object.values(debateSessions || {}).forEach((s) => {
+        if (!s || s.type !== 'trial') return
+        Object.values(s.speechEvals || {}).forEach((ev) => {
+          const r = ev?.results?.[myStudentId]
+          if (!r) return
+          const tgt = ev.targetName || ev.speakerName || ev.label || ev.title || ev.targetSpeaker || '연설'
+          const scoreStr = r.scores && typeof r.scores === 'object'
+            ? Object.values(r.scores).map((x) => `★${x}`).join(' ') : ''
+          evalLines.push(`• ${tgt}: ${scoreStr}${r.comment ? `\n  "${r.comment}"` : ''}`)
+        })
+      })
+      if (evalLines.length) {
+        acts.push({
+          key: 'phase3_jud_speecheval', phase: 3, section: 'p3-jud',
+          type: 'speecheval', icon: '📋', shortTitle: '재판 중 평가',
+          stepLabel: '재판 중 — 내가 한 연설 평가',
+          title: `재판 중 연설 평가 (${evalLines.length}건)`,
+          content: evalLines.join('\n\n'),
+        })
+      }
+    }
+
+    // 3-4. 국정 기사 (재판 후/여정 기사 포함) — target 없으면 토론 세션 종류로 부 추론
     Object.entries(articles).forEach(([id, a]) => {
       if (a.authorStudentId !== myStudentId || a.phase !== 3) return
+      let branch = (a.target && ['legislative', 'executive', 'judicial'].includes(a.target)) ? a.target : null
+      if (!branch && a.debateSessionId) branch = sessionBranch(debateSessions?.[a.debateSessionId])
       acts.push({
         key: `phase3_article_${id}`, phase: 3,
-        type: 'article',
-        icon: '📰', shortTitle: '국정기사',
-        stepLabel: '국정 기사 보도',
-        title: a.title || '국정 기사',
+        type: 'article', _branch: branch, ts: a.createdAt || a.updatedAt,
+        icon: '📰', shortTitle: a.contextType === 'debate' ? '재판후기사' : '국정기사',
+        stepLabel: a.contextType === 'debate' ? '재판/토론 후 기사' : '국정 여정 기사',
+        title: a.headline || a.title || '국정 기사',
         content: a.headline ? `[헤드라인] ${a.headline}\n\n${a.body}` : a.body || a.content || '',
       })
     })
 
-    // 3-5. 법안 투표 참여
+    // 3-5. 법안 투표 참여 → 설문모음으로
     Object.entries(billVotes).forEach(([bid, votes]) => {
-      if (votes && votes[myStudentId]) {
-        let billTitle = bid
+      const mv = votes && votes[myStudentId]
+      if (!mv) return
+      // bills 노드 우선(정식 법안), 없으면 branchUnits 폴백
+      let billTitle = billsMap?.[bid]?.title || ''
+      if (!billTitle) {
         for (const unit of Object.values(branchData)) {
           if (unit.type === 'legislative' && unit.bills) {
-            const matched = Object.values(unit.bills).find(b => b.title && b.title.includes(bid) || b.content && b.content.includes(bid))
+            const matched = Object.values(unit.bills).find(b => (b.title && b.title.includes(bid)) || (b.content && b.content.includes(bid)))
             if (matched) { billTitle = matched.title; break }
           }
         }
-        acts.push({
-          key: `phase3_billvote_${bid}`, phase: 3,
-          type: 'billvote',
-          rawVotes: votes,
-          icon: '🏛️', shortTitle: '법안투표',
-          stepLabel: '국회 법안 의결 투표',
-          title: `법안 표결 참여: ${billTitle}`,
-          content: '',
-        })
       }
+      if (!billTitle) billTitle = '법안'
+      pushVote('p3-leg', {
+        kind: 'billvote',
+        title: `법안 표결: ${billTitle}`,
+        myChoice: mv === 'pro' ? '✅ 찬성' : mv === 'con' ? '❌ 반대' : '⚪ 기권',
+        total: Object.keys(votes).length,
+      })
     })
 
-    // 3-6. 배심원 재판 투표 참여
+    // 3-6. 배심원 재판 투표 참여 → 설문모음으로
     Object.entries(juryVotes).forEach(([cid, votes]) => {
-      if (votes && votes[myStudentId]) {
-        acts.push({
-          key: `phase3_juryvote_${cid}`, phase: 3,
-          type: 'juryvote',
-          rawVotes: votes,
-          icon: '⚖️', shortTitle: '재판투표',
-          stepLabel: '사법 재판 배심원 투표',
-          title: `배심원 재판 표결 참여: ${cid}`,
-          content: '',
-        })
-      }
+      const mv = votes && votes[myStudentId]
+      if (!mv) return
+      pushVote('p3-jud', {
+        kind: 'juryvote',
+        title: '배심원 평결',
+        myChoice: mv === 'pro' ? '⚖️ 유죄' : mv === 'con' ? '🕊️ 무죄' : String(mv),
+        total: Object.keys(votes).length,
+      })
     })
 
     // 3-7. 공유 영상/캔바 링크 (type이 news가 아닌 외부 링크)
@@ -1204,29 +1527,32 @@ export default function MyJourneyTimeline() {
     Object.entries(debateSessions).forEach(([sid, s]) => {
       const preVote = s.stancePoll?.pre?.votes?.[myStudentId]
       const postVote = s.stancePoll?.post?.votes?.[myStudentId]
-      const phase = Number(s.phase) || 3
+      // phase: 세션 phase 우선, 없으면 선거 토론 단서(플래그·제목)로 2여정 추론, 그래도 없으면 3
+      const elecHint = s.relatedElectionDebate || s.sourceStepId === 'debatePrep' ||
+        /후보|대통령|선거/.test(`${s.title || ''} ${s.topic || ''}`)
+      const phase = Number(s.phase) || (elecHint ? 2 : 3)
 
+      // 토론 사전/사후 입장(투표) → 설문모음으로(부별)
       if (preVote || postVote) {
-        acts.push({
-          key: `debate_poll_${sid}`,
-          phase,
-          type: 'debate_poll',
-          debateSession: s,
-          icon: '📊',
-          shortTitle: '토론설문',
-          stepLabel: '토론 여론조사(사전/사후)',
-          title: s.title || '토론 여론조사',
-          content: s.topic ? `토론 주제: ${s.topic}` : '',
+        const pre = preVote?.option || preVote || null
+        const post = postVote?.option || postVote || null
+        pushVote(sectionKey(phase, sessionBranch(s)), {
+          kind: 'debate_poll',
+          title: `토론 입장: ${s.title || s.topic || '토론'}`,
+          myChoice: post ? (pre && pre !== post ? `${pre} → ${post}` : post) : (pre || '참여'),
+          total: Object.keys(s.stancePoll?.post?.votes || s.stancePoll?.pre?.votes || {}).length,
         })
       }
 
-      // ── 3-8-1. 토론전 카드 (Debate Prep Card) ──
+      // ── 3-8-1. 토론전 카드 (Debate Prep Card) — 개별 노드(내용이므로 유지) ──
       const cardsObj = s.prepCards || {}
-      Object.entries(cardsObj).forEach(([cid, card]) => {
+      Object.values(cardsObj).forEach((card) => {
         if (card.studentId === myStudentId) {
           acts.push({
             key: `debate_prep_${sid}_${card.studentId}`,
             phase,
+            section: sectionKey(phase, sessionBranch(s)),
+            ts: card.updatedAt || card.createdAt,
             type: 'debate_prep',
             icon: '📇',
             shortTitle: '토론전카드',
@@ -1246,6 +1572,7 @@ export default function MyJourneyTimeline() {
         acts.push({
           key: `debate_final_eval_${sid}_${myStudentId}`,
           phase,
+          section: sectionKey(phase, sessionBranch(s)),
           type: 'debate_final_eval',
           icon: '⚖️',
           shortTitle: '최종평가',
@@ -1256,73 +1583,114 @@ export default function MyJourneyTimeline() {
       }
     })
 
-    // ── 4. 내가 작성한 댓글 및 동료 평가 ──
+    // ── 4. 내가 작성한 댓글 및 동료 평가 ── (원글 제목 + 원글 내용 함께 보관)
     Object.entries(commentsMap).forEach(([cid, c]) => {
       if (c.authorStudentId !== myStudentId || c.parentId) return
-      
+
       let targetTitle = '원글 자료'
+      let targetBody = ''
       let phase = 1
-      
+      let branch = null
+
       if (c.targetType === 'poster') {
         const p = posters[c.targetId]
         targetTitle = p ? `🖼️ 포스터: "${p.title || p.caption || '제목 없음'}"` : '🖼️ 친구의 포스터'
+        targetBody = p?.caption || p?.description || ''
         phase = p?.phase || 1
       } else if (c.targetType === 'article') {
         const a = articles[c.targetId]
-        targetTitle = a ? `📰 기사: "${a.title || '제목 없음'}"` : '📰 친구의 기사'
-        phase = a?.phase || 2
+        targetTitle = a ? `📰 기사: "${a.headline || a.title || '제목 없음'}"` : '📰 친구의 기사'
+        targetBody = a?.body || ''
+        phase = Number(a?.phase) || 2
+        branch = a?.target || null
       } else if (c.targetType === 'bill') {
-        let matchedTitle = ''
-        for (const unit of Object.values(branchData)) {
-          if (unit.type === 'legislative' && unit.bills) {
-            const bill = Object.values(unit.bills).find(b => b.id === c.targetId || b.title === c.targetId)
-            if (bill) { matchedTitle = bill.title; break }
+        const b = billsMap?.[c.targetId]
+        let matchedTitle = b?.title || ''
+        targetBody = b?.body || ''
+        if (!matchedTitle) {
+          for (const unit of Object.values(branchData)) {
+            if (unit.type === 'legislative' && unit.bills) {
+              const bill = Object.values(unit.bills).find(bb => bb.id === c.targetId || bb.title === c.targetId)
+              if (bill) { matchedTitle = bill.title; targetBody = bill.content || bill.body || ''; break }
+            }
           }
         }
-        targetTitle = matchedTitle ? `🏛️ 법안: "${matchedTitle}"` : `🏛️ 의회 법안: ${c.targetId}`
-        phase = 3
+        targetTitle = matchedTitle ? `🏛️ 법안: "${matchedTitle}"` : '🏛️ 의회 법안'
+        phase = 3; branch = 'legislative'
       } else if (c.targetType === 'trial') {
-        targetTitle = `⚖️ 사법 재판: ${c.targetId}`
-        phase = 3
+        targetTitle = '⚖️ 사법 재판'
+        phase = 3; branch = 'judicial'
       } else if (c.targetType === 'policy') {
-        const unit = branchData[c.targetId]
-        targetTitle = unit ? `🏢 행정 정책: "${unit.ministryName || '정책'}"` : `🏢 행정 정책`
-        phase = 3
+        const pol = policiesMap?.[c.targetId] || branchData[c.targetId]
+        const pname = pol?.policyFields?.title || pol?.policyName || pol?.ministryName
+        targetTitle = pname ? `🏢 행정 정책: "${pname}"` : '🏢 행정 정책'
+        targetBody = pol?.policyFields?.ordinance || pol?.ordinance || pol?.impact || ''
+        phase = 3; branch = 'executive'
       } else if (c.targetType === 'reflection') {
         const r = reflectionsMap[c.targetId]
         targetTitle = r ? `📝 정리글: "${r.title || '친구의 글'}"` : '📝 친구의 정리글'
+        targetBody = r?.finalEssay || r?.body || ''
         phase = 4
       }
 
-      acts.push({
-        key: `comment_${cid}`,
-        phase,
-        type: 'comment',
-        icon: '💬',
-        shortTitle: '댓글 작성',
-        stepLabel: '동료 평가 및 댓글 작성',
-        title: `내가 작성한 댓글`,
+      pushComment(sectionKey(phase, branch), {
         targetTitle,
-        commentBody: c.body,
+        targetBody,
+        body: c.body,
         ratings: c.ratings || {},
         targetType: c.targetType,
-        content: `내가 남긴 동료 평가 의견:\n"${c.body}"`
       })
     })
 
-    // 여정별 단계 번호 및 전역 발자취 번호 동적 부여
-    const phaseCounts = { 1: 0, 2: 0, 3: 0, 4: 0 }
-    const processedActs = acts.map((act, idx) => {
-      phaseCounts[act.phase]++
-      return {
-        ...act,
-        phaseStep: phaseCounts[act.phase],
-        globalStep: idx + 1
-      }
+    // ── 5. 섹션별 '설문 모음' / '댓글 모음' 단일 노드로 합치기 ──
+    const sectionPhase = (sec) => sec.startsWith('p3') ? 3 : Number(sec.replace('p', ''))
+    Object.entries(voteBuckets).forEach(([sec, items]) => {
+      if (!items.length) return
+      acts.push({
+        key: `polls_group_${sec}`, phase: sectionPhase(sec), section: sec,
+        type: 'polls_group',
+        polls: items,
+        icon: '📊', shortTitle: '설문모음',
+        stepLabel: '투표·설문 참여 모음',
+        title: `설문·투표 모음 (${items.length}건)`,
+        content: '',
+      })
+    })
+    Object.entries(commentBuckets).forEach(([sec, items]) => {
+      if (!items.length) return
+      acts.push({
+        key: `comments_group_${sec}`, phase: sectionPhase(sec), section: sec,
+        type: 'comments_group',
+        comments: items,
+        icon: '💬', shortTitle: '댓글모음',
+        stepLabel: '동료 평가·댓글 모음',
+        title: `댓글 모음 (${items.length}건)`,
+        content: '',
+      })
     })
 
+    // 여정 순서 → 같은 여정 안에서는 작성 시각(ts) 순. 시각 없는 항목(요약·투표 등)은 뒤로.
+    const tsOf = (a) => (typeof a.ts === 'number' ? a.ts : Number.MAX_SAFE_INTEGER)
+    acts.sort((a, b) => ((a.phase || 0) - (b.phase || 0)) || (tsOf(a) - tsOf(b)))
+
+    // 섹션 부여(미지정 시 type/branch로 추론) + 전역 발자취 번호
+    const sectionFor = (act) => {
+      if (act.section) return act.section
+      if (Number(act.phase) !== 3) return `p${act.phase}`
+      if (act.type === 'bill') return 'p3-leg'
+      if (act.type === 'policy') return 'p3-exe'
+      if (act.type === 'judicial') return 'p3-jud'
+      if (act._branch) return sectionKey(3, act._branch)
+      return 'p3-leg'
+    }
+    const processedActs = acts.map((act, idx) => ({
+      ...act,
+      section: sectionFor(act),
+      globalStep: idx + 1,
+    }))
+
     return processedActs
-  }, [essays, posters, candidates, supports, articles, branchData, links, polls, pollReasons, electionVotes, billVotes, juryVotes, debateSessions, commentsMap, reflectionsMap, myStudentId, myGroupId, groups])
+  }, [essays, posters, candidates, supports, articles, branchData, branchDrafts, config, billsMap, policiesMap, verdicts, links, polls, pollReasons, electionVotes, billVotes, juryVotes, debateSessions, commentsMap, reflectionsMap, petitions, groupHistory, myStudentId, myGroupId, myGroupIds, groups])
 
   // Snake 행으로 분할
   const rows = useMemo(() => {
@@ -1345,6 +1713,132 @@ export default function MyJourneyTimeline() {
   }, [activities, ratings])
 
   const totalRated = Object.values(ratings).filter((v) => v > 0).length
+
+  // 모둠명 헬퍼
+  const gName = (gid) => groups?.[gid]?.name || gid || '모둠'
+
+  // ── 코넬노트 왼쪽 cue: 각 여정의 '학급 전체 이모저모' 요약 ──
+  const renderCue = (m) => {
+    if (m.key === 'p1') {
+      const cnt = (obj, pred) => Object.values(obj || {}).filter(pred).length
+      const items = [
+        ['🖼️ 포스터', Object.keys(posters || {}).length],
+        ['💬 슬로건', Object.values(groups || {}).reduce((n, g) => n + Object.keys(g?.slogans || {}).length, 0)],
+        ['📝 주장하는 글', Object.keys(essays || {}).length],
+        ['📜 국민청원', cnt(petitions, () => true)],
+      ]
+      return (
+        <div className="space-y-1.5">
+          <p className="text-[11px] text-gray-600 leading-relaxed">우리 반 시민광장에서 함께 만든 것들이에요. 이 중 내가 한 건 오른쪽에 ⭐로 남겼어요.</p>
+          <ul className="text-[11px] font-bold text-slate-700 space-y-0.5">
+            {items.map(([l, n]) => <li key={l} className="flex justify-between"><span>{l}</span><span className="text-slate-400">{n}건</span></li>)}
+          </ul>
+        </div>
+      )
+    }
+    if (m.key === 'p2') {
+      const list = Object.entries(candidates || {})
+        .map(([gid, c]) => ({ gid, ...c }))
+        .sort((a, b) => (Number(a.candidateNumber ?? a.leaderNumber) || 99) - (Number(b.candidateNumber ?? b.leaderNumber) || 99))
+      if (!list.length) return <p className="text-[11px] text-gray-400">후보 등록 정보가 없어요.</p>
+      return (
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-black text-rose-700">🗳️ 후보 현황</p>
+          <ul className="space-y-1.5">
+            {list.map((c) => {
+              const thumb = resolveImageUrl(c.posterUrl)
+              const num = c.candidateNumber ?? c.leaderNumber
+              return (
+                <li key={c.gid} className="flex items-center gap-1.5">
+                  <span className="shrink-0 w-5 h-5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-black flex items-center justify-center">{num ?? '?'}</span>
+                  {thumb
+                    ? <img src={thumb} alt="" className="shrink-0 w-7 h-7 rounded object-cover border" />
+                    : <span className="shrink-0 w-7 h-7 rounded bg-rose-50 border flex items-center justify-center text-[10px]">👤</span>}
+                  <span className="text-[11px] font-bold text-slate-700 truncate">{c.leaderNickname || c.candidateName || '후보'}<span className="text-slate-400"> · {gName(c.gid)}</span></span>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      )
+    }
+    if (m.key === 'p3-leg') {
+      const list = Object.entries(billsMap || {}).map(([id, b]) => ({ id, ...b }))
+      if (!list.length) return <p className="text-[11px] text-gray-400">상정된 법안이 없어요.</p>
+      return (
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-black text-sky-700">🏛️ 본회의 법안 상정·의결</p>
+          <ul className="text-[11px] space-y-1">
+            {list.map((b) => (
+              <li key={b.id} className="text-slate-700">
+                <span className="font-bold truncate">{b.title || '법안'}</span>
+                {/* 통과 외에는 모두 부결(상임위 미통과 포함) */}
+                <span className={`ml-1 font-black ${b.status === 'passed' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                  {b.status === 'passed' ? '✅통과' : '❌부결'}
+                </span>
+                {b.voteResult && <span className="block text-[10px] text-slate-400">찬성 {b.voteResult.yesCount ?? b.voteResult.yes} · 반대 {b.voteResult.noCount ?? b.voteResult.no}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+    if (m.key === 'p3-exe') {
+      const list = Object.entries(policiesMap || {}).map(([gid, p]) => ({ gid, ...p }))
+      if (!list.length) return <p className="text-[11px] text-gray-400">제출된 시행령이 없어요.</p>
+      const sum = (p) => {
+        if (Number(p?.requestedBudget)) return Number(p.requestedBudget)
+        const arr = Array.isArray(p?.budgetItems) ? p.budgetItems : Object.values(p?.budgetItems || {})
+        return arr.reduce((s, it) => s + (Number(it?.amount) || Number(it?.total) || 0), 0)
+      }
+      return (
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-black text-emerald-700">🏢 국무회의 시행령·예산</p>
+          <ul className="text-[11px] space-y-1">
+            {list.map((p) => (
+              <li key={p.gid} className="text-slate-700">
+                <span className="font-bold">{p.policyFields?.title || p.policyName || '정책'}</span>
+                <span className="text-slate-400"> · {gName(p.gid)}{sum(p) ? ` · ${sum(p)}억` : ''}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+    if (m.key === 'p3-jud') {
+      // 모둠별 최신 판결문
+      const byGroup = {}
+      for (const byCase of Object.values(verdicts || {})) {
+        if (typeof byCase !== 'object') continue
+        for (const v of Object.values(byCase)) {
+          if (!v?.body) continue
+          const g = v.judgeGroupId || v.groupId
+          if (!g) continue
+          if (!byGroup[g] || (v.createdAt || 0) > (byGroup[g].createdAt || 0)) byGroup[g] = v
+        }
+      }
+      const list = Object.entries(byGroup)
+      return (
+        <div className="space-y-1.5">
+          <p className="text-[11px] font-black text-rose-700">⚖️ 형사재판 — 모둠별 판결</p>
+          {list.length === 0
+            ? <p className="text-[11px] text-gray-400">게시된 판결문이 없어요.</p>
+            : <ul className="text-[11px] space-y-1">
+                {list.map(([g, v]) => (
+                  <li key={g} className="text-slate-700">
+                    <span className="font-bold">{gName(g)}</span>
+                    <span className={`ml-1 font-black ${v.decision === 'guilty' ? 'text-rose-600' : 'text-sky-600'}`}>{v.decision === 'guilty' ? '⚖️유죄' : '🕊️무죄'}</span>
+                  </li>
+                ))}
+              </ul>}
+        </div>
+      )
+    }
+    if (m.key === 'p4') {
+      return <p className="text-[11px] text-gray-600 leading-relaxed">지나온 활동을 돌아보며 별점을 매기고, 카드뉴스로 정리해 보세요.</p>
+    }
+    return null
+  }
 
   return (
     <div className="space-y-5">
@@ -1378,17 +1872,18 @@ export default function MyJourneyTimeline() {
         )}
       </div>
 
-      {/* 여정 범례 */}
+      {/* 여정 범례 — 섹션 단위(3여정은 입법/행정/사법) */}
       <div className="flex flex-wrap gap-2">
-        {[1, 2, 3, 4].map((p) => {
-          const m = PHASE_META[p]
-          const isCompleted = phaseCompleted[p]
+        {SECTIONS.map((m) => {
+          const secActs = activities.filter((a) => a.section === m.key)
+          if (secActs.length === 0) return null
+          const isCompleted = secActs.every((a) => (ratings[a.key] || 0) > 0)
           return (
-            <span key={p} className="relative overflow-visible flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full shadow-2xs transition-all"
-              style={{ 
-                background: isCompleted ? '#f0fdf4' : m.bg, 
-                border: isCompleted ? '1.5px solid #bbf7d0' : `1.5px solid ${m.border}`, 
-                color: isCompleted ? '#166534' : m.text 
+            <span key={m.key} className="relative overflow-visible flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full shadow-2xs transition-all"
+              style={{
+                background: isCompleted ? '#f0fdf4' : m.bg,
+                border: isCompleted ? '1.5px solid #bbf7d0' : `1.5px solid ${m.border}`,
+                color: isCompleted ? '#166534' : m.text
               }}>
               {m.emoji} {m.label}
               {isCompleted && (
@@ -1410,9 +1905,8 @@ export default function MyJourneyTimeline() {
         </div>
       ) : (
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-6">
-          {[1, 2, 3, 4].map((p) => {
-            const m = PHASE_META[p]
-            const phaseActs = activities.filter(act => act.phase === p)
+          {SECTIONS.map((m) => {
+            const phaseActs = activities.filter(act => act.section === m.key)
             if (phaseActs.length === 0) return null
 
             // 5개씩 쪼개기
@@ -1421,38 +1915,41 @@ export default function MyJourneyTimeline() {
               phaseRows.push(phaseActs.slice(i, i + 5))
             }
 
-            const isCompleted = phaseCompleted[p]
+            const isCompleted = phaseActs.every(a => (ratings[a.key] || 0) > 0)
 
             return (
-              <div key={p} className="space-y-4">
-                {/* 여정 구분선 라벨 */}
-                <div className="relative overflow-visible flex items-center gap-2 px-3 py-2 rounded-2xl shadow-sm border"
-                  style={{ 
-                    background: isCompleted ? '#f0fdf4' : m.bg, 
-                    borderColor: isCompleted ? '#bbf7d0' : m.border 
+              <div key={m.key} className="space-y-4">
+                {/* 여정 구분선 라벨 + 설명 */}
+                <div className="relative overflow-visible px-3 py-2.5 rounded-2xl shadow-sm border"
+                  style={{
+                    background: isCompleted ? '#f0fdf4' : m.bg,
+                    borderColor: isCompleted ? '#bbf7d0' : m.border
                   }}>
-                  <span className="text-xl">{m.emoji}</span>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-black" style={{ color: isCompleted ? '#166534' : m.text }}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">{m.emoji}</span>
+                    <span className="text-base sm:text-lg font-black tracking-tight" style={{ color: isCompleted ? '#166534' : m.text }}>
                       {m.label}
                     </span>
-                    <span className="text-[10px] opacity-75 font-semibold text-gray-500">
-                      {isCompleted ? '🎉 이 여정의 모든 활동 평가를 완료했습니다!' : `${m.sub} 단계 활동 시작 🚀`}
-                    </span>
+                    <div className="flex-1 h-[2px] border-t border-dashed" style={{ borderColor: isCompleted ? '#bbf7d0' : m.border }} />
+                    {isCompleted && (
+                      <span className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[10px] font-black px-2 py-0.5 rounded-lg border border-white shadow-sm shrink-0">🏷️ 평가 완료</span>
+                    )}
                   </div>
-                  <div className="flex-1 h-[2px] border-t border-dashed" style={{ borderColor: isCompleted ? '#bbf7d0' : m.border }} />
-                  
-                  {/* 기울어진 입체 완료 스티커 */}
-                  {isCompleted && (
-                    <div className="absolute -right-1.5 -top-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded-lg border-2 border-white shadow-md rotate-[-6deg] select-none flex items-center gap-1 transform transition hover:scale-105 active:scale-95 duration-200">
-                      <span>🏷️</span>
-                      <span>평가 완료</span>
-                    </div>
-                  )}
+                  <p className="text-[11px] mt-1 leading-relaxed font-semibold" style={{ color: m.text, opacity: 0.85 }}>
+                    {m.desc}
+                  </p>
                 </div>
 
-                {/* 노드 행들 (모두 왼쪽 -> 오른쪽 흐름) */}
-                <div className="space-y-4 pt-1">
+                {/* 코넬노트식: 왼쪽 cue(이모저모 요약) + 오른쪽 내 활동 노드 */}
+                <div className="flex flex-col lg:flex-row gap-3 pt-1">
+                  <aside className="lg:w-44 shrink-0 rounded-2xl border border-dashed p-3 h-fit"
+                    style={{ borderColor: m.border, background: `${m.bg}` }}>
+                    <p className="text-[10px] font-black uppercase tracking-wider mb-1.5" style={{ color: m.text }}>
+                      📋 이 여정의 이모저모
+                    </p>
+                    {renderCue(m)}
+                  </aside>
+                  <div className="flex-1 space-y-4 min-w-0">
                   {phaseRows.map((row, rowIdx) => (
                     <div key={rowIdx} className="flex items-start">
                       {row.map((act, colIdx) => {
@@ -1481,6 +1978,7 @@ export default function MyJourneyTimeline() {
                       ))}
                     </div>
                   ))}
+                  </div>
                 </div>
               </div>
             )

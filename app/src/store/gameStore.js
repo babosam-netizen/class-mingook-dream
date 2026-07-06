@@ -813,25 +813,6 @@ const useGameStore = create(
         throw new Error('보상권 기능은 현재 보류 중입니다.')
       },
 
-      // 교사: 야당 연합 1분 타이머 시작/종료
-      startAllianceTimer: async (durationSec = 60) => {
-        const { roomCode } = get()
-        if (!roomCode) return
-        await update(ref(database, `rooms/${roomCode}/timers`), {
-          oppositionAlliance: {
-            active: true,
-            endsAt: Date.now() + durationSec * 1000,
-          },
-        })
-      },
-      stopAllianceTimer: async () => {
-        const { roomCode } = get()
-        if (!roomCode) return
-        await update(ref(database, `rooms/${roomCode}/timers`), {
-          oppositionAlliance: { active: false, endsAt: 0 },
-        })
-      },
-
       // ─────────── v3 스캐폴딩 액션 ───────────
 
       // 모둠장: 한 차시 4역할 배정. roles는 { studentId: roleKey } 형태
@@ -886,17 +867,6 @@ const useGameStore = create(
         await update(ref(database, `rooms/${roomCode}/expertCalls/${callId}`), partial)
       },
 
-      // 교사: NPC 사건 투입 (행정·사법 차시에서 사용)
-      launchNpcEvent: async (event) => {
-        const { roomCode } = get()
-        if (!roomCode) return
-        const id = `npc_${Date.now().toString(36)}`
-        await update(ref(database, `rooms/${roomCode}/npcEvents/${id}`), {
-          ...event,
-          launchedAt: Date.now(),
-        })
-        return id
-      },
     }),
     {
       name: 'class-democra-storage',

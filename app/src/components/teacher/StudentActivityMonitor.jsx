@@ -3,6 +3,7 @@ import useGameStore from '../../store/gameStore'
 import { subscribe } from '../../lib/rtdb-helpers'
 import SubmissionDetailModal from './SubmissionDetailModal'
 import PosterMedia from '../phase1/PosterMedia'
+import { resolveImageUrl } from '../../lib/legacy-image'
 
 const EMPTY_STUDENTS = {}
 
@@ -507,7 +508,7 @@ function StudentActivityMonitor() {
                           <PosterMedia poster={p} className="w-full h-32" imageClassName="w-full h-32 object-cover transition-transform group-hover:scale-110" />
                           {p.imageUrl && (
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <a href={p.imageUrl} target="_blank" rel="noreferrer" className="bg-white text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black">원본보기</a>
+                              <a href={resolveImageUrl(p.imageUrl)} target="_blank" rel="noreferrer" className="bg-white text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black">원본보기</a>
                             </div>
                           )}
                         </div>

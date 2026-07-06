@@ -43,11 +43,15 @@ function ReflectionPage({ previewMode = false }) {
   const myStudentId = useGameStore((s) => s.myStudentId)
 
   const [reflectionsMap, setReflectionsMap] = useState({})
+  const [reflectionsLoaded, setReflectionsLoaded] = useState(false)
   const [sort, setSort] = useState('recent')
 
   useEffect(() => {
     if (!roomCode) return
-    const u = subscribe(roomCode, 'reflections', (d) => setReflectionsMap(d || {}))
+    const u = subscribe(roomCode, 'reflections', (d) => {
+      setReflectionsMap(d || {})
+      setReflectionsLoaded(true)
+    })
     return () => u?.()
   }, [roomCode])
 
@@ -88,14 +92,16 @@ function ReflectionPage({ previewMode = false }) {
 
     return (
       <div className="space-y-5">
-        {/* 단계 안내 배너 */}
-        <div className="bg-white rounded-2xl border-2 border-pink-200 shadow-sm p-4 flex items-start gap-3">
-          <span className="text-3xl">{guide.icon}</span>
-          <div>
-            <p className="font-black text-pink-800">{guide.title}</p>
-            <p className="text-sm text-gray-600 mt-0.5">{guide.desc}</p>
+        {/* 단계 안내 배너 — 타임라인 단계는 MyJourneyTimeline 자체 헤더가 있어 중복이라 숨김 */}
+        {currentStepId !== 'timeline' && (
+          <div className="bg-white rounded-2xl border-2 border-pink-200 shadow-sm p-4 flex items-start gap-3">
+            <span className="text-3xl">{guide.icon}</span>
+            <div>
+              <p className="font-black text-pink-800">{guide.title}</p>
+              <p className="text-sm text-gray-600 mt-0.5">{guide.desc}</p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* 1단계: 나의 여정 타임라인 */}
         {currentStepId === 'timeline' && (
@@ -114,8 +120,17 @@ function ReflectionPage({ previewMode = false }) {
         {/* 3단계: 정리글 작성 / 수정 */}
         {currentStepId === 'reflect' && (
           <HighlightBox active={wf.isHighlight('editor')} anyHighlight={anyHL} previewMode={previewMode}>
-            {!myReflection || myReflection.status === 'writing' ? (
-              <ReflectionStructuredEditor existingReflection={myReflection} />
+            {/* Firebase 첫 로드 전: 로딩 표시 (key 플리커 방지) */}
+            {!reflectionsLoaded ? (
+              <div className="flex items-center justify-center py-12 text-gray-400 text-sm gap-2">
+                <span className="animate-spin text-xl">⏳</span>
+                <span>불러오는 중...</span>
+              </div>
+            ) : !myReflection || myReflection.status === 'writing' ? (
+              <ReflectionStructuredEditor
+                key={myReflection?.id ?? 'new'}
+                existingReflection={myReflection}
+              />
             ) : myReflection.status === 'rejected' ? (
               <div className="space-y-4">
                 {/* 반려 상태 표시 */}
@@ -132,7 +147,10 @@ function ReflectionPage({ previewMode = false }) {
                   </div>
                 </div>
                 {/* 반려 시 에디터를 접지 않고 바로 밑에 노출 */}
-                <ReflectionStructuredEditor existingReflection={myReflection} />
+                <ReflectionStructuredEditor
+                  key={myReflection?.id ?? 'new'}
+                  existingReflection={myReflection}
+                />
               </div>
             ) : (
               <div className="space-y-3">
@@ -159,7 +177,10 @@ function ReflectionPage({ previewMode = false }) {
                     ✏️ 내 정리글 수정하기
                   </summary>
                   <div className="p-4 pt-2">
-                    <ReflectionStructuredEditor existingReflection={myReflection} />
+                    <ReflectionStructuredEditor
+                      key={myReflection?.id ?? 'new'}
+                      existingReflection={myReflection}
+                    />
                   </div>
                 </details>
               </div>
@@ -183,7 +204,10 @@ function ReflectionPage({ previewMode = false }) {
                     ✏️ 내 정리글 미리 수정하기
                   </summary>
                   <div className="p-4 pt-2">
-                    <ReflectionStructuredEditor existingReflection={myReflection} />
+                    <ReflectionStructuredEditor
+                      key={myReflection?.id ?? 'new'}
+                      existingReflection={myReflection}
+                    />
                   </div>
                 </details>
               )}
@@ -219,7 +243,7 @@ function ReflectionPage({ previewMode = false }) {
           <p className="text-sm text-gray-600">
             우리가 만든 작은 대한민국을 돌아보고, 나의 이야기를 정리글로 완성해 봐요.
           </p>
-          {isStudent && (
+          {isStudent && currentStepId !== 'timeline' && (
             <DiscussionPrompt
               tone="pink"
               question="이 프로젝트가 나에게 남긴 것은 무엇인가?"

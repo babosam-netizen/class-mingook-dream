@@ -56,10 +56,11 @@ function HighlightBox({ active, anyHighlight, children, className = '', previewM
     return (
       <div
         ref={ref}
-        className={`relative z-20 my-6 p-3 transform scale-[1.06] transition-all duration-500 rounded-3xl bg-white/40
+        className={`relative z-20 my-6 p-3 transform scale-[1.02] transition-all duration-500 rounded-3xl bg-white/40
                     shadow-[0_30px_60px_-15px_rgba(99,102,241,0.45),0_0_40px_-5px_rgba(99,102,241,0.3)]
                     ${className}`}
-        style={{ scrollMarginTop: '180px', scrollMarginBottom: '40px' }}
+        // 위쪽 기준 확대 — 세로로 긴 콘텐츠도 위의 요소(제목 등)를 덮지 않도록
+        style={{ scrollMarginTop: '180px', scrollMarginBottom: '40px', transformOrigin: 'top center' }}
       >
         {children}
       </div>

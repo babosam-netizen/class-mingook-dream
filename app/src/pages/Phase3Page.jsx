@@ -59,7 +59,7 @@ const ROUNDS = [
     headline: '🥇 1라운드 — 입법부 (10~12차시)',
     articleStepId: 'article1',
     pollStepIds: ['poll2'],       // 입법 결과 여론조사
-    useCustomTab: true,          // 기존 커스텀 탭 사용 (BillTemplate, 야당연합 등 특수 기능 포함)
+    useCustomTab: true,          // 기존 커스텀 탭 사용 (BillTemplate 등 특수 기능 포함)
     prompt: {
       q: '어떤 법을 만들어야 하는가?',
       sub: `코어 이슈를 풀기 위해 어떤 법안이 필요한지 토론하고, 본회의에서 의결합니다. 입법부는 예산 승인·국정 감사도 담당합니다.`,
@@ -89,10 +89,10 @@ const ROUNDS = [
     headline: '🥉 3라운드 — 사법부 (16~18차시)',
     articleStepId: 'article3',
     pollStepIds: ['poll4'],       // 판결 평가 여론조사
-    useCustomTab: true,          // 기존 커스텀 탭 사용 (NPC 사건, 배심원 평결 등 특수 기능 포함)
+    useCustomTab: true,          // 기존 커스텀 탭 사용 (사건 변론, 배심원 평결 등 특수 기능 포함)
     prompt: {
       q: '어떤 판결을 내려야 하는가?',
-      sub: 'NPC 사건의 변론을 듣고 검사·변호인의 주장을 비교한 뒤, 배심원으로서 유·무죄를 결정합니다.',
+      sub: '사건의 변론을 듣고 검사·변호인의 주장을 비교한 뒤, 배심원으로서 유·무죄를 결정합니다.',
     },
     TabComponent: JudicialTab,
     ProgressGuide: null,

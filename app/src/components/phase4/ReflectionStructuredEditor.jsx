@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import useGameStore from '../../store/gameStore'
 import { getOnce, pushUnder, updateAt } from '../../lib/rtdb-helpers'
 import { formatCanvaEmbedUrl } from '../../lib/canva-embed'
@@ -204,6 +204,30 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
 
   const textareaRef = useRef(null)
 
+  // 최신 상태값을 ref로 추적 — 언마운트/타이머 콜백에서 stale 클로저 방지
+  const stateRef = useRef({})
+  useEffect(() => {
+    stateRef.current = {
+      title, color, intro, body, conclusion,
+      p1Main, p1MainTag, p1SupportA, p1SupportATag, p1SupportB, p1SupportBTag,
+      p2Main, p2MainTag, p2SupportA, p2SupportATag, p2SupportB, p2SupportBTag,
+      p3Main, p3MainTag, p3SupportA, p3SupportATag, p3SupportB, p3SupportBTag,
+      finalEssay, activeTab,
+    }
+  })
+
+  // roomCode/myStudentId ref — 언마운트 시 최신 값 참조용
+  const roomCodeRef = useRef(roomCode)
+  const myStudentIdRef = useRef(myStudentId)
+  const myNumberRef = useRef(myNumber)
+  const myNicknameRef = useRef(myNickname)
+  const tempIdRef = useRef(tempId)
+  useEffect(() => { roomCodeRef.current = roomCode }, [roomCode])
+  useEffect(() => { myStudentIdRef.current = myStudentId }, [myStudentId])
+  useEffect(() => { myNumberRef.current = myNumber }, [myNumber])
+  useEffect(() => { myNicknameRef.current = myNickname }, [myNickname])
+  useEffect(() => { tempIdRef.current = tempId }, [tempId])
+
   // 본문 오토사이징
   useEffect(() => {
     if (textareaRef.current) {
@@ -218,6 +242,84 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
     getOnce(roomCode, `students/${myStudentId}/canvaCardNewsUrl`).then((url) => {
       if (url) setCanvaUrlLocal(formatCanvaEmbedUrl(url))
     })
+  }, [roomCode, myStudentId])
+
+  // ── 헬퍼: r(Firebase 레코드 또는 localStorage 파싱 객체)로 state 일괄 복원
+  const applyRecord = useCallback((id, r) => {
+    if (id) setTempId(id)
+    if (r.progressStep) setActiveTab(r.progressStep)
+    if (r.title)        setTitle(r.title)
+    if (r.color)        setColor(r.color)
+    if (r.outline?.intro)      setIntro(r.outline.intro)
+    if (r.outline?.body)       setBody(r.outline.body)
+    if (r.outline?.conclusion) setConclusion(r.outline.conclusion)
+    if (r.p1?.main)        setP1Main(r.p1.main)
+    if (r.p1?.mainTag)     setP1MainTag(r.p1.mainTag)
+    if (r.p1?.supportA)    setP1SupportA(r.p1.supportA)
+    if (r.p1?.supportATag) setP1SupportATag(r.p1.supportATag)
+    if (r.p1?.supportB)    setP1SupportB(r.p1.supportB)
+    if (r.p1?.supportBTag) setP1SupportBTag(r.p1.supportBTag)
+    if (r.p2?.main)        setP2Main(r.p2.main)
+    if (r.p2?.mainTag)     setP2MainTag(r.p2.mainTag)
+    if (r.p2?.supportA)    setP2SupportA(r.p2.supportA)
+    if (r.p2?.supportATag) setP2SupportATag(r.p2.supportATag)
+    if (r.p2?.supportB)    setP2SupportB(r.p2.supportB)
+    if (r.p2?.supportBTag) setP2SupportBTag(r.p2.supportBTag)
+    if (r.p3?.main)        setP3Main(r.p3.main)
+    if (r.p3?.mainTag)     setP3MainTag(r.p3.mainTag)
+    if (r.p3?.supportA)    setP3SupportA(r.p3.supportA)
+    if (r.p3?.supportATag) setP3SupportATag(r.p3.supportATag)
+    if (r.p3?.supportB)    setP3SupportB(r.p3.supportB)
+    if (r.p3?.supportBTag) setP3SupportBTag(r.p3.supportBTag)
+    if (r.finalEssay)      setFinalEssay(r.finalEssay)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // 마운트 시 복원:
+  //   1) localStorage 즉시(동기) 복원 → 화면 반응이 빠름
+  //   2) Firebase에서 비동기로 불러와 더 최신이면 덮어씀
+  const hasLoadedFromDB = useRef(false)
+  useEffect(() => {
+    if (hasLoadedFromDB.current) return
+    if (!roomCode || !myStudentId) return
+
+    // existingReflection(부모에서 이미 내려온 데이터)이 있으면 그걸 우선 사용
+    if (existing && existing.id) {
+      hasLoadedFromDB.current = true
+      return
+    }
+
+    // ── 1단계: localStorage에서 즉시 복원 (네트워크 지연과 무관하게 빠름)
+    const lKey = `reflection_draft_${myStudentId}`
+    let localTs = 0
+    try {
+      const raw = localStorage.getItem(lKey)
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        localTs = parsed.savedAt || 0
+        applyRecord(parsed.tempId || null, parsed)
+      }
+    } catch {/* localStorage 읽기 실패 무시 */}
+
+    // ── 2단계: Firebase에서 비동기로 불러와 더 최신이면 덮어씀
+    getOnce(roomCode, 'reflections').then((all) => {
+      if (!all) return
+      const myEntry = Object.entries(all).find(
+        ([, r]) => r.authorStudentId === myStudentId
+      )
+      if (!myEntry) return
+      const [id, r] = myEntry
+      const dbTs = r.updatedAt || r.createdAt || 0
+      hasLoadedFromDB.current = true
+      // Firebase가 더 최신(또는 localStorage가 없었던 경우)이면 덮어씀
+      if (dbTs >= localTs) {
+        applyRecord(id, r)
+      } else {
+        // localStorage가 더 최신 — tempId만 동기화 (Firebase 키 필요)
+        setTempId(id)
+      }
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomCode, myStudentId])
 
   const buildPayload = () => ({
@@ -240,43 +342,163 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
     revisit:       p1Main.trim(),
   })
 
-  // 임시 저장 처리
-  const saveDraft = async (stepToSave) => {
-    if (!roomCode || !myStudentId) return
-    setBusy(true)
-    setError('')
+  // ── localStorage 백업 키
+  const localKey = myStudentId ? `reflection_draft_${myStudentId}` : null
+
+  // localStorage에 현재 상태 백업
+  const saveToLocal = useCallback(() => {
+    if (!localKey) return
+    const s = stateRef.current
+    try {
+      localStorage.setItem(localKey, JSON.stringify({
+        tempId: tempIdRef.current,
+        savedAt: Date.now(),
+        ...s,
+      }))
+    } catch {/* 용량 초과 등 무시 */}
+  }, [localKey])
+
+  // 임시 저장 처리 (Firebase)
+  const saveDraft = useCallback(async (stepToSave) => {
+    const rc = roomCodeRef.current
+    const sid = myStudentIdRef.current
+    if (!rc || !sid) return
+    const s = stateRef.current
+    const tid = tempIdRef.current
     const payload = {
-      ...buildPayload(),
-      progressStep: stepToSave,
+      title: (s.title || '').trim(),
+      color: s.color || 'yellow',
+      isPrivate: false,
+      canvaUrl: canvaUrl || '',
+      outline: {
+        intro: (s.intro || '').trim(),
+        body: (s.body || '').trim(),
+        conclusion: (s.conclusion || '').trim(),
+      },
+      p1: {
+        main: (s.p1Main || '').trim(), mainTag: s.p1MainTag || '',
+        supportA: (s.p1SupportA || '').trim(), supportATag: s.p1SupportATag || '',
+        supportB: (s.p1SupportB || '').trim(), supportBTag: s.p1SupportBTag || '',
+      },
+      p2: {
+        main: (s.p2Main || '').trim(), mainTag: s.p2MainTag || '',
+        supportA: (s.p2SupportA || '').trim(), supportATag: s.p2SupportATag || '',
+        supportB: (s.p2SupportB || '').trim(), supportBTag: s.p2SupportBTag || '',
+      },
+      p3: {
+        main: (s.p3Main || '').trim(), mainTag: s.p3MainTag || '',
+        supportA: (s.p3SupportA || '').trim(), supportATag: s.p3SupportATag || '',
+        supportB: (s.p3SupportB || '').trim(), supportBTag: s.p3SupportBTag || '',
+      },
+      finalEssay: (s.finalEssay || '').trim(),
+      participation: (s.intro || '').trim(),
+      feelings: (s.p1Main || '').trim(),
+      mostImpressive: (s.p2Main || '').trim(),
+      newLearnings: (s.p2SupportA || '').trim(),
+      pledge: (s.p3Main || '').trim(),
+      impressive: (s.p2Main || '').trim(),
+      revisit: (s.p1Main || '').trim(),
+      progressStep: stepToSave ?? (s.activeTab || 1),
       status: 'writing',
       updatedAt: Date.now(),
     }
+    // localStorage에도 백업
+    saveToLocal()
     try {
-      if (tempId) {
-        await updateAt(roomCode, `reflections/${tempId}`, payload)
+      if (tid) {
+        await updateAt(rc, `reflections/${tid}`, payload)
       } else {
-        const newKey = await pushUnder(roomCode, 'reflections', {
+        const newKey = await pushUnder(rc, 'reflections', {
           ...payload,
-          authorStudentId: myStudentId,
-          authorNumber: myNumber,
-          authorNickname: myNickname,
+          authorStudentId: sid,
+          authorNumber: myNumberRef.current,
+          authorNickname: myNicknameRef.current,
           createdAt: Date.now(),
           empathy: { heart: 0, clap: 0, lightbulb: 0, thumbsup: 0 },
         })
         setTempId(newKey)
+        tempIdRef.current = newKey
+        // localStorage 백업에 새 키 반영
+        if (localKey) {
+          try {
+            const raw = localStorage.getItem(localKey)
+            if (raw) {
+              const parsed = JSON.parse(raw)
+              localStorage.setItem(localKey, JSON.stringify({ ...parsed, tempId: newKey }))
+            }
+          } catch {/* 무시 */}
+        }
       }
-      setSaveDone(true)
-      setTimeout(() => setSaveDone(false), 1500)
+      return true
     } catch (err) {
-      setError('임시 저장 중 오류: ' + err.message)
+      console.warn('[ReflectionEditor] 임시저장 오류:', err.message)
+      return false
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canvaUrl, localKey, saveToLocal])
+
+  // UI용 saveDraft 래퍼 (버튼 클릭 등에서 사용)
+  const saveDraftUI = async (stepToSave) => {
+    if (!roomCode || !myStudentId) return
+    setBusy(true)
+    setError('')
+    try {
+      const ok = await saveDraft(stepToSave)
+      if (ok !== false) {
+        setSaveDone(true)
+        setTimeout(() => setSaveDone(false), 1500)
+      } else {
+        setError('임시 저장 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.')
+      }
     } finally {
       setBusy(false)
     }
   }
 
+  // ── debounced 자동 저장 (2초 유휴 후)
+  const autoSaveTimerRef = useRef(null)
+  useEffect(() => {
+    // 아직 방/학생 정보가 없으면 스킵
+    if (!roomCode || !myStudentId) return
+    // 제출 완료 상태면 자동저장 안 함
+    if (done) return
+    clearTimeout(autoSaveTimerRef.current)
+    autoSaveTimerRef.current = setTimeout(() => {
+      saveDraft(activeTab).then((ok) => {
+        if (ok !== false) {
+          setSaveDone(true)
+          setTimeout(() => setSaveDone(false), 1200)
+        }
+      })
+    }, 2000)
+    return () => clearTimeout(autoSaveTimerRef.current)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    title, color, intro, body, conclusion,
+    p1Main, p1MainTag, p1SupportA, p1SupportATag, p1SupportB, p1SupportBTag,
+    p2Main, p2MainTag, p2SupportA, p2SupportATag, p2SupportB, p2SupportBTag,
+    p3Main, p3MainTag, p3SupportA, p3SupportATag, p3SupportB, p3SupportBTag,
+    finalEssay,
+  ])
+
+  // ── 언마운트 시 마지막 저장 (뒤로가기 / 페이지 이탈 시)
+  useEffect(() => {
+    return () => {
+      // cleanup: 타이머 취소 후 즉시 저장
+      clearTimeout(autoSaveTimerRef.current)
+      // 동기적 localStorage 백업은 확실하게
+      saveToLocal()
+      // Firebase 저장은 비동기 — fire-and-forget
+      const s = stateRef.current
+      saveDraft(s.activeTab || 1)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // 탭 변경
   const handleTabChange = async (targetStep) => {
-    await saveDraft(activeTab)
+    clearTimeout(autoSaveTimerRef.current)
+    await saveDraftUI(activeTab)
     setActiveTab(targetStep)
   }
 
@@ -630,7 +852,7 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
           disabled={busy}
           className="flex-1 py-2.5 rounded-xl bg-pink-600 text-white font-black shadow-md hover:bg-pink-700 transition disabled:opacity-50 flex items-center justify-center gap-1.5"
         >
-          {busy ? '임시저장 중...' : activeTab < 5 ? '임시 저장하고 다음 단계로 👉' : '🔍 미리보기 및 검토'}
+          {busy ? '자동 저장 중...' : activeTab < 5 ? '임시 저장하고 다음 단계로 👉' : '🔍 미리보기 및 검토'}
         </button>
       </div>
 

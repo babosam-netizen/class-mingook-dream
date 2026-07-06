@@ -3,6 +3,7 @@ import useGameStore from '../../store/gameStore'
 import { topicBg } from '../../styles/tokens'
 import StudentActivityMonitor from './StudentActivityMonitor'
 import SubmissionDetailModal from './SubmissionDetailModal'
+import { resolveImageUrl } from '../../lib/legacy-image'
 
 /**
  * 모둠별 학생 현황 모니터.
@@ -117,7 +118,7 @@ function GroupFormationMonitor() {
           >
             <div className="flex items-center justify-between mb-2">
               <button 
-                onClick={() => group?.posterUrl && setViewingPoster({ name: group.name, url: group.posterUrl })}
+                onClick={() => group?.posterUrl && setViewingPoster({ name: group.name, url: resolveImageUrl(group.posterUrl) })}
                 className={`font-bold text-sm truncate text-left ${group?.posterUrl ? 'hover:underline hover:text-indigo-600 cursor-pointer' : ''}`}
                 title={group?.posterUrl ? '클릭하여 포스터 보기' : ''}
               >

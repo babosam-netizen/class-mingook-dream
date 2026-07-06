@@ -5,6 +5,25 @@ import { formatCanvaEmbedUrl } from '../../lib/canva-embed'
 import { getDebatePrepCardConfig } from '../debate/tools/DebatePrepCard'
 import PosterMedia from '../phase1/PosterMedia'
 import { calculateRanks } from '../../lib/election'
+import { getStudentJudicialSide } from '../../lib/judicial-teams'
+
+const JUD_SCRIPT_SPEAKERS = { judge: ['judge'], prosecution: ['prosecution', 'witness'], defense: ['defense', 'defendant'] }
+const JUD_SPEAKER_LABEL   = { judge: '⚖️ 판사', prosecution: '👨‍💼 검사', defense: '🛡️ 변호인', witness: '👤 증인', defendant: '🙍 피고인' }
+
+// 순수 헬퍼 함수 — 컴포넌트 밖에 두어 참조 안정
+const sessionBranch = (s) => {
+  if (!s) return null
+  const sid = String(s.sourceStepId || '')
+  if (s.type === 'trial' || s.relatedCaseId || sid.startsWith('judicial') || sid.startsWith('verdict')) return 'judicial'
+  if (s.relatedExecutiveMeeting || s.type === 'multi_party' || sid.startsWith('executive')) return 'executive'
+  if (s.relatedBillId || sid.startsWith('legislative')) return 'legislative'
+  return null
+}
+const sectionKey = (phase, branch) => {
+  if (phase !== 3 || !branch) return `p${phase}`
+  return { legislative: 'p3-leg', executive: 'p3-exe', judicial: 'p3-jud' }[branch] || 'p3-leg'
+}
+const sectionPhase = (sec) => sec.startsWith('p3') ? 3 : Number(sec.replace('p', ''))
 
 /**
  * 2단계: 캔바 카드뉴스 제작 + URL 제출
@@ -33,7 +52,13 @@ export default function CanvaCardNewsStep() {
   const [candidates,      setCandidates]      = useState({})
   const [supports,        setSupports]        = useState({})
   const [articles,        setArticles]        = useState({})
-  const [branchData,      setBranchData]      = useState({})
+  const [branchData,      setBranchData]      = useState({})  // branchUnits (legacy)
+  const [branchDrafts,    setBranchDrafts]    = useState({})  // 역할별 초안
+  const [billsMap,        setBillsMap]        = useState({})  // 정식 법안
+  const [policiesMap,     setPoliciesMap]     = useState({})  // 행정 정책 완성본
+  const [verdicts,        setVerdicts]        = useState({})  // 판결문
+  const [config,          setConfig]          = useState({})  // branchConfig
+  const [groupHistory,    setGroupHistory]    = useState({})  // 모둠 변경 이력
   const [links,           setLinks]           = useState({})
   const [polls,           setPolls]           = useState({})
   const [pollReasons,     setPollReasons]     = useState({})
@@ -43,6 +68,7 @@ export default function CanvaCardNewsStep() {
   const [debateSessions,  setDebateSessions]  = useState({})
   const [commentsMap,     setCommentsMap]     = useState({})
   const [reflectionsMap,  setReflectionsMap]  = useState({})
+  const [petitions,       setPetitions]       = useState({})
 
   const [canvaInput, setCanvaInput] = useState('')
   const [savedUrl, setSavedUrl] = useState('')
@@ -69,6 +95,12 @@ export default function CanvaCardNewsStep() {
       subscribe(roomCode, 'supportStatements', (d) => setSupports(d || {})),
       subscribe(roomCode, 'articles',          (d) => setArticles(d || {})),
       subscribe(roomCode, 'branchUnits',       (d) => setBranchData(d || {})),
+      subscribe(roomCode, 'branchDrafts',      (d) => setBranchDrafts(d || {})),
+      subscribe(roomCode, 'bills',             (d) => setBillsMap(d || {})),
+      subscribe(roomCode, 'policies',          (d) => setPoliciesMap(d || {})),
+      subscribe(roomCode, 'verdicts',          (d) => setVerdicts(d || {})),
+      subscribe(roomCode, 'config',            (d) => setConfig(d || {})),
+      subscribe(roomCode, 'groupHistory',      (d) => setGroupHistory(d || {})),
       subscribe(roomCode, 'links',             (d) => setLinks(d || {})),
       subscribe(roomCode, 'polls',             (d) => setPolls(d || {})),
       subscribe(roomCode, 'polls/reasons',     (d) => setPollReasons(d || {})),
@@ -78,11 +110,35 @@ export default function CanvaCardNewsStep() {
       subscribe(roomCode, 'debateSessions',    (d) => setDebateSessions(d || {})),
       subscribe(roomCode, 'comments',          (d) => setCommentsMap(d || {})),
       subscribe(roomCode, 'reflections',       (d) => setReflectionsMap(d || {})),
+      subscribe(roomCode, 'petitions',         (d) => setPetitions(d || {})),
     ]
     return () => subs.forEach((u) => u?.())
   }, [roomCode, myStudentId])
 
-  // 전체 활동 수집 (MyJourneyTimeline 과 동기화)
+  // ── MyJourneyTimeline과 동일한 groupOkAt 로직 ──
+  const groupOkAt = useMemo(() => {
+    const myTrans = Object.values(groupHistory?.[myStudentId] || {})
+      .filter((h) => h && typeof h.cutoff === 'number' && (h.from || h.to))
+      .sort((a, b) => a.cutoff - b.cutoff)
+    const studentGroupAt = (rank) => {
+      if (!myTrans.length) return null
+      let g = myTrans[0].from
+      for (const t of myTrans) { if (rank >= t.cutoff) g = t.to }
+      return g
+    }
+    // myGroupIds fallback: 내가 속한 모둠 합집합
+    const myGroupIds = new Set()
+    Object.entries(groups || {}).forEach(([gid, g]) => { if (g?.members?.[myStudentId]) myGroupIds.add(gid) })
+    Object.values(posters || {}).forEach((p) => { if (p?.authorStudentId === myStudentId && p.groupId) myGroupIds.add(p.groupId) })
+
+    return (gid, rank) => {
+      if (!gid) return false
+      if (myTrans.length) return studentGroupAt(rank) === gid
+      return myGroupIds.has(gid)
+    }
+  }, [groupHistory, myStudentId, groups, posters])
+
+  // 전체 활동 수집 (MyJourneyTimeline 키 포맷과 일치)
   const activities = useMemo(() => {
     const acts = []
 
@@ -105,6 +161,18 @@ export default function CanvaCardNewsStep() {
       })
     })
 
+    // 1-1b. 국민청원 (MyJourneyTimeline: phase1_petition_${id})
+    Object.entries(petitions || {}).forEach(([id, p]) => {
+      if (p?.authorStudentId !== myStudentId) return
+      acts.push({
+        key: `phase1_petition_${id}`, phase: 1,
+        type: 'petition', icon: '📜', shortTitle: '국민청원',
+        stepLabel: '국민청원 작성',
+        title: p.title || '국민청원',
+        content: p.body || p.content || '',
+      })
+    })
+
     // 1-2. 주장하는 글 (에세이)
     Object.entries(essays).forEach(([id, e]) => {
       if (e.authorStudentId !== myStudentId) return
@@ -122,9 +190,9 @@ export default function CanvaCardNewsStep() {
       })
     })
 
-    // 1-3. 포스터
+    // 1-3. 포스터 — groupOkAt(gid, 10)으로 1여정 모둠 판정 (MyJourneyTimeline과 동일)
     Object.entries(posters).forEach(([id, p]) => {
-      if (p.authorStudentId !== myStudentId && (!myGroupId || p.groupId !== myGroupId)) return
+      if (p.authorStudentId !== myStudentId && !groupOkAt(p.groupId, 10)) return
       const isMyUpload = p.authorStudentId === myStudentId
       acts.push({
         key: `phase1_poster_${id}`, phase: 1,
@@ -137,44 +205,49 @@ export default function CanvaCardNewsStep() {
       })
     })
 
-    // 1-4. 시민광장 설문조사 투표 및 사유
-    Object.entries(polls).forEach(([pid, p]) => {
-      const isPhase1 = pid.startsWith('phase1') || (typeof p?.tag === 'string' && p.tag.includes('시민'))
-      if (!isPhase1) return
-      const v = p?.votes?.[myStudentId]
-      if (!v) return
-
-      const optIdx = parseInt(v.optionId?.replace('opt_', '') || '', 10)
-      const opt = p.options?.[optIdx] || p.options?.[v.optionId]
-      const label = typeof opt === 'string' ? opt : (opt?.label || opt?.id || v.optionId)
-      const reason = pollReasons[pid]?.[myStudentId] || ''
-
-      acts.push({
-        key: `phase1_poll_${pid}`, phase: 1,
-        type: 'poll',
-        rawPoll: p,
-        icon: '📊', shortTitle: '설문투표',
-        stepLabel: '시민 여론조사 투표',
-        title: p.question || '시민광장 설문조사',
-        content: reason ? `[선택 이유]\n${reason}` : '',
+    // 1-4. 시민광장 설문조사 투표 → polls_group_p1 (MyJourneyTimeline과 동일)
+    {
+      const p1VoteBucket = []
+      Object.entries(polls).forEach(([pid, p]) => {
+        const isPhase1 = pid.startsWith('phase1') || (typeof p?.tag === 'string' && p.tag.includes('시민'))
+        if (!isPhase1) return
+        const v = p?.votes?.[myStudentId]
+        if (!v) return
+        const optIdx = parseInt(v.optionId?.replace('opt_', '') || '', 10)
+        const opt = p.options?.[optIdx] || p.options?.[v.optionId]
+        const label = typeof opt === 'string' ? opt : (opt?.label || opt?.id || v.optionId)
+        const reason = pollReasons[pid]?.[myStudentId] || ''
+        p1VoteBucket.push({ kind: 'poll', title: p.question || '시민광장 설문조사', myChoice: label, reason, total: Object.keys(p.votes || {}).length })
       })
-    })
+      if (p1VoteBucket.length) {
+        acts.push({
+          key: 'polls_group_p1', phase: 1,
+          type: 'polls_group', polls: p1VoteBucket,
+          icon: '📊', shortTitle: '설문모음',
+          stepLabel: '시민 여론조사 투표',
+          title: `설문·투표 모음 (${p1VoteBucket.length}건)`,
+          content: '',
+        })
+      }
+    }
 
-    // 2-1. 후보 등록
-    if (myGroupId && candidates[myGroupId]) {
-      const c = candidates[myGroupId]
+    // 2-1. 후보 등록 — MyJourneyTimeline과 동일: gid 포함 키 + groupOkAt(gid, 20)
+    Object.entries(candidates).forEach(([gid, c]) => {
+      const isMine = c?.leaderStudentId === myStudentId   // 내가 후보 당사자
+      if (!isMine && !groupOkAt(gid, 20)) return           // 선거=2여정(랭크20)
       const candName = c.leaderNickname || c.candidateName
       acts.push({
-        key: 'phase2_candidate', phase: 2,
-        type: 'candidate',
-        candidate: c,
-        icon: '🗳️', 
-        shortTitle: candName ? `후보: ${candName}` : '후보등록',
-        stepLabel: '대통령 후보 등록',
-        title: candName ? `대통령 후보 등록 (${candName})` : '대통령 후보 등록',
+        key: `phase2_candidate_${gid}`, phase: 2,
+        type: 'candidate', candidate: c,
+        icon: '🗳️',
+        shortTitle: isMine ? '내 후보등록' : (candName ? `후보: ${candName}` : '모둠 후보'),
+        stepLabel: isMine ? '내가 등록한 대통령 후보' : '우리 모둠 대통령 후보',
+        title: isMine
+          ? `내가 등록한 대통령 후보${candName ? ` (${candName})` : ''}`
+          : (candName ? `우리 모둠 대통령 후보 (${candName})` : '우리 모둠 대통령 후보'),
         content: c.pamphlet ? `[출마선언문]\n${c.pamphlet}` : '대통령 후보 등록 완료',
       })
-    }
+    })
 
     // 2-2. 지지 선언문
     Object.entries(supports).forEach(([id, s]) => {
@@ -189,7 +262,7 @@ export default function CanvaCardNewsStep() {
       })
     })
 
-    // 2-3. 선거 기사
+    // 2-3. 선거 기사 — 제목: [선거기사] 헤드라인
     Object.entries(articles).forEach(([id, a]) => {
       if (a.authorStudentId !== myStudentId || a.phase !== 2) return
       acts.push({
@@ -197,21 +270,24 @@ export default function CanvaCardNewsStep() {
         type: 'article',
         icon: '📰', shortTitle: '선거기사',
         stepLabel: '선거 보도 기사 작성',
-        title: a.title || '선거 기사',
+        title: a.headline ? `[선거기사] ${a.headline}` : (a.title || '선거 기사'),
         content: a.headline ? `[헤드라인] ${a.headline}\n\n${a.body}` : a.body || a.content || '',
       })
     })
 
-    // 2-4. 대통령 선거 투표 참여
+    // 2-4. 대통령 선거 투표 → polls_group_p2 (MyJourneyTimeline과 동일)
     if (electionVotes[myStudentId]) {
+      const votedGid = electionVotes[myStudentId]?.candidateGroupId
+      const votedCand = votedGid ? candidates[votedGid] : null
+      const votedName = votedCand ? (votedCand.leaderNickname || votedCand.candidateName || '후보') : null
       acts.push({
-        key: 'phase2_election', phase: 2,
-        type: 'election',
-        rawVotes: electionVotes,
+        key: 'polls_group_p2', phase: 2,
+        type: 'polls_group',
+        polls: [{ kind: 'election', title: '대통령 선거 투표', myChoice: votedName ? `${votedName} 후보` : '투표함', total: Object.keys(electionVotes || {}).length }],
         icon: '🗳️', shortTitle: '대선투표',
         stepLabel: '대통령 선거 투표',
         title: '대통령 선거 투표 참여',
-        content: '대한민국 제1대 대통령 선거 투표에 참여하였습니다.',
+        content: '',
       })
     }
 
@@ -229,47 +305,146 @@ export default function CanvaCardNewsStep() {
       })
     })
 
-    // 3-1. 입법 법안
-    Object.entries(branchData).forEach(([unitId, unit]) => {
-      if (!unit || unit.groupId !== myGroupId || unit.type !== 'legislative') return
-      const bills = Object.values(unit.bills || {})
-      bills.forEach((bill, i) => {
+    // ── 3여정: MyJourneyTimeline과 동일한 소스·키 사용 ──
+    const bc = config?.branchConfig || {}
+    const sectionText = (content) =>
+      typeof content === 'object' ? (content?.policyFields?.text || content?.text || '') : (content || '')
+    const budgetLines = (items) => {
+      const arr = Array.isArray(items) ? items : Object.values(items || {})
+      return arr.filter(Boolean).map((it) => `${it.name || it.label || '항목'}: ${it.amount ?? it.budget ?? 0}억`)
+    }
+
+    // 3-1. 입법부 — 내 조항 초안 (branchDrafts)
+    ;(bc.legislative?.units || []).forEach((unit) => {
+      if (!unit?.unitId || !groupOkAt(unit.groupId, 31)) return
+      const draft = branchDrafts?.[unit.unitId]
+      Object.entries(draft?.sections || {}).forEach(([sk, s]) => {
+        if (s?.authorStudentId !== myStudentId) return
+        const txt = sectionText(s.content)
+        if (!txt.trim()) return
         acts.push({
-          key: `phase3_bill_${unitId}_${i}`, phase: 3,
-          type: 'bill',
-          icon: '🏛️', shortTitle: '제안법안',
-          stepLabel: '의회 법안 발의',
-          title: bill.title || '입법부 제안 법안',
-          content: bill.content || bill.body || '',
+          key: `phase3_legsec_${unit.unitId}_${sk}`, phase: 3,
+          type: 'legdraft', icon: '✍️', shortTitle: '내 조항초안',
+          stepLabel: '입법 — 내 조항(역할) 초안 작성',
+          title: `내 입법 초안 · ${sk}`,
+          content: txt,
         })
       })
     })
-
-    // 3-2. 행정 정책
-    Object.entries(branchData).forEach(([unitId, unit]) => {
-      if (!unit || unit.groupId !== myGroupId || unit.type !== 'executive') return
+    // 3-1b. 우리 모둠 법안 (bills 노드)
+    Object.entries(billsMap || {}).forEach(([bid, b]) => {
+      if (!groupOkAt(b?.proposerGroupId, 31)) return
+      const statusKo = b.status === 'passed' ? '✅ 통과' : '❌ 부결'
       acts.push({
-        key: `phase3_executive_${unitId}`, phase: 3,
-        type: 'policy',
-        icon: '🏢', shortTitle: '행정정책',
-        stepLabel: '행정부 국정 정책 수립',
-        title: unit.ministryName || '행정부 정책 수립',
-        content: `[수립 정책]\n${unit.policyDraft || unit.finalPolicy || ''}`,
+        key: `phase3_bill_${bid}`, phase: 3,
+        type: 'bill', icon: '🏛️', shortTitle: '모둠법안',
+        stepLabel: '우리 모둠 법안',
+        title: `${b.title || '법안'} (${statusKo})`,
+        content: `${b.body || ''}${b.voteResult ? `\n\n[표결] 찬성 ${b.voteResult.yesCount ?? b.voteResult.yes} · 반대 ${b.voteResult.noCount ?? b.voteResult.no}` : ''}`,
       })
     })
 
-    // 3-3. 사법 활동
-    Object.entries(branchData).forEach(([unitId, unit]) => {
-      if (!unit || unit.groupId !== myGroupId || unit.type !== 'judicial') return
-      acts.push({
-        key: `phase3_judicial_${unitId}`, phase: 3,
-        type: 'judicial',
-        icon: '⚖️', shortTitle: '사법활동',
-        stepLabel: '사법부 재판/활동',
-        title: unit.role ? `사법부 활동 (${unit.role})` : '사법부 재판/활동',
-        content: unit.submission || unit.verdict || '',
+    // 3-2. 행정부 — 내 시행령·예산 초안 + 부처 정책 완성본
+    const exeUnits = [...(bc.executive?.units || [])]
+    if (bc.executive?.presidentGroupId) exeUnits.push({ unitId: 'exe-president', groupId: bc.executive.presidentGroupId, ministryName: '대통령실' })
+    exeUnits.forEach((unit) => {
+      if (!unit?.unitId || !groupOkAt(unit.groupId, 32)) return
+      const draft = branchDrafts?.[unit.unitId]
+      Object.entries(draft?.sections || {}).forEach(([sk, s]) => {
+        if (s?.authorStudentId !== myStudentId) return
+        const txt = sectionText(s.content)
+        const budget = budgetLines(s?.content?.budgetItems)
+        if (!txt.trim() && budget.length === 0) return
+        acts.push({
+          key: `phase3_exesec_${unit.unitId}_${sk}`, phase: 3,
+          type: 'exedraft', icon: '✍️', shortTitle: '내 시행령',
+          stepLabel: '행정 — 내 시행령·예산(역할) 작성',
+          title: `내 시행령·예산 · ${sk}`,
+          content: `${txt}${budget.length ? `\n\n[예산]\n${budget.join('\n')}` : ''}`,
+        })
       })
     })
+    Object.entries(policiesMap || {}).forEach(([gid, p]) => {
+      if (!groupOkAt(gid, 32)) return
+      const arr = Array.isArray(p?.budgetItems) ? p.budgetItems : Object.values(p?.budgetItems || {})
+      const sum = Number(p?.requestedBudget) || arr.reduce((s, it) => s + (Number(it?.amount) || Number(it?.total) || 0), 0)
+      acts.push({
+        key: `phase3_policy_${gid}`, phase: 3,
+        type: 'policy', icon: '🏢', shortTitle: '모둠정책',
+        stepLabel: '우리 부처 정책 완성본(시행령·예산)',
+        title: `${p.policyFields?.title || p.policyName || '정책'}${sum ? ` · ${sum}억` : ''}`,
+        content: `${p.policyFields?.ordinance || p.ordinance || p.impact || ''}`,
+      })
+    })
+
+    // 3-3. 사법부 — 우리 모둠 판결문
+    {
+      const byGroup = {}
+      for (const byCase of Object.values(verdicts || {})) {
+        if (typeof byCase !== 'object') continue
+        for (const v of Object.values(byCase)) {
+          if (!v?.body) continue
+          const g = v.judgeGroupId || v.groupId
+          if (!g || !groupOkAt(g, 33)) continue
+          if (!byGroup[g] || (v.createdAt || 0) > (byGroup[g].createdAt || 0)) byGroup[g] = v
+        }
+      }
+      Object.entries(byGroup).forEach(([g, v]) => {
+        acts.push({
+          key: `phase3_verdict_${g}`, phase: 3,
+          type: 'judicial', icon: '⚖️', shortTitle: '모둠판결문',
+          stepLabel: '우리 모둠 판결문',
+          title: `우리 모둠 판결 — ${v.decision === 'guilty' ? '유죄' : '무죄'}`,
+          content: `${v.sentence ? `[선고] ${v.sentence}\n\n` : ''}${v.body || ''}`,
+        })
+      })
+    }
+
+    // 3-3b. 재판 전 대본 — 내 역할 대본
+    {
+      const jc = bc.judicial
+      const activeCase = jc?.activeCase
+      const side = getStudentJudicialSide(myStudentId, jc, groups)
+      const allow = JUD_SCRIPT_SPEAKERS[side] || []
+      const script = Array.isArray(activeCase?.trialScript) ? activeCase.trialScript : []
+      const myLines = allow.length
+        ? [...script].filter((l) => allow.includes(l?.speaker)).sort((a, b) => (a.order || 0) - (b.order || 0))
+        : []
+      if (myLines.length) {
+        acts.push({
+          key: 'phase3_jud_script', phase: 3,
+          type: 'judscript', icon: '🎭', shortTitle: '재판 대본',
+          stepLabel: '재판 전 — 내 역할 대본',
+          title: `내 역할 대본 (${myLines.length}줄)`,
+          content: myLines.map((l) => `[${JUD_SPEAKER_LABEL[l.speaker] || l.speaker}${l.scene ? ` · ${l.scene}` : ''}]\n${l.text || ''}`).join('\n\n'),
+        })
+      }
+    }
+
+    // 3-3c. 재판 중 연설 평가
+    {
+      const evalLines = []
+      Object.values(debateSessions || {}).forEach((s) => {
+        if (!s || s.type !== 'trial') return
+        Object.values(s.speechEvals || {}).forEach((ev) => {
+          const r = ev?.results?.[myStudentId]
+          if (!r) return
+          const tgt = ev.targetName || ev.speakerName || ev.label || ev.title || ev.targetSpeaker || '연설'
+          const scoreStr = r.scores && typeof r.scores === 'object'
+            ? Object.values(r.scores).map((x) => `★${x}`).join(' ') : ''
+          evalLines.push(`• ${tgt}: ${scoreStr}${r.comment ? `\n  "${r.comment}"` : ''}`)
+        })
+      })
+      if (evalLines.length) {
+        acts.push({
+          key: 'phase3_jud_speecheval', phase: 3,
+          type: 'speecheval', icon: '📋', shortTitle: '재판 중 평가',
+          stepLabel: '재판 중 — 내가 한 연설 평가',
+          title: `재판 중 연설 평가 (${evalLines.length}건)`,
+          content: evalLines.join('\n\n'),
+        })
+      }
+    }
 
     // 3-4. 국정 기사
     Object.entries(articles).forEach(([id, a]) => {
@@ -279,46 +454,9 @@ export default function CanvaCardNewsStep() {
         type: 'article',
         icon: '📰', shortTitle: '국정기사',
         stepLabel: '국정 기사 보도',
-        title: a.title || '국정 기사',
+        title: a.headline || a.title || '국정 기사',
         content: a.headline ? `[헤드라인] ${a.headline}\n\n${a.body}` : a.body || a.content || '',
       })
-    })
-
-    // 3-5. 법안 투표 참여
-    Object.entries(billVotes).forEach(([bid, votes]) => {
-      if (votes && votes[myStudentId]) {
-        let billTitle = bid
-        for (const unit of Object.values(branchData)) {
-          if (unit.type === 'legislative' && unit.bills) {
-            const matched = Object.values(unit.bills).find(b => b.title && b.title.includes(bid) || b.content && b.content.includes(bid))
-            if (matched) { billTitle = matched.title; break }
-          }
-        }
-        acts.push({
-          key: `phase3_billvote_${bid}`, phase: 3,
-          type: 'billvote',
-          rawVotes: votes,
-          icon: '🏛️', shortTitle: '법안투표',
-          stepLabel: '국회 법안 의결 투표',
-          title: `법안 표결 참여: ${billTitle}`,
-          content: '',
-        })
-      }
-    })
-
-    // 3-6. 배심원 재판 투표 참여
-    Object.entries(juryVotes).forEach(([cid, votes]) => {
-      if (votes && votes[myStudentId]) {
-        acts.push({
-          key: `phase3_juryvote_${cid}`, phase: 3,
-          type: 'juryvote',
-          rawVotes: votes,
-          icon: '⚖️', shortTitle: '재판투표',
-          stepLabel: '사법 재판 배심원 투표',
-          title: `배심원 재판 표결 참여: ${cid}`,
-          content: '',
-        })
-      }
     })
 
     // 3-7. 공유 영상/캔바 링크 (type이 news가 아닌 외부 링크)
@@ -336,54 +474,75 @@ export default function CanvaCardNewsStep() {
     })
 
     // ── 3-8. 토론 여론조사 및 토론 활동 ──
+    // 투표/설문은 섹션별로 묶어서 단일 키(polls_group_${sec})로 표현 — MyJourneyTimeline과 동일
+    const voteBuckets = {}
+    const pushVote = (sec, item) => { (voteBuckets[sec] = voteBuckets[sec] || []).push(item) }
+
+    // 법안 투표 — 내 모둠 법안만 (proposerGroupId 체크)
+    Object.entries(billVotes).forEach(([bid, votes]) => {
+      const mv = votes && votes[myStudentId]
+      if (!mv) return
+      const b = billsMap?.[bid]
+      if (!b || !groupOkAt(b.proposerGroupId, 31)) return  // 다른 모둠 법안 제외
+      pushVote('p3-leg', {
+        kind: 'billvote',
+        title: `법안 표결: ${b.title || '법안'}`,
+        myChoice: mv === 'pro' ? '✅ 찬성' : mv === 'con' ? '❌ 반대' : '⚪ 기권',
+        total: Object.keys(votes).length,
+      })
+    })
+
+    // 배심원 재판 투표
+    Object.entries(juryVotes).forEach(([cid, votes]) => {
+      const mv = votes && votes[myStudentId]
+      if (!mv) return
+      pushVote('p3-jud', {
+        kind: 'juryvote',
+        title: '배심원 평결',
+        myChoice: mv === 'pro' ? '⚖️ 유죄' : mv === 'con' ? '🕊️ 무죄' : String(mv),
+        total: Object.keys(votes).length,
+      })
+    })
+
+    // 토론 여론조사 + 토론 준비 카드 + 최종 평가
     Object.entries(debateSessions).forEach(([sid, s]) => {
       const preVote = s.stancePoll?.pre?.votes?.[myStudentId]
       const postVote = s.stancePoll?.post?.votes?.[myStudentId]
       const phase = Number(s.phase) || 3
+      const sec = sectionKey(phase, sessionBranch(s))
 
       if (preVote || postVote) {
-        acts.push({
-          key: `debate_poll_${sid}`,
-          phase,
-          type: 'debate_poll',
-          debateSession: s,
-          icon: '📊',
-          shortTitle: '토론설문',
-          stepLabel: '토론 여론조사(사전/사후)',
+        pushVote(sec, {
+          kind: 'debate_poll',
           title: s.title || '토론 여론조사',
-          content: s.topic ? `토론 주제: ${s.topic}` : '',
+          myChoice: postVote || preVote,
+          total: Object.keys(s.stancePoll?.post?.votes || s.stancePoll?.pre?.votes || {}).length,
         })
       }
 
-      // ── 3-8-1. 토론전 카드 (Debate Prep Card) ──
+      // 토론 준비 카드 (개별 키 유지 — 명확히 "내 것")
       const cardsObj = s.prepCards || {}
       Object.entries(cardsObj).forEach(([cid, card]) => {
         if (card.studentId === myStudentId) {
           acts.push({
             key: `debate_prep_${sid}_${card.studentId}`,
-            phase,
-            type: 'debate_prep',
-            icon: '📇',
-            shortTitle: '토론전카드',
+            phase, type: 'debate_prep',
+            icon: '📇', shortTitle: '토론전카드',
             stepLabel: '토론 준비 카드 작성',
             title: `토론 준비 카드 (${s.title || '토론'})`,
-            debateCard: card,
-            debateSession: s,
+            debateCard: card, debateSession: s,
             content: `[입장] ${card.stance || '미정'}\n\n[주장/판단] ${card.mainClaim || ''}\n\n[근거] ${card.evidence || ''}\n\n[반박] ${card.rebuttal || ''}\n\n[대응] ${card.counterRebuttal || ''}`
           })
         }
       })
 
-      // ── 3-8-2. 평가단 최종 종합 평가 (Debate Final Evaluation) ──
-      const finalEvals = s.finalEvaluations || {}
-      const myEval = finalEvals[myStudentId]
+      // 평가단 최종 종합 평가 (개별 키 유지)
+      const myEval = s.finalEvaluations?.[myStudentId]
       if (myEval) {
         acts.push({
           key: `debate_final_eval_${sid}_${myStudentId}`,
-          phase,
-          type: 'debate_final_eval',
-          icon: '⚖️',
-          shortTitle: '최종평가',
+          phase, type: 'debate_final_eval',
+          icon: '⚖️', shortTitle: '최종평가',
           stepLabel: '평가단 최종 종합 평가 제출',
           title: `평가단 최종 종합 평가 (${s.title || '토론'})`,
           content: typeof myEval === 'string' ? myEval : myEval.content || myEval.comment || '',
@@ -391,57 +550,79 @@ export default function CanvaCardNewsStep() {
       }
     })
 
-    // ── 4. 내가 작성한 댓글 및 동료 평가 ──
+    // 투표 그룹 노드 삽입
+    Object.entries(voteBuckets).forEach(([sec, items]) => {
+      if (!items.length) return
+      acts.push({
+        key: `polls_group_${sec}`, phase: sectionPhase(sec), section: sec,
+        type: 'polls_group', polls: items,
+        icon: '📊', shortTitle: '설문모음',
+        stepLabel: '투표·설문 참여 모음',
+        title: `설문·투표 모음 (${items.length}건)`,
+        content: '',
+      })
+    })
+
+    // ── 4. 내가 작성한 댓글 및 동료 평가 — 섹션별 그룹 키 (MyJourneyTimeline과 동일) ──
+    const commentBuckets = {}
+    const pushComment = (sec, item) => { (commentBuckets[sec] = commentBuckets[sec] || []).push(item) }
+
     Object.entries(commentsMap).forEach(([cid, c]) => {
       if (c.authorStudentId !== myStudentId || c.parentId) return
-      
       let targetTitle = '원글 자료'
+      let targetBody = ''
       let phase = 1
-      
+      let branch = null
+
       if (c.targetType === 'poster') {
         const p = posters[c.targetId]
         targetTitle = p ? `🖼️ 포스터: "${p.title || p.caption || '제목 없음'}"` : '🖼️ 친구의 포스터'
+        targetBody = p?.caption || p?.description || ''
         phase = p?.phase || 1
       } else if (c.targetType === 'article') {
         const a = articles[c.targetId]
-        targetTitle = a ? `📰 기사: "${a.title || '제목 없음'}"` : '📰 친구의 기사'
-        phase = a?.phase || 2
+        targetTitle = a ? `📰 기사: "${a.headline || a.title || '제목 없음'}"` : '📰 친구의 기사'
+        targetBody = a?.body || ''
+        phase = Number(a?.phase) || 2
+        branch = a?.target || null
       } else if (c.targetType === 'bill') {
-        let matchedTitle = ''
-        for (const unit of Object.values(branchData)) {
-          if (unit.type === 'legislative' && unit.bills) {
-            const bill = Object.values(unit.bills).find(b => b.id === c.targetId || b.title === c.targetId)
-            if (bill) { matchedTitle = bill.title; break }
-          }
-        }
-        targetTitle = matchedTitle ? `🏛️ 법안: "${matchedTitle}"` : `🏛️ 의회 법안: ${c.targetId}`
-        phase = 3
+        const b = billsMap?.[c.targetId]
+        targetTitle = b?.title ? `🏛️ 법안: "${b.title}"` : '🏛️ 의회 법안'
+        targetBody = b?.body || ''
+        phase = 3; branch = 'legislative'
       } else if (c.targetType === 'trial') {
-        targetTitle = `⚖️ 사법 재판: ${c.targetId}`
-        phase = 3
+        targetTitle = '⚖️ 사법 재판'
+        phase = 3; branch = 'judicial'
       } else if (c.targetType === 'policy') {
-        const unit = branchData[c.targetId]
-        targetTitle = unit ? `🏢 행정 정책: "${unit.ministryName || '정책'}"` : `🏢 행정 정책`
-        phase = 3
+        const pol = policiesMap?.[c.targetId]
+        const pname = pol?.policyFields?.title || pol?.policyName
+        targetTitle = pname ? `🏢 행정 정책: "${pname}"` : '🏢 행정 정책'
+        targetBody = pol?.policyFields?.ordinance || pol?.ordinance || ''
+        phase = 3; branch = 'executive'
       } else if (c.targetType === 'reflection') {
         const r = reflectionsMap[c.targetId]
         targetTitle = r ? `📝 정리글: "${r.title || '친구의 글'}"` : '📝 친구의 정리글'
+        targetBody = r?.finalEssay || r?.body || ''
         phase = 4
       }
 
-      acts.push({
-        key: `comment_${cid}`,
-        phase,
-        type: 'comment',
-        icon: '💬',
-        shortTitle: '댓글 작성',
-        stepLabel: '동료 평가 및 댓글 작성',
-        title: `내가 작성한 댓글`,
-        targetTitle,
-        commentBody: c.body,
+      pushComment(sectionKey(phase, branch), {
+        targetTitle, targetBody,
+        body: c.body,
         ratings: c.ratings || {},
         targetType: c.targetType,
-        content: `내가 남긴 동료 평가 의견:\n"${c.body}"`
+      })
+    })
+
+    Object.entries(commentBuckets).forEach(([sec, items]) => {
+      if (!items.length) return
+      acts.push({
+        key: `comments_group_${sec}`, phase: sectionPhase(sec), section: sec,
+        type: 'comments_group', comments: items,
+        icon: '💬', shortTitle: '댓글모음',
+        stepLabel: '동료 평가·댓글 모음',
+        title: `댓글 모음 (${items.length}건)`,
+        content: '',
       })
     })
 
@@ -457,7 +638,7 @@ export default function CanvaCardNewsStep() {
     })
 
     return processedActs
-  }, [essays, posters, candidates, supports, articles, branchData, links, polls, pollReasons, electionVotes, billVotes, juryVotes, debateSessions, commentsMap, reflectionsMap, myStudentId, myGroupId, groups])
+  }, [essays, posters, petitions, candidates, supports, articles, branchData, branchDrafts, billsMap, policiesMap, verdicts, config, groupHistory, links, polls, pollReasons, electionVotes, billVotes, juryVotes, debateSessions, commentsMap, reflectionsMap, myStudentId, myGroupId, groups, groupOkAt])
 
   // 별점 준 활동 전체 — 별점 높은 순으로 정렬(개수 제한 없음, 스크롤로 표시)
   const topActivities = useMemo(() => {
@@ -507,12 +688,23 @@ export default function CanvaCardNewsStep() {
         <div className="space-y-4">
           {topActivities.length > 0 && (
             <div className="bg-yellow-50/70 border border-yellow-200 rounded-2xl p-4 space-y-3">
-              <div className="border-b border-yellow-250 pb-2">
-                <h3 className="font-black text-yellow-800 text-sm">⭐ 내가 높이 평가한 활동들 <span className="text-[10px] font-bold text-yellow-600">({topActivities.length}개 · 별점순)</span></h3>
-                <p className="text-[10px] text-gray-500 mt-0.5">별점 높은 순으로 모두 표시됩니다. 제목을 누르면 내용이 펼쳐져요. 스크롤하며 참고하세요!</p>
+              <div className="border-b border-yellow-250 pb-2 space-y-1.5">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <h3 className="font-black text-yellow-800 text-sm">⭐ 내가 높이 평가한 활동들 <span className="text-[10px] font-bold text-yellow-600">({topActivities.length}개 · 별점순)</span></h3>
+                  <a
+                    href={`${window.location.origin}${window.location.pathname}#/journey`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-800 text-[10px] font-bold hover:bg-amber-200 transition shrink-0"
+                  >
+                    📅 발자취 보기 ↗
+                  </a>
+                </div>
+                <p className="text-[10px] text-gray-500">별점 높은 순으로 모두 표시됩니다. 제목을 누르면 내용이 펼쳐져요. 스크롤하며 참고하세요!</p>
               </div>
 
-              <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+              <style>{`.canva-act-scroll::-webkit-scrollbar{width:6px}.canva-act-scroll::-webkit-scrollbar-track{background:#fefce8;border-radius:9px}.canva-act-scroll::-webkit-scrollbar-thumb{background:#fcd34d;border-radius:9px}`}</style>
+              <div className="canva-act-scroll space-y-2 max-h-[360px] overflow-y-scroll pr-1" style={{scrollbarWidth:'thin',scrollbarColor:'#fcd34d #fefce8'}}>
                 {topActivities.map((act) => {
                   const isExpanded = expandedKey === act.key
                   return (
@@ -912,13 +1104,29 @@ export default function CanvaCardNewsStep() {
         <div className="space-y-3">
           {/* 캔바 바로가기 + 제작 가이드 */}
           <div className="bg-white border border-violet-100 rounded-2xl p-4 space-y-3 shadow-sm">
-            <h3 className="font-black text-violet-850 text-sm">📋 카드뉴스 제작 가이드</h3>
-            <ul className="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
-              <li>Canva 프레젠테이션(16:9) 또는 인스타그램 정사각형 템플릿 추천</li>
-              <li>슬라이드 1: 제목 (나의 여정 이야기)</li>
-              <li>슬라이드 2~4: 1·2·3여정 각 하이라이트 한 장씩</li>
-              <li>슬라이드 마지막: 나의 다짐 한 줄</li>
-            </ul>
+            <h3 className="font-black text-violet-800 text-sm">📋 카드뉴스 제작 가이드</h3>
+            <ol className="text-xs text-gray-700 space-y-2 list-none pl-0">
+              <li className="flex gap-2">
+                <span className="shrink-0 w-5 h-5 rounded-full bg-violet-100 text-violet-700 font-black text-[10px] flex items-center justify-center">1</span>
+                <span>캔바 열기 → <strong>만들기</strong> → 검색창에 <strong>"카드뉴스"</strong> 입력 후 원하는 형식 선택</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="shrink-0 w-5 h-5 rounded-full bg-violet-100 text-violet-700 font-black text-[10px] flex items-center justify-center">2</span>
+                <span>마음에 드는 <strong>템플릿</strong> 고르기</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="shrink-0 w-5 h-5 rounded-full bg-violet-100 text-violet-700 font-black text-[10px] flex items-center justify-center">3</span>
+                <span><strong>표지</strong> 만들기 — 제목(나의 여정 이야기 등)과 작성자 이름</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="shrink-0 w-5 h-5 rounded-full bg-violet-100 text-violet-700 font-black text-[10px] flex items-center justify-center">4</span>
+                <span><strong>슬라이드 2~4</strong>: 1·2·3여정 각 하이라이트 한 장씩 — 왼쪽 별점 높은 활동 결과물 소개와 활동 설명</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="shrink-0 w-5 h-5 rounded-full bg-violet-100 text-violet-700 font-black text-[10px] flex items-center justify-center">5</span>
+                <span><strong>마지막 슬라이드</strong>: 나의 다짐이나 소감 정리</span>
+              </li>
+            </ol>
             <a
               href="https://www.canva.com"
               target="_blank"

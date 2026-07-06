@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { CandidateSupportStatementList } from './CandidateSupportStatements'
 import StanceComments from './StanceComments'
 import { formatCanvaEmbedUrl } from '../../lib/canva-embed'
+import { resolveImageUrl } from '../../lib/legacy-image'
 
 /**
  * 클릭-to-play 동영상 임베드
@@ -120,7 +121,7 @@ function CandidateCard({
               </div>
             ) : (
               <img
-                src={candidate.posterUrl}
+                src={resolveImageUrl(candidate.posterUrl)}
                 alt="선거 포스터"
                 className="w-full rounded-2xl border border-gray-100 shadow-sm"
               />

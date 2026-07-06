@@ -3,6 +3,7 @@ import useGameStore from '../../store/gameStore'
 import { subscribe } from '../../lib/rtdb-helpers'
 import SubmissionDetailModal from './SubmissionDetailModal'
 import SubmissionTimeline from './SubmissionTimeline'
+import { resolveImageUrl } from '../../lib/legacy-image'
 
 const TABS = [
   { id: 'timeline', label: '🕒 시간별 모아보기', path: null },
@@ -189,9 +190,9 @@ function SubmissionItem({ type, data, groups, students, onExpandImage }) {
           <div className="flex gap-4">
              <div 
                className="w-24 h-32 shrink-0 bg-slate-100 rounded-lg overflow-hidden border cursor-zoom-in hover:opacity-80 transition-opacity"
-               onClick={() => data.posterUrl && onExpandImage?.({ title: `${data.name} 캠페인 포스터`, url: data.posterUrl })}
+               onClick={() => data.posterUrl && onExpandImage?.({ title: `${data.name} 캠페인 포스터`, url: resolveImageUrl(data.posterUrl) })}
              >
-                <img src={data.posterUrl} alt="포스터" className="w-full h-full object-cover" />
+                <img src={resolveImageUrl(data.posterUrl)} alt="포스터" className="w-full h-full object-cover" />
              </div>
              <div className="flex flex-col justify-between py-1">
                 <div>

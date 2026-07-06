@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import CandidateCard from './CandidateCard'
+import { resolveImageUrl } from '../../lib/legacy-image'
 
 /**
  * 7단계 투표용 — 컴팩트 후보 카드 + 자세히 보기 모달.
@@ -42,7 +43,7 @@ function CandidateBallotList({
           const isVoted = myVote === c.groupId
           const group = groups?.[c.groupId]
           const number = c.candidateNumber ?? c.leaderNumber
-          const posterThumb = c.posterUrl || null  // 캔바 임베드는 썸네일 없으니 이미지만
+          const posterThumb = resolveImageUrl(c.posterUrl) || null  // 캔바 임베드는 썸네일 없으니 이미지만
           return (
             <div
               key={c.groupId}

@@ -3,7 +3,6 @@ import useGameStore from '../../store/gameStore'
 import { pushUnder, subscribe, updateAt } from '../../lib/rtdb-helpers'
 import BillCard from './BillCard'
 import LegislativeProgressGuide from './LegislativeProgressGuide'
-import AlliancePanel from './AlliancePanel'
 import { useWorkflow } from '../../lib/use-workflow'
 import RoleWorkspace from '../scaffolding/RoleWorkspace'
 import RoleAssigner from '../scaffolding/RoleAssigner'
@@ -64,7 +63,7 @@ function computeBillScore(commentsMap, billId) {
 
 /**
  * @param {{previewMode?: boolean}} props
- *   previewMode: true 면 학생 전용 영역(역할 작업 공간 / 모둠 활동 / 야당연합 등) 숨기고
+ *   previewMode: true 면 학생 전용 영역(역할 작업 공간 / 모둠 활동 등) 숨기고
  *   법안 데이터 영역만 노출. 모든 입력·액션 비활성. 교사 대시보드 미리보기용.
  */
 function LegislativeTab({ previewMode = false }) {
@@ -380,9 +379,6 @@ function LegislativeTab({ previewMode = false }) {
       })()}
       </div>
       )}
-
-      {/* 야당 연합 패널 (당분간 보류로 인한 숨김 처리) */}
-      {/* {!previewMode && <AlliancePanel />} */}
 
       {/* === ③ 토의 및 평가 — legislative-discuss 단계에만 노출 === */}
       {discussMode !== 'hidden' && (() => {

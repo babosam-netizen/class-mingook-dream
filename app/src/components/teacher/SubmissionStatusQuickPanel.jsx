@@ -4,6 +4,7 @@ import { subscribe } from '../../lib/rtdb-helpers'
 import { useWorkflow } from '../../lib/use-workflow'
 import SubmissionDetailModal from './SubmissionDetailModal'
 import { formatBudgetAmount } from '../phase3/executiveBudgetData'
+import { resolveImageUrl } from '../../lib/legacy-image'
 
 const STEP_CONFIGS = {
   media: {
@@ -717,51 +718,110 @@ function CandidateChecklist({ candidateData, journalistData, newspaperData }) {
 }
 
 // 기사 단계 — 유형(여정/토론후)별로 묶어 작성된 기사를 이름과 함께 보여준다.
+const PERSPECTIVE_KO = { critical: '비판', supportive: '옹호', neutral: '중립' }
+
+// 기사 상세 모달 (새 창처럼 전체 내용) — 같은 학생의 여러 기사를 넘겨볼 수 있음
+function ArticleDetailModal({ articles, author, onClose }) {
+  const [idx, setIdx] = useState(0)
+  if (!articles || articles.length === 0) return null
+  const i = Math.min(idx, articles.length - 1)
+  const article = articles[i]
+  const approved = article.status === 'approved'
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <div className="px-5 py-3 border-b flex items-start justify-between gap-2">
+          <div>
+            <h4 className="font-black text-slate-900 text-base leading-snug">{article.headline || '제목 없음'}</h4>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              {author} · {approved ? '✅ 게시' : '⏳ 승인 대기'}
+              {article.perspective ? ` · ${PERSPECTIVE_KO[article.perspective] || article.perspective}` : ''}
+              {article.contextType === 'debate' ? ' · 📢 토론후' : ''}
+            </p>
+            {article.debateSessionTopic && <p className="text-[11px] text-slate-400">🎙️ {article.debateSessionTopic}</p>}
+          </div>
+          <button onClick={onClose} className="shrink-0 w-8 h-8 rounded-full hover:bg-gray-100 text-gray-500 font-bold">✕</button>
+        </div>
+        <div className="px-5 py-4 overflow-y-auto">
+          <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{(article.body || '').trim() || '(본문 없음)'}</p>
+        </div>
+        {articles.length > 1 && (
+          <div className="px-5 py-3 border-t flex items-center justify-between gap-2">
+            <button onClick={() => setIdx((p) => Math.max(0, (p || i) - 1))} disabled={i === 0}
+              className="text-xs font-bold px-3 py-1.5 rounded-lg bg-sky-50 text-sky-700 disabled:opacity-40">← 이전</button>
+            <span className="text-[11px] font-bold text-slate-400">이 학생의 기사 {i + 1} / {articles.length}</span>
+            <button onClick={() => setIdx((p) => Math.min(articles.length - 1, (p || i) + 1))} disabled={i === articles.length - 1}
+              className="text-xs font-bold px-3 py-1.5 rounded-lg bg-sky-50 text-sky-700 disabled:opacity-40">다음 →</button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function ArticleGroupBlock({ group, articles, students }) {
-  const [openId, setOpenId] = useState(null)
+  const [detail, setDetail] = useState(null) // { articles, author }
+
+  // 번호순 학생 격자
+  const studentList = Object.entries(students || {})
+    .map(([id, s]) => ({ id, ...s }))
+    .sort((a, b) => (Number(a.number) || 0) - (Number(b.number) || 0))
+  const byStudent = {}
+  articles.forEach((a) => {
+    if (!a.authorStudentId) return
+    ;(byStudent[a.authorStudentId] = byStudent[a.authorStudentId] || []).push(a)
+  })
+  const submittedCount = studentList.filter((s) => (byStudent[s.id] || []).length > 0).length
+
+  const authorName = (st, a) => st ? `${st.number || ''}번 ${st.nickname || ''}`.trim() : (a?.authorNickname || '익명')
+
   return (
     <div className="rounded-xl border border-sky-100 bg-sky-50/40 p-3 space-y-2">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-black text-sky-900">
-          {group.label} <span className="text-xs font-bold text-sky-500">({articles.length})</span>
+          {group.label} <span className="text-xs font-bold text-sky-500">(제출 {submittedCount}/{studentList.length}명 · 기사 {articles.length}건)</span>
         </h3>
         {group.hint && <span className="text-[10px] text-slate-400 shrink-0">{group.hint}</span>}
       </div>
-      {articles.length === 0 ? (
-        <p className="text-xs text-slate-300 italic py-2 text-center">아직 작성된 기사가 없습니다. (빈칸)</p>
+
+      {studentList.length === 0 ? (
+        <p className="text-xs text-slate-300 italic py-2 text-center">학생 명단이 없습니다.</p>
       ) : (
-        <ul className="space-y-1.5">
-          {articles.map((a) => {
-            const st = students?.[a.authorStudentId]
-            const author = st ? `${st.number || ''}번 ${st.nickname || ''}`.trim() : (a.authorNickname || '익명')
-            const open = openId === a.id
-            const approved = a.status === 'approved'
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
+          {studentList.map((s) => {
+            const arts = byStudent[s.id] || []
+            const submitted = arts.length > 0
+            const a = arts[0]
+            const approved = a?.status === 'approved'
             return (
-              <li key={a.id}>
-                <button
-                  onClick={() => setOpenId(open ? null : a.id)}
-                  className="w-full text-left bg-white border border-sky-100 rounded-lg px-3 py-2 hover:bg-sky-50 transition"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-bold text-slate-800 truncate">{a.headline || '제목 없음'}</span>
-                    <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-bold ${approved ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                      {approved ? '게시' : '대기'}
-                    </span>
-                  </div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">
-                    {author}{a.debateSessionTopic ? ` · 🎙️ ${a.debateSessionTopic}` : ''}
-                  </div>
-                  {open && (
-                    <p className="text-xs text-slate-700 whitespace-pre-wrap mt-2 pt-2 border-t border-slate-100">
-                      {(a.body || '').trim() || '(빈칸)'}
-                    </p>
-                  )}
-                </button>
-              </li>
+              <button
+                key={s.id}
+                type="button"
+                disabled={!submitted}
+                onClick={() => submitted && setDetail({ articles: arts, author: authorName(s, a) })}
+                className={`text-left rounded-lg border px-2 py-1.5 transition ${
+                  submitted
+                    ? 'bg-white border-sky-200 hover:bg-sky-50 hover:border-sky-400 cursor-pointer'
+                    : 'bg-slate-50 border-dashed border-slate-200 opacity-70'
+                }`}
+                title={submitted ? a.headline : '미제출'}
+              >
+                <div className="flex items-center justify-between gap-1">
+                  <span className="text-[10px] font-black text-slate-500 shrink-0">{s.number != null ? `${s.number}번` : ''}</span>
+                  <span className={`shrink-0 w-2 h-2 rounded-full ${submitted ? (approved ? 'bg-emerald-500' : 'bg-amber-400') : 'bg-slate-300'}`} />
+                </div>
+                <div className="text-[11px] font-bold text-slate-700 truncate">{s.nickname || s.name || '학생'}</div>
+                <div className={`text-[10px] truncate ${submitted ? 'text-slate-500' : 'text-slate-300'}`}>
+                  {submitted ? (a.headline || '제목 없음') : '미제출'}
+                  {submitted && arts.length > 1 ? ` 외 ${arts.length - 1}` : ''}
+                </div>
+              </button>
             )
           })}
-        </ul>
+        </div>
       )}
+
+      {detail && <ArticleDetailModal articles={detail.articles} author={detail.author} onClose={() => setDetail(null)} />}
     </div>
   )
 }
@@ -777,11 +837,20 @@ export default function SubmissionStatusQuickPanel() {
   const [journalistNewspapersMap, setJournalistNewspapersMap] = useState({})
   const [selectedCandidateGroup, setSelectedCandidateGroup] = useState(null)
   const [activeStepDetail, setActiveStepDetail] = useState(null) // 정리글 5단계 세부 조회 모달 상태
+  const [debateSessionsMap, setDebateSessionsMap] = useState({})
 
   const stepId = wf.currentStep?.id
   const config = STEP_CONFIGS[stepId]
   const sourcesKey = (config?.sources || []).join('|')
   const isCandidateRegister = stepId === 'register'
+  const hasArticleGroups = !!config?.articleGroups
+
+  // 기사 유형별 단계: 토론 세션을 구독해 '토론도구에서 쓴 기사'의 소속 부를 추론
+  useEffect(() => {
+    if (!roomCode || !hasArticleGroups) return undefined
+    const u = subscribe(roomCode, 'debateSessions', (d) => setDebateSessionsMap(d || {}))
+    return () => u?.()
+  }, [roomCode, hasArticleGroups])
 
   useEffect(() => {
     if (!roomCode || !config) return undefined
@@ -840,7 +909,25 @@ export default function SubmissionStatusQuickPanel() {
 
   // 기사 단계: 여정/토론후 등 유형별로 묶어서 이름과 함께 표시
   if (config.articleGroups) {
-    const allArticles = asArray(data.articles).filter((a) => a.status !== 'deleted')
+    // 토론 세션 → 소속 부(府) 추론. 학생이 target을 'general'로 두고 토론도구에서 써도 분류되도록 보강.
+    const sessionBranch = (s) => {
+      if (!s) return null
+      const sid = String(s.sourceStepId || '')
+      if (s.type === 'trial' || s.relatedCaseId || sid.startsWith('judicial') || sid.startsWith('verdict')) return 'judicial'
+      if (s.relatedExecutiveMeeting || s.type === 'multi_party' || sid.startsWith('executive')) return 'executive'
+      if (s.relatedBillId || sid.startsWith('legislative')) return 'legislative'
+      return null
+    }
+    const allArticles = asArray(data.articles)
+      .filter((a) => a.status !== 'deleted')
+      .map((a) => {
+        // target이 비어있거나 일반인데 토론 세션이 붙어 있으면, 세션으로 부를 추론해 보강
+        if ((!a.target || a.target === 'general') && a.debateSessionId) {
+          const branch = sessionBranch(debateSessionsMap?.[a.debateSessionId])
+          if (branch) return { ...a, target: branch, contextType: a.contextType || 'debate' }
+        }
+        return a
+      })
     const totalShown = config.articleGroups.reduce((n, g) => n + allArticles.filter(g.filter).length, 0)
     return (
       <section className="bg-white rounded-2xl shadow-lg border-2 border-sky-100 p-4 space-y-3">
@@ -848,7 +935,7 @@ export default function SubmissionStatusQuickPanel() {
           <div>
             <p className="text-[11px] font-black text-sky-600 uppercase tracking-wide">제출 확인 빠른보기 · 기사 유형별</p>
             <h2 className="text-base font-black text-slate-900">{config.title}</h2>
-            <p className="text-xs text-slate-500 mt-0.5">기사 제목을 누르면 본문을 펼쳐 확인할 수 있습니다.</p>
+            <p className="text-xs text-slate-500 mt-0.5">번호순으로 제출 여부·제목을 한눈에. 칸을 누르면 본문이 새 창으로 열립니다. (🟢 게시 · 🟡 대기 · ⚪ 미제출)</p>
           </div>
           <div className="text-right">
             <div className="text-2xl font-black text-sky-700 tabular-nums">{totalShown}</div>
@@ -1076,7 +1163,7 @@ function SubmissionDetail({ item, groups, students }) {
 
       {item.type === 'poster' && (
         <div className="space-y-2">
-          {item.imageUrl && <img src={item.imageUrl} alt="포스터" className="w-full max-h-[52vh] object-contain rounded-xl border bg-slate-50" />}
+          {item.imageUrl && <img src={resolveImageUrl(item.imageUrl)} alt="포스터" className="w-full max-h-[52vh] object-contain rounded-xl border bg-slate-50" />}
           {item.canvaUrl && <a href={item.canvaUrl} target="_blank" rel="noreferrer" className="text-blue-600 underline break-all">Canva 포스터 열기</a>}
           {item.caption && <p className="whitespace-pre-wrap">{item.caption}</p>}
         </div>

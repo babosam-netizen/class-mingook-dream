@@ -4,7 +4,6 @@ import RoomBar from '../components/shared/RoomBar'
 import ClassroomConfigEditor from '../components/teacher/ClassroomConfigEditor'
 import BranchConfigEditor from '../components/teacher/BranchConfigEditor'
 import LinkApprovalQueue from '../components/teacher/LinkApprovalQueue'
-import Phase3Controls from '../components/teacher/Phase3Controls'
 import PhaseWorkflow from '../components/teacher/PhaseWorkflow'
 
 import StudentActivityMonitor from '../components/teacher/StudentActivityMonitor'
@@ -16,6 +15,7 @@ import Phase3JudicialQuickPanel from '../components/teacher/Phase3JudicialQuickP
 import Phase2ElectionQuickPanel from '../components/teacher/Phase2ElectionQuickPanel'
 import Phase2RoleControlPanel from '../components/teacher/Phase2RoleControlPanel'
 import SubmissionStatusQuickPanel from '../components/teacher/SubmissionStatusQuickPanel'
+import Phase4QuickPanel from '../components/teacher/Phase4QuickPanel'
 import ExpertCallNotifier from '../components/scaffolding/ExpertCallNotifier'
 import PetitionAdmin from '../components/petition/PetitionAdmin'
 import TeacherDebateControl from '../components/debate/TeacherDebateControl'
@@ -369,12 +369,6 @@ function TeacherDashboard() {
                   }`}
                 >
                   <PhaseWorkflow phase={p} embedded />
-
-                  {isCurrent && p === 3 && (
-                    <div className="mt-4 pt-4 border-t">
-                      <Phase3Controls />
-                    </div>
-                  )}
                 </section>
               </div>
             )
@@ -412,6 +406,7 @@ function TeacherDashboard() {
         {currentPhase === 3 && (wf.currentStep?.highlight === 'judicial' || wf.currentStep?.id?.startsWith('judicial-')) && (
           <Phase3JudicialQuickPanel onOpenDebateTool={() => setDebateModal(true)} />
         )}
+        {currentPhase === 4 && <Phase4QuickPanel />}
         <SubmissionStatusQuickPanel />
 
         </div> {/* /메인 컬럼 */}

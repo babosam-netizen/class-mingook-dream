@@ -1,4 +1,5 @@
 import { formatCanvaEmbedUrl } from '../../lib/canva-embed'
+import { resolveImageUrl } from '../../lib/legacy-image'
 
 function PosterMedia({
   poster,
@@ -25,7 +26,7 @@ function PosterMedia({
   if (poster.imageUrl) {
     return (
       <img
-        src={poster.imageUrl}
+        src={resolveImageUrl(poster.imageUrl)}
         alt={poster.caption || title}
         className={imageClassName}
         loading="lazy"

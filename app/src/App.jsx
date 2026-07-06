@@ -23,6 +23,7 @@ import DebateToolPanel from './components/debate/DebateToolPanel'
 import ConnectionStatusOverlay from './components/shared/ConnectionStatusOverlay'
 import LegislativeBoardModal from './components/phase3/LegislativeBoardModal'
 import TVBoardPage from './pages/TVBoardPage'
+import JourneyViewPage from './pages/JourneyViewPage'
 import TVExecutiveBoardPage from './pages/TVExecutiveBoardPage'
 import './App.css'
 
@@ -137,6 +138,7 @@ function App() {
             </PhaseGate>
           }
         />
+        <Route path="/journey" element={<JourneyViewPage />} />
         <Route path="/teacher" element={<TeacherDashboard />} />
         <Route path="/analytics" element={<StudentAnalyticsPage />} />
         <Route path="/gallery" element={<PosterGalleryPage />} />

@@ -16,7 +16,7 @@ const STATUS_BADGE = {
  * - 학생: 에디터(좌) + 우리 모둠이 제출한 기사 목록(우)
  * - 교사: 기사 승인 큐 인라인
  */
-function ArticleSection() {
+function ArticleSection({ debateSession } = {}) {
   const role = useGameStore((s) => s.role)
   const roomCode = useGameStore((s) => s.roomCode)
   const myStudentId = useGameStore((s) => s.myStudentId)
@@ -65,11 +65,15 @@ function ArticleSection() {
   return (
     <div className="grid lg:grid-cols-2 gap-4">
 
-      <ArticleEditor 
+      <ArticleEditor
         editingArticleId={editingArticleId}
         articleData={myGroupArticles.find(a => a.id === editingArticleId)}
         onSuccess={() => setEditingArticleId(null)}
         onCancel={() => setEditingArticleId(null)}
+        {...(debateSession && !editingArticleId ? {
+          presetContextType: 'debate',
+          presetDebateSessionId: debateSession.id,
+        } : {})}
       />
 
       <div className="bg-white p-4 rounded-2xl border-2 border-blue-100 shadow-sm space-y-2 h-fit">

@@ -4,6 +4,7 @@ import { onValue, ref } from 'firebase/database'
 import { database } from '../lib/firebase'
 import DebateTimer from '../components/debate/tools/DebateTimer'
 import { formatCanvaEmbedUrl } from '../lib/canva-embed'
+import { resolveImageUrl } from '../lib/legacy-image'
 
 /**
  * TV 송출용 토론 타이머 전용 페이지.
@@ -128,7 +129,7 @@ function DebateTimerTVPage() {
                     />
                   ) : (
                     <img
-                      src={presentation.imageUrl}
+                      src={resolveImageUrl(presentation.imageUrl)}
                       alt={presentation.title || '증거 사진'}
                       className="w-full h-full object-contain"
                     />

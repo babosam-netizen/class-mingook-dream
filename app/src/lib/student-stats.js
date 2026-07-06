@@ -19,7 +19,6 @@ export function computeStudentStats({
   articles = {},
   reflections = {},
   links = {},
-  alliances = {},
   polls = {},
   pollReasons = {},
   coreIssueVotes = {},
@@ -63,8 +62,6 @@ export function computeStudentStats({
       reflection: null, // { status, isPrivate, color, ... }
 
       links: { submitted: 0, approved: 0, pending: 0, rejected: 0 },
-
-      alliances: { proposed: 0, accepted: 0 },
 
       empathyGiven: 0,
 
@@ -358,33 +355,6 @@ export function computeStudentStats({
           type: 'debate_final_eval',
           label: `평가단 최종 종합 평가 (${s.title || '토론'})`,
           body: typeof myEval === 'string' ? myEval : myEval.content || myEval.comment || '',
-        })
-      }
-    }
-  }
-
-  // 12. 야당 연합 (모둠 단위 기록)
-  for (const a of Object.values(alliances?.active || {})) {
-    if (!a?.groupA || !a?.groupB) continue
-    const aMembers = Object.keys(groups[a.groupA]?.members || {})
-    const bMembers = Object.keys(groups[a.groupB]?.members || {})
-    for (const sid of aMembers) {
-      if (out[sid]) {
-        out[sid].alliances.proposed += 1
-        out[sid].timeline.push({
-          at: a.formedAt || 0,
-          type: 'alliance',
-          label: `야당 연합 결성 (with ${groups[a.groupB]?.name})`,
-        })
-      }
-    }
-    for (const sid of bMembers) {
-      if (out[sid]) {
-        out[sid].alliances.accepted += 1
-        out[sid].timeline.push({
-          at: a.formedAt || 0,
-          type: 'alliance',
-          label: `야당 연합 수락 (with ${groups[a.groupA]?.name})`,
         })
       }
     }

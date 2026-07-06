@@ -4,6 +4,7 @@ import RoomBar from '../components/shared/RoomBar'
 import useGameStore from '../store/gameStore'
 import { subscribe } from '../lib/rtdb-helpers'
 import { computeStudentStats, statsToCSV } from '../lib/student-stats'
+import { resolveImageUrl } from '../lib/legacy-image'
 import { topicBg } from '../styles/tokens'
 import PosterMedia from '../components/phase1/PosterMedia'
 
@@ -18,7 +19,6 @@ const TIMELINE_TYPE_EMOJI = {
   article: '📰',
   reflection: '📝',
   link: '🔗',
-  alliance: '🤝',
   poll: '📊',
   debate_poll: '📊',
   debate_prep: '📇',
@@ -422,7 +422,6 @@ function StudentAnalyticsPage() {
   const [articles, setArticles] = useState({})
   const [reflections, setReflections] = useState({})
   const [links, setLinks] = useState({})
-  const [alliances, setAlliances] = useState({})
   const [polls, setPolls] = useState({})
   const [pollReasons, setPollReasons] = useState({})
   const [coreIssueVotes, setCoreIssueVotes] = useState({})
@@ -446,7 +445,6 @@ function StudentAnalyticsPage() {
       subscribe(roomCode, 'articles', (d) => setArticles(d || {})),
       subscribe(roomCode, 'reflections', (d) => setReflections(d || {})),
       subscribe(roomCode, 'links', (d) => setLinks(d || {})),
-      subscribe(roomCode, 'alliances', (d) => setAlliances(d || {})),
       subscribe(roomCode, 'polls', (d) => setPolls(d || {})),
       subscribe(roomCode, 'polls/reasons', (d) => setPollReasons(d || {})),
       subscribe(roomCode, 'polls/coreIssue/votes', (d) => setCoreIssueVotes(d || {})),
@@ -459,11 +457,11 @@ function StudentAnalyticsPage() {
     () =>
       computeStudentStats({
         students, groups, posters, comments, candidates, electionVotes,
-        bills, billVotes, juryVotes, verdicts, articles, reflections, links, alliances,
+        bills, billVotes, juryVotes, verdicts, articles, reflections, links,
         polls, pollReasons, coreIssueVotes, debateSessions,
       }),
     [students, groups, posters, comments, candidates, electionVotes,
-     bills, billVotes, juryVotes, verdicts, articles, reflections, links, alliances,
+     bills, billVotes, juryVotes, verdicts, articles, reflections, links,
      polls, pollReasons, coreIssueVotes, debateSessions],
   )
 
@@ -806,7 +804,7 @@ function StudentAnalyticsPage() {
                             {t.type === 'poster' && (t.imageUrl || t.canvaUrl || t.posterCanvaUrl) && (
                               <div className="group/img relative w-48 h-32 rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
                                 <PosterMedia poster={t} className="w-full h-full" imageClassName="w-full h-full object-cover transition-transform group-hover/img:scale-110" />
-                                {t.imageUrl && <a href={t.imageUrl} target="_blank" rel="noreferrer" className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity text-white text-[10px] font-bold">원본보기</a>}
+                                {t.imageUrl && <a href={resolveImageUrl(t.imageUrl)} target="_blank" rel="noreferrer" className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity text-white text-[10px] font-bold">원본보기</a>}
                               </div>
                             )}
 

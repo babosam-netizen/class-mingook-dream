@@ -165,6 +165,7 @@ function ElectionRoleEditor({ value, onChange }) {
 function ClassroomConfigEditor({ value, onChange, students = {}, groups = {} }) {
   const v = value
   const roomCode = useGameStore((s) => s.roomCode)
+  const currentPhase = useGameStore((s) => s.currentPhase)
   const topicEntries = useMemo(() => Object.entries(v.topics || {}), [v.topics])
   const classSize = Math.max(1, Math.min(40, Number(v.classSize) || 24))
 
@@ -187,13 +188,72 @@ function ClassroomConfigEditor({ value, onChange, students = {}, groups = {} }) 
   const [isDirty, setIsDirty] = useState(false)
   const [viewingSid, setViewingSid] = useState(null)
   const [assigningNumber, setAssigningNumber] = useState(null)
+  // 과거 모둠 편성 1회 기록(발자취 보정) — 모둠 컨테이너별로 '이전 번호'를 직접 입력
+  const [pastByGroup, setPastByGroup] = useState({})   // { gid: "11,18,24" }
+  const [pastSeedMsg, setPastSeedMsg] = useState('')
+  // 변경 경계(이 단계 '부터' 현재 모둠). 그 이전 단계 활동은 이전 모둠으로 본다.
+  // 단계 랭크: 1여정=10, 2여정=20, 3여정 입법=31·행정=32·사법=33, 4여정=40
+  const [pastCutoff, setPastCutoff] = useState(33)     // 기본: 사법부부터 현재 모둠
+  const CUTOFF_OPTIONS = [
+    { rank: 20, label: '2여정(선거)부터 현재 모둠' },
+    { rank: 31, label: '3여정 입법부부터 현재 모둠' },
+    { rank: 32, label: '3여정 행정부부터 현재 모둠' },
+    { rank: 33, label: '3여정 사법부부터 현재 모둠' },
+    { rank: 40, label: '4여정(시사회)부터 현재 모둠' },
+  ]
+
+  // 각 모둠 칸에 적은 '이전 번호'를 그 모둠으로 연결해 groupHistory를 1회 기록(기존 데이터 불변).
+  const seedPastFormation = async () => {
+    if (!roomCode) { setPastSeedMsg('방 정보가 없습니다.'); return }
+    const numToSid = {}
+    Object.entries(students || {}).forEach(([sid, s]) => { if (s?.number != null) numToSid[String(s.number)] = sid })
+    const updates = {}
+    let count = 0
+    const missNums = []   // 그 번호의 학생을 못 찾음
+    Object.entries(pastByGroup).forEach(([gid, text]) => {
+      const nums = (String(text || '').match(/\d+/g) || [])
+      nums.forEach((n) => {
+        const sid = numToSid[String(n)]
+        if (!sid) { missNums.push(n); return }
+        const cur = students[sid]?.groupId
+        if (cur && cur !== gid) {
+          updates[`rooms/${roomCode}/groupHistory/${sid}/seed_${gid}`] = { from: gid, to: cur, at: Date.now(), cutoff: Number(pastCutoff), seeded: true }
+          count++
+        }
+      })
+    })
+    const missLine = missNums.length ? ` · ⚠️ 번호 못 찾음: ${[...new Set(missNums)].join(', ')}` : ''
+    if (!Object.keys(updates).length) {
+      setPastSeedMsg(`기록할 모둠 변경이 없습니다(이미 같은 모둠이거나 입력 없음).${missLine}`)
+      return
+    }
+    try {
+      await update(ref(database), updates)
+      setPastSeedMsg(`✅ ${count}명 이전 모둠 기록 완료.${missLine}`)
+    } catch (err) {
+      setPastSeedMsg(`기록 실패: ${err.message}`)
+    }
+  }
   
   // 제출물 데이터 구독 (상세 보기용)
   const [articles, setArticles] = useState({})
   const [posters, setPosters] = useState({})
   const [reflections, setReflections] = useState({})
   const [links, setLinks] = useState({})
-  
+  const [candidatesMap, setCandidatesMap] = useState({})   // 후보 등록(등록 당시 모둠 단서)
+  const [billsMap, setBillsMap] = useState({})             // 법안(제안 모둠 단서)
+  const [policiesMap, setPoliciesMap] = useState({})       // 정책(제안 모둠 단서)
+
+  useEffect(() => {
+    if (!roomCode) return
+    const subs = [
+      subscribe(roomCode, 'candidates', (d) => setCandidatesMap(d || {})),
+      subscribe(roomCode, 'bills', (d) => setBillsMap(d || {})),
+      subscribe(roomCode, 'policies', (d) => setPoliciesMap(d || {})),
+    ]
+    return () => subs.forEach((u) => u?.())
+  }, [roomCode])
+
   useEffect(() => {
     if (!roomCode || !viewingSid) return
     const subs = [
@@ -407,6 +467,16 @@ function ClassroomConfigEditor({ value, onChange, students = {}, groups = {} }) 
           // 메인 그룹 변경 시 멤버십 관리 (단순화: 여기서는 primary만 관리하거나 전체 관리)
           // 전체 관리를 위해 모든 그룹의 멤버십을 업데이트하는 것이 안전함
           updates[`rooms/${roomCode}/students/${sid}/groupId`] = primaryGid
+          // ── 모둠 변경 이력 기록 (4단계 발자취가 '그때 모둠'을 정확히 판정하도록) ──
+          const at = Date.now()
+          // 라이브 변경: 현재 여정 시작을 컷오프로(1→10,2→20,3→31,4→40). 그 이전 단계는 이전 모둠.
+          const phaseCutoff = { 1: 10, 2: 20, 3: 31, 4: 40 }[Number(currentPhase) || 1] || 10
+          updates[`rooms/${roomCode}/groupHistory/${sid}/h_${at}`] = {
+            from: oldGid || null,
+            to: primaryGid || null,
+            at,
+            cutoff: phaseCutoff,
+          }
         }
 
         // 전체 멤버십 동기화 (모든 그룹 순회)
@@ -658,6 +728,120 @@ function ClassroomConfigEditor({ value, onChange, students = {}, groups = {} }) 
               </button>
             </div>
           </div>
+
+          {/* 과거 모둠 편성 1회 기록 (발자취 보정) — 모둠 컨테이너별 직접 입력 */}
+          <details className="mb-3 rounded-2xl border-2 border-dashed border-violet-200 bg-violet-50/40 p-3">
+            <summary className="cursor-pointer text-xs font-black text-violet-800">🕓 이전 모둠 편성 기록(과거 보정) — 모둠이 중간에 바뀐 반만</summary>
+            <p className="text-[11px] text-violet-700 mt-2 leading-relaxed">
+              아래는 <b>현재 모둠 목록</b>입니다(컨테이너는 그대로 유지됨). 각 모둠 칸에 <b>그 모둠이 '이전에' 가지고 있던 학생 번호</b>를 적고 [이전 편성 기록]을 누르세요.
+              그러면 4단계 발자취가 그때 모둠 활동까지 정확히 모읍니다. <b>기존 활동 데이터는 바뀌지 않습니다.</b>
+            </p>
+
+            {/* 후보 등록 기록 — 등록 당시(2여정) 모둠 ↔ 후보 학생. 이전 편성 입력에 참고. */}
+            {Object.keys(candidatesMap).length > 0 && (
+              <div className="mt-2 rounded-xl border border-emerald-200 bg-emerald-50/60 p-2.5">
+                <p className="text-[11px] font-black text-emerald-800 mb-1">🗳️ 후보 등록 기록(2여정 당시 모둠) — 참고용</p>
+                <ul className="text-[11px] text-emerald-900 space-y-0.5">
+                  {Object.entries(candidatesMap).map(([gid, c]) => {
+                    const gName = groups?.[gid]?.name || v.topics?.[gid]?.name || gid
+                    return (
+                      <li key={gid} className="flex items-center gap-1.5">
+                        <span className="font-bold">{gName}</span>
+                        <span className="text-emerald-400 font-mono text-[9px]">({gid})</span>
+                        <span>→</span>
+                        <span className="font-black">{c?.leaderNumber != null ? `${c.leaderNumber}번 ` : ''}{c?.leaderNickname || c?.candidateName || '후보'}</span>
+                      </li>
+                    )
+                  })}
+                </ul>
+                <p className="text-[10px] text-emerald-600 mt-1">※ 이 학생이 지금 다른 모둠이면, 위 모둠 칸에 그 번호를 넣어 '이전 모둠'으로 기록하세요.</p>
+              </div>
+            )}
+
+            {/* 법안/정책 등록 기록 — 제안 모둠(gid) 단서 */}
+            {(Object.keys(billsMap).length > 0 || Object.keys(policiesMap).length > 0) && (
+              <div className="mt-2 rounded-xl border border-sky-200 bg-sky-50/60 p-2.5">
+                <p className="text-[11px] font-black text-sky-800 mb-1">📜 법안·정책 등록 기록(제안 모둠) — 참고용</p>
+                <ul className="text-[11px] text-sky-900 space-y-0.5">
+                  {Object.entries(billsMap).map(([bid, b]) => {
+                    const gid = b?.proposerGroupId
+                    const gName = groups?.[gid]?.name || v.topics?.[gid]?.name || gid || '미상'
+                    return (
+                      <li key={`b_${bid}`} className="flex items-center gap-1.5">
+                        <span>🏛️</span>
+                        <span className="font-black truncate max-w-[180px]">{b?.title || '법안'}</span>
+                        <span>→</span>
+                        <span className="font-bold">{gName}</span>
+                        <span className="text-sky-400 font-mono text-[9px]">({gid || '?'})</span>
+                      </li>
+                    )
+                  })}
+                  {Object.entries(policiesMap).map(([pid, p]) => {
+                    const gid = p?.proposerGroupId || pid
+                    const gName = groups?.[gid]?.name || v.topics?.[gid]?.name || gid || '미상'
+                    return (
+                      <li key={`p_${pid}`} className="flex items-center gap-1.5">
+                        <span>🏢</span>
+                        <span className="font-black truncate max-w-[180px]">{p?.policyFields?.title || p?.policyName || '정책'}</span>
+                        <span>→</span>
+                        <span className="font-bold">{gName}</span>
+                        <span className="text-sky-400 font-mono text-[9px]">({gid || '?'})</span>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            )}
+            <div className="grid sm:grid-cols-2 gap-2 mt-2">
+              {(() => {
+                // 현재 토픽 + 실제 그룹 노드(옛/이름 바뀐 모둠 포함) 합집합, gid 중복 제거
+                const seen = new Set()
+                const list = []
+                topicEntries.forEach(([gid, t]) => { if (!seen.has(gid)) { seen.add(gid); list.push({ gid, name: t?.name || gid, emoji: t?.emoji || '', extra: false }) } })
+                Object.entries(groups || {}).forEach(([gid, g]) => { if (!seen.has(gid)) { seen.add(gid); list.push({ gid, name: g?.name || gid, emoji: g?.emoji || '', extra: true }) } })
+                return list.map((c, i) => (
+                  <label key={c.gid} className={`flex items-center gap-2 rounded-xl border px-2.5 py-1.5 ${c.extra ? 'bg-amber-50 border-amber-200' : 'bg-white border-violet-150'}`}>
+                    <span className="shrink-0 w-40 truncate leading-tight">
+                      <span className="text-xs font-black text-slate-700 block">
+                        {c.extra ? '구' : `${i + 1}`}모둠 ({c.emoji}{c.name})
+                      </span>
+                      <span className="text-[9px] font-mono text-gray-400 block">gid: {c.gid}</span>
+                    </span>
+                    <input
+                      type="text"
+                      value={pastByGroup[c.gid] || ''}
+                      onChange={(e) => setPastByGroup((prev) => ({ ...prev, [c.gid]: e.target.value }))}
+                      placeholder="예: 11,18,24,23"
+                      className="flex-1 min-w-0 px-2 py-1 text-xs rounded-lg border border-gray-200 font-mono bg-white"
+                    />
+                  </label>
+                ))
+              })()}
+            </div>
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              <label className="text-[11px] font-black text-violet-800">변경 경계:</label>
+              <select
+                value={pastCutoff}
+                onChange={(e) => setPastCutoff(Number(e.target.value))}
+                className="text-[11px] px-2 py-1 rounded-lg border border-violet-200 bg-white font-bold"
+              >
+                {CUTOFF_OPTIONS.map((o) => (
+                  <option key={o.rank} value={o.rank}>{o.label}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={seedPastFormation}
+                className="px-4 py-1.5 rounded-xl bg-violet-600 text-white font-black text-xs hover:bg-violet-700 transition"
+              >
+                이전 편성 기록
+              </button>
+              {pastSeedMsg && <span className="text-[11px] font-bold text-violet-800 w-full">{pastSeedMsg}</span>}
+            </div>
+            <p className="text-[10px] text-violet-600 mt-1">
+              💡 "변경 경계"는 <b>이 단계부터 현재 모둠</b>이라는 뜻 — 그 이전 단계 활동은 이전 모둠 것으로 정리됩니다. (예: 사법부부터 바뀌었으면 입법·행정은 이전 모둠)
+            </p>
+          </details>
 
           <div className="flex flex-wrap gap-2.5">
             {Array.from({ length: classSize }, (_, i) => i + 1).map((num) => {

@@ -1432,7 +1432,7 @@ const lastSessionIdRef = useRef(null)
                     </p>
                     {/* 기사 작성 참고용 — 내가 쓴 최종 평가 */}
                     <MyFinalEvalRecap session={session} />
-                    <ArticleSection />
+                    <ArticleSection debateSession={session} />
                   </div>
 
                   {/* 빈 상태 */}

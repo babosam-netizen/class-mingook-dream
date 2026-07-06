@@ -20,7 +20,7 @@ const PHASE_PATH = {
 }
 
 // 학생이 자유롭게 머물 수 있는 예외 경로 (여론판, 갤러리 등)
-const ALLOWED_FOR_STUDENT = ['/super-admin', '/share', '/news', '/gallery']
+const ALLOWED_FOR_STUDENT = ['/super-admin', '/share', '/news', '/gallery', '/journey']
 
 const normalizePath = (pathname) => {
   if (!pathname) return '/'

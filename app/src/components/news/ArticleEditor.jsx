@@ -34,7 +34,7 @@ const CONTEXT_OPTIONS = [
  * 기사 작성 에디터 — 헤드라인 + 본문 + 관점 + 대상.
  * 작성하면 status: pending → 교사 승인 후 NewsBoard에 게시.
  */
-function ArticleEditor({ editingArticleId, articleData, onSuccess, onCancel }) {
+function ArticleEditor({ editingArticleId, articleData, onSuccess, onCancel, presetContextType, presetDebateSessionId, presetTarget }) {
   const roomCode = useGameStore((s) => s.roomCode)
   const myStudentId = useGameStore((s) => s.myStudentId)
   const myNumber = useGameStore((s) => s.myNumber)
@@ -55,9 +55,9 @@ function ArticleEditor({ editingArticleId, articleData, onSuccess, onCancel }) {
   const [body, setBody] = useState('')
   const [perspective, setPerspective] = useState('neutral')
   const [articleNature, setArticleNature] = useState('news')
-  const [target, setTarget] = useState('general')
-  const [contextType, setContextType]       = useState('activity')
-  const [debateSessionId, setDebateSessionId] = useState('')
+  const [target, setTarget] = useState(presetTarget || 'general')
+  const [contextType, setContextType]       = useState(presetContextType || 'activity')
+  const [debateSessionId, setDebateSessionId] = useState(presetDebateSessionId || '')
   const [debateSessions, setDebateSessions]   = useState([])
   const [busy, setBusy] = useState(false)
   const [done, setDone] = useState(false)
@@ -138,12 +138,24 @@ function ArticleEditor({ editingArticleId, articleData, onSuccess, onCancel }) {
       const selectedSession = contextType === 'debate' && debateSessionId
         ? debateSessions.find((s) => s.id === debateSessionId)
         : null
+      // 토론 세션이 어느 부(府) 소속인지 자동 판별 → 기사 target 자동 태깅
+      // (학생이 '관련 영역'을 일반으로 두고 토론도구에서 써도 입법/행정/사법으로 분류되도록)
+      const sessionBranch = (s) => {
+        if (!s) return null
+        const sid = String(s.sourceStepId || '')
+        if (s.type === 'trial' || s.relatedCaseId || sid.startsWith('judicial') || sid.startsWith('verdict')) return 'judicial'
+        if (s.relatedExecutiveMeeting || s.type === 'multi_party' || sid.startsWith('executive')) return 'executive'
+        if (s.relatedBillId || sid.startsWith('legislative')) return 'legislative'
+        return null
+      }
+      const branchTarget = sessionBranch(selectedSession)
+      const effectiveTarget = (target === 'general' && branchTarget) ? branchTarget : target
       const data = {
         headline: headline.trim(),
         body: body.trim(),
         perspective,
         articleNature,
-        target,
+        target: effectiveTarget,
         phase: currentPhase || 1,
         contextType,
         ...(selectedSession ? { debateSessionId: selectedSession.id, debateSessionTopic: selectedSession.topic || '' } : {}),

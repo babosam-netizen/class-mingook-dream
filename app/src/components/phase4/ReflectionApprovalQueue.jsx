@@ -315,6 +315,7 @@ export default function ReflectionApprovalQueue() {
   const [detail, setDetail] = useState(null)
   const [activeStepDetail, setActiveStepDetail] = useState(null) // 단계별 상세 팝업 상태
   const [bulkLoading, setBulkLoading] = useState(false)
+  const [actionToast, setActionToast] = useState('')
 
   const labels = ['개요 작성', '도입 단락', '전개 단락', '마무리 단락', '최종본 작성']
 
@@ -377,9 +378,13 @@ export default function ReflectionApprovalQueue() {
   const approve = (id) => updateAt(roomCode, `reflections/${id}`, {
     status: 'approved', approvedAt: Date.now(), rejectMemo: null,
   })
-  const reject = (id, memo) => updateAt(roomCode, `reflections/${id}`, {
-    status: 'rejected', rejectMemo: memo || null,
-  })
+  const reject = (id, memo) => {
+    updateAt(roomCode, `reflections/${id}`, {
+      status: 'rejected', rejectMemo: memo || null,
+    })
+    setActionToast('✗ 반려 처리했어요 — 학생 화면에 바로 반영돼요.')
+    setTimeout(() => setActionToast(''), 2000)
+  }
   const del = (id) => {
     if (!confirm('이 정리 글을 영구 삭제할까요?')) return
     removeAt(roomCode, `reflections/${id}`)
@@ -400,6 +405,13 @@ export default function ReflectionApprovalQueue() {
 
   return (
     <div className="space-y-3">
+      {/* 반려/승인 처리 확인 토스트 */}
+      {actionToast && (
+        <div className="fixed top-4 right-4 z-[60] bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
+          {actionToast}
+        </div>
+      )}
+
       {/* 헤더 및 탭 */}
       <div className="space-y-2">
         <h3 className="font-extrabold text-pink-900 text-sm">📝 정리글 검토 및 모니터링</h3>

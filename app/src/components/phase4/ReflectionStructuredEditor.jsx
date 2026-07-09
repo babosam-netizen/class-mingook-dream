@@ -602,17 +602,21 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
         }
       }
 
+      const timeout = (ms) => new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('네트워크가 느려 제출이 지연되고 있어요. 인터넷 연결을 확인하고 다시 시도해 주세요.')), ms)
+      )
+
       if (tempId) {
-        await updateAt(roomCode, `reflections/${tempId}`, payload)
+        await Promise.race([updateAt(roomCode, `reflections/${tempId}`, payload), timeout(15000)])
       } else {
-        const newKey = await pushUnder(roomCode, 'reflections', {
+        const newKey = await Promise.race([pushUnder(roomCode, 'reflections', {
           ...payload,
           authorStudentId: myStudentId,
           authorNumber: myNumber,
           authorNickname: myNickname,
           createdAt: Date.now(),
           empathy: { heart: 0, clap: 0, lightbulb: 0, thumbsup: 0 },
-        })
+        }), timeout(15000)])
         setTempId(newKey)
         tempIdRef.current = newKey
       }
@@ -1009,6 +1013,10 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
 
                 {/* 하단 제어 & 워닝 */}
                 <div className="space-y-3.5 border-t pt-4">
+                  {error && (
+                    <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-xl border border-red-100">{error}</p>
+                  )}
+
                   {hasWarning && (
                     <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-[11px] text-amber-800 leading-normal space-y-1.5">
                       <p className="font-extrabold flex items-center gap-1 text-xs">⚠️ 알림</p>
@@ -1017,9 +1025,10 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
                         <button
                           type="button"
                           onClick={() => handleFinalSubmit(true)}
-                          className="flex-1 py-1 rounded bg-amber-600 text-white font-bold hover:bg-amber-700 transition"
+                          disabled={busy}
+                          className="flex-1 py-1 rounded bg-amber-600 text-white font-bold hover:bg-amber-700 transition disabled:opacity-50"
                         >
-                          그대로 제출하기
+                          {busy ? '제출 중...' : '그대로 제출하기'}
                         </button>
                         <button
                           type="button"
@@ -1027,7 +1036,8 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
                             setHasWarning(false)
                             setShowReviewModal(false)
                           }}
-                          className="flex-1 py-1 rounded bg-white text-gray-600 border border-gray-300 font-bold hover:bg-gray-50 transition"
+                          disabled={busy}
+                          className="flex-1 py-1 rounded bg-white text-gray-600 border border-gray-300 font-bold hover:bg-gray-50 transition disabled:opacity-50"
                         >
                           다시 최종본 수정하기
                         </button>
@@ -1039,7 +1049,8 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
                     <button
                       type="button"
                       onClick={() => setShowReviewModal(false)}
-                      className="flex-1 py-2 text-xs rounded-xl border border-gray-300 text-gray-700 font-bold hover:bg-gray-50 transition"
+                      disabled={busy}
+                      className="flex-1 py-2 text-xs rounded-xl border border-gray-300 text-gray-700 font-bold hover:bg-gray-50 transition disabled:opacity-50"
                     >
                       다시 읽고 수정하기
                     </button>
@@ -1047,9 +1058,10 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
                       <button
                         type="button"
                         onClick={() => handleFinalSubmit(false)}
-                        className="flex-1 py-2 text-xs rounded-xl bg-pink-600 text-white font-black shadow-md hover:bg-pink-700 transition"
+                        disabled={busy}
+                        className="flex-1 py-2 text-xs rounded-xl bg-pink-600 text-white font-black shadow-md hover:bg-pink-700 transition disabled:opacity-50 flex items-center justify-center gap-1.5"
                       >
-                        🚀 정리글 최종 제출
+                        {busy ? '⏳ 제출 처리 중...' : '🚀 정리글 최종 제출'}
                       </button>
                     )}
                   </div>

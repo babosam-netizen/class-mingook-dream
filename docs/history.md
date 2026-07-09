@@ -6,15 +6,22 @@
 
 ---
 
-## v1.7.43 (2026-07-06) [Antigravity] — 정리글 에디터 데이터 유지 개선 (뒤로가기·재진입 시 글 보존)
+## v1.7.106 (2026-07-09) [Claude] — 정상 제출인데도 '수정됨' 배지가 뜨던 문제 수정 + Cloudflare Pages 자동배포 전환
+- **버그**: `ReflectionStructuredEditor`의 `handleFinalSubmit`에서 `isModified: isEdit`로 저장 — `isEdit`은 기존 글을 불러와 편집 화면을 열기만 하면 무조건 `true`라서, 처음 제출이든 반려 후 재제출이든 상관없이 학생 화면(`ReflectionPage.jsx`)과 여론판 카드에 "✏️ 수정됨" 배지가 떠서 마치 뭔가 잘못된 것처럼 보였음.
+- **수정**: `isModified: wasApproved`로 변경 — **이미 승인된 글을 승인 후에 다시 고쳤을 때만** '수정됨'을 표시하도록 의미를 바로잡음. 일반 제출·재제출 시에는 배지 없이 기존 성공 메시지(`제출 완료!` / `수정되었어요!`)만 뜸.
+- **배포 인프라 전환**: 배포(`deploy.sh`)를 종료하고 실서비스 도메인 `<배포주소>`(Cloudflare Pages 프로젝트 `class-democra`)을 GitHub 저장소와 연동해 **git push만으로 자동배포**되도록 전환. 별도로 존재하던 `mingook-dream` 프로젝트(기존부터 git 자동배포, 별도 Firebase DB)는 그대로 유지·미변경.
+  - Cloudflare Pages 대시보드에서 `class-democra`를 Connect to Git (root directory: `app`, build: `npm run build`, output: `dist`).
+  - 빌드에 필요한 `VITE_FIREBASE_*` 등 환경변수 10개를 `wrangler pages secret put`으로 등록(로컬 `.env.local`과 동일 값 — 이 프로젝트의 실제 운영 Firebase 설정).
+  - 로컬 npm(11.x)/Node(25.x)와 Cloudflare 빌드 환경(npm 10.9.x/Node 22.16.x)의 버전 차이로 `package-lock.json`의 optional dependency(lightningcss의 @emnapi wasm) 잠금 내용이 달라 `npm ci`가 실패 — `brew install node@22`로 맞춰 lock 파일 재생성.
+  - **다음 세션 참고**: 이 저장소에서 `npm install`/`npm ci`를 실행할 때는 `export PATH="/opt/homebrew/opt/node@22/bin:$PATH"`로 Node 22를 앞에 두고 실행할 것 (기본 `node`는 26.x로 더 올라가 있음).
+- `npm run build` 통과. `APP_BUILD` v1.7.106.
 
-- **핵심 버그 수정**: 정리글 작성 중 뒤로갔다 돌아오거나 페이지를 이탈하면 작성 내용이 사라지는 문제 해결.
-- **저장 레이어 이중화**: localStorage(`reflection_draft_{studentId}`) 동기 백업 + Firebase RTDB 비동기 저장.
-- **자동저장 2종**: ① 입력 후 2초 유휴 debounced 자동 저장, ② 언마운트(뒤로가기·이탈) 시 localStorage 즉시 백업 + Firebase fire-and-forget.
-- **복원 2단계**: 마운트 즉시 localStorage 동기 복원 → Firebase 더 최신이면 덮어씀(타임스탬프 비교).
-- **key 플리커 버그 수정**: `ReflectionPage`에 `reflectionsLoaded` 상태 추가 — Firebase 첫 응답 전 로딩 스피너, `key=new→실제ID` 전환으로 에디터 리셋 차단.
-- **stale 클로저 방지**: `stateRef`로 최신 상태값 항시 추적.
-- `npm run build` 통과. GitHub push 완료.
+## v1.7.105 (2026-07-06) [Claude] — 정리글 임시저장이 제출·승인 상태를 'writing'으로 되돌리던 회귀 수정
+- **배경**: v1.7.104까지의 정리글 사라짐 수정(localStorage 즉시복원·언마운트 자동저장·debounced 자동저장)은 새로고침/이동 시 글 유지 문제를 실제로 해결함. 다만 **부작용**이 있었음.
+- **회귀 버그**: `ReflectionStructuredEditor`의 `saveDraft()`가 항상 `status: 'writing'`을 하드코딩. 자동저장 effect·언마운트 cleanup은 사용자가 타이핑하지 않아도 마운트 2초 뒤 자동 실행 → **이미 제출(pending)·승인(approved)된 정리글을 보기만 해도 상태가 'writing'으로 강등**되어 갤러리에서 사라지고 작성 화면으로 튕김. 최종 제출 직후 언마운트 cleanup도 제출을 취소시킴.
+- **수정**: `serverStatusRef`로 서버 현재 상태 추적(Firebase 구독 동기화). 임시저장 시 `approved`/`pending`이면 상태를 보존하고 그 외에만 `writing`으로 저장. 최종 제출·신규 생성 직후에도 ref 즉시 갱신.
+- **부수 수정**: `handleFinalSubmit`에서 신규 글(tempId 없음)을 최종 제출할 때 `tempId`를 세팅하지 않아 언마운트 자동저장이 **중복 정리글**을 만들던 버그도 함께 해결.
+- `npm run build` 통과. `APP_BUILD` v1.7.105.
 
 ## v1.7.42 (2026-06-17) [Claude] — 사법부 활동 메모를 모둠 단위 → 개인 단위로 전환
 - **변경**: `JudicialActivityMemo`(쟁점·재판·참관 판사 메모) 저장 경로를 `judicialIssues/{caseId}/{groupId}`(모둠 공유) → **`judicialIssues/{caseId}/{studentId}`(개인)**. 학생마다 자기 메모를 따로 작성. 모둠 종합은 토론도구 종합판결문(모둠원 종합평가 카드 + 판결문 작성)에서 정리하는 흐름 유지.

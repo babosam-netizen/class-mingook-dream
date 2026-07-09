@@ -592,7 +592,7 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
         progressStep: 5,
         status: wasApproved ? 'approved' : 'pending',
         updatedAt: Date.now(),
-        isModified: isEdit,
+        isModified: wasApproved,
         selfAssessment: {
           selfCheck,
           score1,

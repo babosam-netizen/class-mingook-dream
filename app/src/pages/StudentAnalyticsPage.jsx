@@ -27,7 +27,7 @@ const TIMELINE_TYPE_EMOJI = {
 
 function hasDetail(t) {
   if (!t) return false
-  if (t.type === 'reflection') return !!(t.body || t.impressive || t.revisit || t.pledge)
+  if (t.type === 'reflection') return !!(t.finalEssay || t.p1?.main || t.p2?.main || t.p3?.main || t.outline?.intro)
   if (t.type === 'article' || t.type === 'bill') return !!t.body
   if (t.type === 'debate_prep') {
     if (t.isEvaluatorCard) {
@@ -42,7 +42,7 @@ function hasDetail(t) {
   return false
 }
 
-function handleOpenDetailWindow(t, nickname) {
+function handleOpenDetailWindow(t, number, nickname) {
   const newWin = window.open('', '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes')
   if (!newWin) {
     alert('팝업 차단이 설정되어 있습니다. 팝업 허용 후 다시 시도해 주세요.')
@@ -53,27 +53,26 @@ function handleOpenDetailWindow(t, nickname) {
   let bodyHtml = ''
 
   if (t.type === 'reflection') {
+    const paraBlock = (label, p) => (p && p.main) ? `
+      <div class="field-block">
+        <div class="field-label text-emerald-700">${label}</div>
+        <div class="field-value">${p.main.replace(/\n/g, '<br/>')}${p.supportA ? `<br/>↳ ${p.supportA.replace(/\n/g, '<br/>')}` : ''}${p.supportB ? `<br/>↳ ${p.supportB.replace(/\n/g, '<br/>')}` : ''}</div>
+      </div>` : ''
     bodyHtml = `
       <div class="card">
-        <div class="card-header border-emerald">📝 정리글 에세이</div>
+        <div class="card-header border-emerald">📝 ${t.title ? t.title.replace(/\n/g, ' ') : '정리글 최종본'}</div>
         <div class="card-body">
-          ${t.body ? `<div class="essay-body">${t.body.replace(/\n/g, '<br/>')}</div>` : '<p class="empty">작성된 에세이가 없습니다.</p>'}
+          ${t.finalEssay ? `<div class="essay-body">${t.finalEssay.replace(/\n/g, '<br/>')}</div>` : '<p class="empty">작성된 최종본이 없습니다.</p>'}
         </div>
       </div>
-      ${t.impressive ? `
+      ${(t.p1?.main || t.p2?.main || t.p3?.main) ? `
       <div class="card mt-4">
-        <div class="card-header border-emerald text-sm">✨ 가장 인상 깊은 장면</div>
-        <div class="card-body text-gray-700">${t.impressive.replace(/\n/g, '<br/>')}</div>
-      </div>` : ''}
-      ${t.revisit ? `
-      <div class="card mt-4">
-        <div class="card-header border-emerald text-sm">🔄 다시 생각해보게 된 부분</div>
-        <div class="card-body text-gray-700">${t.revisit.replace(/\n/g, '<br/>')}</div>
-      </div>` : ''}
-      ${t.pledge ? `
-      <div class="card mt-4">
-        <div class="card-header border-emerald text-sm">🤝 앞으로의 다짐</div>
-        <div class="card-body text-gray-700">${t.pledge.replace(/\n/g, '<br/>')}</div>
+        <div class="card-header border-emerald text-sm">📋 단락별 구성</div>
+        <div class="card-body space-y-4">
+          ${paraBlock('📘 도입 단락', t.p1)}
+          ${paraBlock('📗 전개 단락', t.p2)}
+          ${paraBlock('📕 마무리 단락', t.p3)}
+        </div>
       </div>` : ''}
     `
   } else if (t.type === 'article') {
@@ -209,7 +208,7 @@ function handleOpenDetailWindow(t, nickname) {
     <html lang="ko">
     <head>
       <meta charset="UTF-8">
-      <title>\${title}</title>
+      <title>${title}</title>
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@400;600;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -385,12 +384,12 @@ function handleOpenDetailWindow(t, nickname) {
     <body>
       <div class="container">
         <header>
-          <span class="student-badge">\${openStudent.number}번 \${nickname}</span>
-          <h1>\${t.label}</h1>
-          <div class="meta-time">\${t.at ? new Date(t.at).toLocaleString() : ''}</div>
+          <span class="student-badge">${number}번 ${nickname}</span>
+          <h1>${t.label}</h1>
+          <div class="meta-time">${t.at ? new Date(t.at).toLocaleString() : ''}</div>
         </header>
         <main>
-          \${bodyHtml}
+          ${bodyHtml}
           <button class="close-btn" onclick="window.close()">창 닫기</button>
         </main>
       </div>
@@ -760,7 +759,7 @@ function StudentAnalyticsPage() {
                               <span className="font-black text-indigo-900">{t.label}</span>
                               {hasDetail(t) && (
                                 <button
-                                  onClick={() => handleOpenDetailWindow(t, openStudent.nickname)}
+                                  onClick={() => handleOpenDetailWindow(t, openStudent.number, openStudent.nickname)}
                                   className="text-xs text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-0.5 font-bold"
                                 >
                                   자세히 보기 ↗
@@ -816,13 +815,28 @@ function StudentAnalyticsPage() {
 
                             {t.type === 'reflection' && (
                               <div className="space-y-4 bg-emerald-50/30 p-5 rounded-2xl border border-emerald-100">
-                                <p className="text-xs text-emerald-900 whitespace-pre-wrap leading-relaxed">{t.body}</p>
-                                {(t.impressive || t.revisit || t.pledge) && (
+                                {t.title && <p className="text-sm font-black text-emerald-900">"{t.title}"</p>}
+                                <p className="text-xs text-emerald-900 whitespace-pre-wrap leading-relaxed">
+                                  {t.finalEssay || <span className="text-gray-400 italic">작성된 최종본이 없습니다.</span>}
+                                </p>
+                                {(t.p1?.main || t.p2?.main || t.p3?.main) && (
                                   <div className="pt-3 border-t border-emerald-100 grid grid-cols-1 gap-3">
-                                    {t.impressive && (
+                                    {t.p1?.main && (
                                       <div>
-                                        <p className="text-[10px] text-emerald-600 font-bold mb-1">✨ 인상 깊은 장면</p>
-                                        <p className="text-[11px] text-gray-600">{t.impressive}</p>
+                                        <p className="text-[10px] text-emerald-600 font-bold mb-1">📘 도입 단락</p>
+                                        <p className="text-[11px] text-gray-600">{t.p1.main}</p>
+                                      </div>
+                                    )}
+                                    {t.p2?.main && (
+                                      <div>
+                                        <p className="text-[10px] text-emerald-600 font-bold mb-1">📗 전개 단락</p>
+                                        <p className="text-[11px] text-gray-600">{t.p2.main}</p>
+                                      </div>
+                                    )}
+                                    {t.p3?.main && (
+                                      <div>
+                                        <p className="text-[10px] text-emerald-600 font-bold mb-1">📕 마무리 단락</p>
+                                        <p className="text-[11px] text-gray-600">{t.p3.main}</p>
                                       </div>
                                     )}
                                   </div>

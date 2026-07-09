@@ -223,10 +223,12 @@ export function computeStudentStats({
           at: r.createdAt || 0,
           type: 'reflection',
           label: '정리글 제출',
-          body: r.body,
-          impressive: r.impressive,
-          revisit: r.revisit,
-          pledge: r.pledge,
+          title: r.title,
+          finalEssay: r.finalEssay,
+          outline: r.outline,
+          p1: r.p1,
+          p2: r.p2,
+          p3: r.p3,
           status: r.status
         })
       }

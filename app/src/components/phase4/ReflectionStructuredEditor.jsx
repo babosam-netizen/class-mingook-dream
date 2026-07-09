@@ -222,11 +222,17 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
   const myNumberRef = useRef(myNumber)
   const myNicknameRef = useRef(myNickname)
   const tempIdRef = useRef(tempId)
+  // 서버에 저장된 현재 상태 추적 — 임시저장/언마운트 자동저장이 제출·승인 상태를
+  // 실수로 'writing'으로 되돌리지 않도록 보존한다. Firebase 구독으로 상태가 바뀌면 동기화.
+  const serverStatusRef = useRef(existing.status || null)
   useEffect(() => { roomCodeRef.current = roomCode }, [roomCode])
   useEffect(() => { myStudentIdRef.current = myStudentId }, [myStudentId])
   useEffect(() => { myNumberRef.current = myNumber }, [myNumber])
   useEffect(() => { myNicknameRef.current = myNickname }, [myNickname])
   useEffect(() => { tempIdRef.current = tempId }, [tempId])
+  useEffect(() => {
+    if (existingReflection?.status) serverStatusRef.current = existingReflection.status
+  }, [existingReflection?.status])
 
   // 본문 오토사이징
   useEffect(() => {
@@ -374,6 +380,10 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
     if (!rc || !sid) return
     const s = stateRef.current
     const tid = tempIdRef.current
+    // 이미 제출(pending)·승인(approved)된 글은 임시저장이 상태를 낮추지 않도록 보존.
+    // (그 외 신규/작성중/반려 상태는 'writing'으로 임시저장)
+    const keepStatus = serverStatusRef.current
+    const draftStatus = (keepStatus === 'approved' || keepStatus === 'pending') ? keepStatus : 'writing'
     const payload = {
       title: (s.title || '').trim(),
       color: s.color || 'yellow',
@@ -408,7 +418,7 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
       impressive: (s.p2Main || '').trim(),
       revisit: (s.p1Main || '').trim(),
       progressStep: stepToSave ?? (s.activeTab || 1),
-      status: 'writing',
+      status: draftStatus,
       updatedAt: Date.now(),
     }
     // localStorage에도 백업
@@ -427,6 +437,7 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
         })
         setTempId(newKey)
         tempIdRef.current = newKey
+        serverStatusRef.current = draftStatus
         // localStorage 백업에 새 키 반영
         if (localKey) {
           try {
@@ -594,7 +605,7 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
       if (tempId) {
         await updateAt(roomCode, `reflections/${tempId}`, payload)
       } else {
-        await pushUnder(roomCode, 'reflections', {
+        const newKey = await pushUnder(roomCode, 'reflections', {
           ...payload,
           authorStudentId: myStudentId,
           authorNumber: myNumber,
@@ -602,7 +613,11 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
           createdAt: Date.now(),
           empathy: { heart: 0, clap: 0, lightbulb: 0, thumbsup: 0 },
         })
+        setTempId(newKey)
+        tempIdRef.current = newKey
       }
+      // 제출 상태를 즉시 ref에 반영 — 언마운트/자동저장이 'writing'으로 되돌리지 않도록
+      serverStatusRef.current = payload.status
 
       setDone(true)
       setShowReviewModal(false)

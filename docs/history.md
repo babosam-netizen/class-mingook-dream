@@ -6,6 +6,12 @@
 
 ---
 
+## v1.7.110 (2026-07-10) [Claude] — 교사 정리글 완성 확인 동기화 버그 수정 + 검토 기능 강화
+- **핵심 버그**: `SubmissionStatusQuickPanel.jsx`(교사 대시보드 '제출 확인 빠른보기')가 정리글을 `data.reflections?.[row.id]`로 학생 id를 키 삼아 직접 조회하고 있었음. 그러나 정리글은 `pushUnder`로 생성된 랜덤 키에 저장되고 학생 id는 `authorStudentId` 필드에만 있어 이 조회는 항상 실패 — 학생이 제출을 마쳐도 항상 "미시작"으로 보이고 완료 카운트·상태 배지·단계별 체크리스트가 전혀 갱신되지 않던 원인. `authorStudentId`로 찾는 `findReflectionByStudent()` 헬퍼를 추가해 해결.
+- **번호 정렬 버그**: `ReflectionApprovalQueue.jsx`(정리글 검토 페이지)의 대기/승인/반려/전체 목록이 제출 시각순으로 정렬돼 있어 번호가 뒤죽박죽으로 보이던 것을 학생 번호(`authorNumber`) 오름차순으로 수정.
+- **기능 추가**: 두 화면 모두에서 학생 카드/번호 클릭 시 뜨는 검토 모달에 확인(승인)/반려/**수정**(제목·최종본 인라인 편집) 버튼과 "◀ 이전 제출 학생 · 다음 제출 학생 ▶" 이동 버튼 추가 — 제출한 학생만 순서대로 이어서 검토 가능.
+- `APP_BUILD` v1.7.110. (로컬 `node_modules` 미설치 환경이라 `npm run build` 미실행 — 코드 정적 검토만 수행)
+
 ## v1.7.109 (2026-07-09) [Claude] — 교사 학생분석 '자세히 보기' 팝업이 깨져 나오던 문제 수정
 - **핵심 버그(이스케이프)**: `StudentAnalyticsPage.jsx`의 `handleOpenDetailWindow`가 새 창에 쓰는 최종 HTML 템플릿 리터럴에서 `<title>`, 학생 배지, `<h1>`, 시간, 본문(`bodyHtml`) 삽입부가 전부 `${...}`가 아니라 `\${...}`로 이스케이프되어 있었음 — 즉 실제 값 대신 `${bodyHtml}` 같은 글자 그대로가 팝업에 출력되던 것이 "이상하게 나온다"의 직접 원인. 백슬래시 제거로 정상 보간되도록 수정.
 - **스코프 버그**: 같은 헤더에서 `openStudent`를 참조했지만 `handleOpenDetailWindow(t, nickname)`엔 `openStudent`가 전달되지 않아 원래도 깨져 있었음 — 함수 시그니처에 `number` 인자를 추가하고 호출부에서 `openStudent.number`도 함께 전달하도록 수정.

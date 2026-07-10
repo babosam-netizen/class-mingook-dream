@@ -162,9 +162,12 @@ function StepDetailModal({ student, step, r, onClose }) {
   )
 }
 
-function DetailPanel({ r, onClose, onApprove, onReject, onDelete }) {
+function DetailPanel({ r, onClose, onApprove, onReject, onDelete, onSave, onPrev, onNext, hasPrev, hasNext }) {
   const [rejectMemo, setRejectMemo] = useState(r.rejectMemo || '')
   const [canvaOpen, setCanvaOpen] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [editTitle, setEditTitle] = useState(r.title || '')
+  const [editEssay, setEditEssay] = useState(r.finalEssay || '')
   const canvaUrl = r.canvaUrl ? formatCanvaEmbedUrl(r.canvaUrl) : ''
 
   const labels = ['개요 작성', '도입 단락', '전개 단락', '마무리 단락', '최종본 작성']
@@ -213,7 +216,13 @@ function DetailPanel({ r, onClose, onApprove, onReject, onDelete }) {
           )}
 
           {/* 제목 */}
-          {r.title && (
+          {editing ? (
+            <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 shadow-sm">
+              <label className="text-xs font-bold text-gray-500 block mb-1">📝 글 제목</label>
+              <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-pink-300" />
+            </div>
+          ) : r.title && (
             <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 shadow-sm">
               <p className="text-xs font-bold text-gray-500 mb-1">📝 글 제목</p>
               <p className="font-extrabold text-gray-800 text-base">"{r.title}"</p>
@@ -256,7 +265,13 @@ function DetailPanel({ r, onClose, onApprove, onReject, onDelete }) {
           )}
 
           {/* 마치며 (최종 에세이) */}
-          {r.finalEssay && (
+          {editing ? (
+            <div className="bg-pink-50/40 border-2 border-pink-200 rounded-2xl p-4 shadow-sm">
+              <label className="text-xs font-extrabold text-pink-700 block mb-1.5">📜 마치며 (최종본)</label>
+              <textarea value={editEssay} onChange={(e) => setEditEssay(e.target.value)} rows={8}
+                className="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-pink-300 resize-none" />
+            </div>
+          ) : r.finalEssay && (
             <div className="bg-pink-50/40 border-2 border-pink-200 rounded-2xl p-4 shadow-sm">
               <p className="text-xs font-extrabold text-pink-700 mb-1.5">📜 마치며 (최종본)</p>
               <p className="whitespace-pre-wrap text-gray-800 leading-relaxed font-medium text-xs">{r.finalEssay}</p>
@@ -274,9 +289,30 @@ function DetailPanel({ r, onClose, onApprove, onReject, onDelete }) {
           )}
         </div>
 
+        {/* 제출한 학생 사이 이동 */}
+        {(onPrev || onNext) && (
+          <div className="sticky bottom-[68px] bg-white border-t px-4 py-2 flex gap-2">
+            <button onClick={onPrev} disabled={!hasPrev}
+              className="flex-1 py-2 text-xs rounded-xl bg-gray-100 font-bold text-gray-600 hover:bg-gray-200 disabled:opacity-30 transition">◀ 이전 제출 학생</button>
+            <button onClick={onNext} disabled={!hasNext}
+              className="flex-1 py-2 text-xs rounded-xl bg-gray-100 font-bold text-gray-600 hover:bg-gray-200 disabled:opacity-30 transition">다음 제출 학생 ▶</button>
+          </div>
+        )}
+
         {/* 액션 버튼 */}
-        <div className="sticky bottom-0 bg-white border-t p-4 flex gap-2">
-          {r.status === 'writing' ? (
+        <div className="sticky bottom-0 bg-white border-t p-4 flex gap-2 flex-wrap">
+          {editing ? (
+            <>
+              <button onClick={() => { onSave(r.id, { title: editTitle, finalEssay: editEssay }); setEditing(false) }}
+                className="flex-1 py-2.5 text-sm rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition">
+                저장
+              </button>
+              <button onClick={() => { setEditTitle(r.title || ''); setEditEssay(r.finalEssay || ''); setEditing(false) }}
+                className="px-4 py-2.5 text-sm rounded-xl bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition">
+                취소
+              </button>
+            </>
+          ) : r.status === 'writing' ? (
             <button onClick={onClose}
               className="flex-1 py-2.5 text-sm rounded-xl bg-gray-700 text-white font-bold hover:bg-gray-800 transition">
               확인 및 닫기
@@ -295,6 +331,10 @@ function DetailPanel({ r, onClose, onApprove, onReject, onDelete }) {
                   ✗ 반려
                 </button>
               )}
+              <button onClick={() => setEditing(true)}
+                className="px-4 py-2.5 text-sm rounded-xl bg-indigo-100 text-indigo-700 font-bold hover:bg-indigo-200 transition">
+                ✏️ 수정
+              </button>
               <button onClick={() => onDelete(r.id)}
                 className="px-4 py-2.5 text-sm rounded-xl bg-red-100 text-red-700 font-bold hover:bg-red-200 transition">
                 삭제
@@ -337,6 +377,18 @@ export default function ReflectionApprovalQueue() {
     return Object.values(map).find(r => r.authorStudentId === studentId)
   }
 
+  // 제출한(리플렉션이 있는) 학생만 번호순으로 — 상세 패널의 이전/다음 이동에 사용
+  const submittedIds = useMemo(() =>
+    sortedStudents.filter((s) => getStudentReflection(s.id)).map((s) => s.id),
+    [sortedStudents, map]
+  )
+  const detailIndex = detail ? submittedIds.indexOf(detail.authorStudentId) : -1
+  const goToSubmittedIndex = (idx) => {
+    const sid = submittedIds[idx]
+    const r = sid && Object.entries(map).map(([id, v]) => ({ id, ...v })).find((x) => x.authorStudentId === sid)
+    if (r) setDetail(r)
+  }
+
   // 특정 리플렉션의 단계별 작성(완료) 판정
   const checkStepDone = (r, step) => {
     if (!r) return false
@@ -359,10 +411,11 @@ export default function ReflectionApprovalQueue() {
   }
 
   const list = useMemo(() => {
+    // 번호순 정렬 — 제출 시각순으로 정렬하면 번호가 뒤섞여 보이는 문제가 있었음
     const arr = Object.entries(map)
       .map(([id, r]) => ({ id, ...r }))
-      .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
-    
+      .sort((a, b) => (Number(a.authorNumber) || 0) - (Number(b.authorNumber) || 0))
+
     if (filter === 'all') return arr
     return arr.filter((r) => r.status === filter)
   }, [map, filter])
@@ -597,11 +650,17 @@ export default function ReflectionApprovalQueue() {
       {/* 상세 패널 (전체 내용) */}
       {detail && (
         <DetailPanel
+          key={detail.id}
           r={map[detail.id] ? { id: detail.id, ...map[detail.id] } : detail}
           onClose={() => setDetail(null)}
           onApprove={(id) => { approve(id) }}
           onReject={(id, memo) => { reject(id, memo) }}
           onDelete={(id) => { del(id); setDetail(null) }}
+          onSave={(id, patch) => updateAt(roomCode, `reflections/${id}`, patch)}
+          hasPrev={detailIndex > 0}
+          hasNext={detailIndex >= 0 && detailIndex < submittedIds.length - 1}
+          onPrev={() => goToSubmittedIndex(detailIndex - 1)}
+          onNext={() => goToSubmittedIndex(detailIndex + 1)}
         />
       )}
 

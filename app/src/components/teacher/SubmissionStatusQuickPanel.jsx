@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import useGameStore from '../../store/gameStore'
-import { subscribe } from '../../lib/rtdb-helpers'
+import { subscribe, updateAt, removeAt } from '../../lib/rtdb-helpers'
 import { useWorkflow } from '../../lib/use-workflow'
 import SubmissionDetailModal from './SubmissionDetailModal'
 import { formatBudgetAmount } from '../phase3/executiveBudgetData'
@@ -116,6 +116,15 @@ const fmtTime = (ts) => {
 const asArray = (map = {}) => Object.entries(map || {}).map(([id, value]) => ({ id, ...value }))
 const groupIdOf = (item = {}) => item.groupId || item.authorGroupId || item.proposerGroupId
 const studentIdOf = (item = {}) => item.authorStudentId || item.submittedByStudentId || item.leaderStudentId
+
+// 정리글은 push 키로 저장되어 학생 id와 키가 다르므로, authorStudentId로 찾아야 함
+// (reflections/{studentId}로 직접 인덱싱하면 항상 못 찾아 '미시작'으로 보이는 버그가 있었음)
+const findReflectionByStudent = (reflectionsMap = {}, studentId) => {
+  for (const [id, r] of Object.entries(reflectionsMap || {})) {
+    if (r?.authorStudentId === studentId) return { id, ...r }
+  }
+  return null
+}
 
 function normalizeNewspaperLayoutItem(item = {}) {
   const slot = NEWSPAPER_LAYOUT_TYPES.some((type) => type.key === item.slot) ? item.slot : 'brief'
@@ -422,6 +431,130 @@ function ReflectionChecklist({ reflectionData, student, onStepClick }) {
           </button>
         )
       })}
+    </div>
+  )
+}
+
+/* ── 정리글 검토 모달 (4-1 완성 확인 전용) — 확인/반려/수정 + 다음 제출 학생 이동 ── */
+function ReflectionReviewModal({ student, reflection, onClose, onApprove, onReject, onDelete, onSave, onPrev, onNext, hasPrev, hasNext }) {
+  const [editing, setEditing] = useState(false)
+  const [editTitle, setEditTitle] = useState(reflection?.title || '')
+  const [editEssay, setEditEssay] = useState(reflection?.finalEssay || '')
+  const [rejectMemo, setRejectMemo] = useState(reflection?.rejectMemo || '')
+
+  useEffect(() => {
+    setEditing(false)
+    setEditTitle(reflection?.title || '')
+    setEditEssay(reflection?.finalEssay || '')
+    setRejectMemo(reflection?.rejectMemo || '')
+  }, [reflection?.id])
+
+  if (!reflection) return null
+  const r = reflection
+
+  const statusBadge = {
+    approved: { label: '✓ 승인됨', cls: 'bg-emerald-100 text-emerald-800' },
+    rejected: { label: '✗ 반려됨', cls: 'bg-red-100 text-red-800' },
+    pending:  { label: '⏳ 승인 대기', cls: 'bg-yellow-100 text-yellow-800' },
+    writing:  { label: '📝 작성 중', cls: 'bg-blue-100 text-blue-800' },
+  }[r.status] || { label: '⏳ 승인 대기', cls: 'bg-yellow-100 text-yellow-800' }
+
+  return (
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="bg-white rounded-[1.5rem] shadow-2xl w-full max-w-xl max-h-[85vh] overflow-hidden flex flex-col border">
+        <header className="px-5 py-4 bg-slate-50 border-b flex items-start justify-between gap-3 shrink-0">
+          <div>
+            <h3 className="font-black text-slate-900 text-base">{student?.number}번 {student?.nickname}</h3>
+            <span className={`inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-extrabold ${statusBadge.cls}`}>{statusBadge.label}</span>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-slate-200 text-slate-500 font-bold flex items-center justify-center border shrink-0">✕</button>
+        </header>
+
+        <div className="flex-1 overflow-y-auto p-5 space-y-3 text-sm">
+          {editing ? (
+            <>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">글 제목</label>
+                <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300" />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-600 block mb-1">최종 에세이 본문</label>
+                <textarea value={editEssay} onChange={(e) => setEditEssay(e.target.value)} rows={8}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-pink-300 resize-none" />
+              </div>
+            </>
+          ) : (
+            <>
+              {r.title && (
+                <div className="bg-gray-50 rounded-2xl p-4 border">
+                  <p className="text-xs font-bold text-gray-500 mb-1">📝 글 제목</p>
+                  <p className="font-extrabold text-gray-800">"{r.title}"</p>
+                </div>
+              )}
+              {r.outline && (r.outline.intro || r.outline.body || r.outline.conclusion) && (
+                <div className="bg-pink-50/30 border border-pink-100 rounded-2xl p-4 space-y-1.5 text-xs">
+                  <p className="font-bold text-pink-700">📋 개요</p>
+                  {r.outline.intro && <p><span className="font-bold text-blue-600">도입</span> {r.outline.intro}</p>}
+                  {r.outline.body && <p><span className="font-bold text-emerald-600">전개</span> {r.outline.body}</p>}
+                  {r.outline.conclusion && <p><span className="font-bold text-pink-600">마무리</span> {r.outline.conclusion}</p>}
+                </div>
+              )}
+              {r.finalEssay && (
+                <div className="bg-pink-50/40 border-2 border-pink-200 rounded-2xl p-4">
+                  <p className="text-xs font-extrabold text-pink-700 mb-1.5">📜 최종본</p>
+                  <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-sm">{r.finalEssay}</p>
+                </div>
+              )}
+              {!r.finalEssay && <p className="text-center text-gray-400 py-6 text-xs">아직 최종본을 작성하지 않았습니다.</p>}
+              {r.rejectMemo && (
+                <p className="text-xs text-amber-700 font-bold bg-amber-50 px-2 py-1 rounded-lg border border-amber-100">💬 반려 메모: {r.rejectMemo}</p>
+              )}
+            </>
+          )}
+
+          {!editing && r.status !== 'approved' && (
+            <div className="border-t pt-3">
+              <label className="text-xs font-bold text-gray-600 block mb-1">반려 사유 메모 (선택 — 학생에게 표시)</label>
+              <textarea value={rejectMemo} onChange={(e) => setRejectMemo(e.target.value)} rows={2}
+                placeholder="어떤 부분을 수정해야 하는지 적어주세요."
+                className="w-full px-3 py-2 rounded-xl border border-gray-300 text-xs focus:outline-none focus:ring-2 focus:ring-amber-300 resize-none" />
+            </div>
+          )}
+        </div>
+
+        <footer className="px-5 py-3.5 bg-gray-50 border-t flex flex-col gap-2 shrink-0">
+          <div className="flex gap-2">
+            <button onClick={onPrev} disabled={!hasPrev}
+              className="px-3 py-2 text-xs rounded-xl bg-white border font-bold text-gray-600 hover:bg-gray-100 disabled:opacity-30 transition">◀ 이전 제출 학생</button>
+            <button onClick={onNext} disabled={!hasNext}
+              className="px-3 py-2 text-xs rounded-xl bg-white border font-bold text-gray-600 hover:bg-gray-100 disabled:opacity-30 transition">다음 제출 학생 ▶</button>
+          </div>
+          {editing ? (
+            <div className="flex gap-2">
+              <button onClick={() => { onSave(r.id, { title: editTitle, finalEssay: editEssay }); setEditing(false) }}
+                className="flex-1 py-2.5 text-sm rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition">저장</button>
+              <button onClick={() => setEditing(false)}
+                className="px-4 py-2.5 text-sm rounded-xl bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition">취소</button>
+            </div>
+          ) : (
+            <div className="flex gap-2 flex-wrap">
+              {r.status !== 'approved' && (
+                <button onClick={() => onApprove(r.id)}
+                  className="flex-1 py-2.5 text-sm rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition">✓ 확인(승인)</button>
+              )}
+              {r.status !== 'rejected' && (
+                <button onClick={() => onReject(r.id, rejectMemo)}
+                  className="flex-1 py-2.5 text-sm rounded-xl bg-amber-500 text-white font-bold hover:bg-amber-600 transition">✗ 반려</button>
+              )}
+              <button onClick={() => setEditing(true)}
+                className="px-4 py-2.5 text-sm rounded-xl bg-indigo-100 text-indigo-700 font-bold hover:bg-indigo-200 transition">✏️ 수정</button>
+              <button onClick={() => onDelete(r.id)}
+                className="px-4 py-2.5 text-sm rounded-xl bg-red-100 text-red-700 font-bold hover:bg-red-200 transition">삭제</button>
+            </div>
+          )}
+        </footer>
+      </div>
     </div>
   )
 }
@@ -833,6 +966,7 @@ export default function SubmissionStatusQuickPanel() {
   const students = useGameStore((s) => s.students)
   const [data, setData] = useState({})
   const [selected, setSelected] = useState(null)
+  const [reflectReviewId, setReflectReviewId] = useState(null) // 정리글 검토 모달 대상 학생 id
   const [journalistsMap, setJournalistsMap] = useState({})
   const [journalistNewspapersMap, setJournalistNewspapersMap] = useState({})
   const [selectedCandidateGroup, setSelectedCandidateGroup] = useState(null)
@@ -873,6 +1007,7 @@ export default function SubmissionStatusQuickPanel() {
 
   useEffect(() => {
     setSelected(null)
+    setReflectReviewId(null)
   }, [stepId])
 
   const groupEntries = useMemo(
@@ -888,6 +1023,27 @@ export default function SubmissionStatusQuickPanel() {
       .sort((a, b) => (Number(a.number) || 0) - (Number(b.number) || 0)),
     [students],
   )
+
+  // 정리글을 제출한 학생만 번호순으로 — 검토 모달의 '이전/다음 제출 학생' 이동에 사용
+  const submittedReflectStudentIds = useMemo(() => {
+    if (stepId !== 'reflect') return []
+    return studentEntries
+      .filter((s) => findReflectionByStudent(data.reflections, s.id))
+      .map((s) => s.id)
+  }, [stepId, studentEntries, data.reflections])
+
+  const reflectReviewIndex = reflectReviewId ? submittedReflectStudentIds.indexOf(reflectReviewId) : -1
+  const reflectReviewStudent = reflectReviewId ? students?.[reflectReviewId] : null
+  const reflectReviewData = reflectReviewId ? findReflectionByStudent(data.reflections, reflectReviewId) : null
+
+  const approveReflection = (id) => updateAt(roomCode, `reflections/${id}`, { status: 'approved', approvedAt: Date.now(), rejectMemo: null })
+  const rejectReflection = (id, memo) => updateAt(roomCode, `reflections/${id}`, { status: 'rejected', rejectMemo: memo || null })
+  const deleteReflection = (id) => {
+    if (!confirm('이 정리글을 영구 삭제할까요?')) return
+    removeAt(roomCode, `reflections/${id}`)
+    setReflectReviewId(null)
+  }
+  const saveReflectionEdit = (id, patch) => updateAt(roomCode, `reflections/${id}`, patch)
 
   const submissions = useMemo(() => buildSubmissions(config, data), [config, data])
 
@@ -965,7 +1121,7 @@ export default function SubmissionStatusQuickPanel() {
     }).length
     : stepId === 'reflect'
       ? rows.filter((row) => {
-        const reflection = data.reflections?.[row.id]
+        const reflection = findReflectionByStudent(data.reflections, row.id)
         return reflection && (reflection.status === 'pending' || reflection.status === 'approved')
       }).length
       : rows.filter((row) => row.submitted).length
@@ -991,7 +1147,7 @@ export default function SubmissionStatusQuickPanel() {
           const candidateData  = isCandidateRegister ? (data.candidates?.[row.id] || null) : null
           const journalistData = isCandidateRegister ? (journalistsMap?.[row.id] || null) : null
           const newspaperData  = isCandidateRegister ? (journalistNewspapersMap?.[row.id] || null) : null
-          const reflectionData = stepId === 'reflect' ? (data.reflections?.[row.id] || null) : null
+          const reflectionData = stepId === 'reflect' ? findReflectionByStudent(data.reflections, row.id) : null
 
           const cardTitle = journalistData
             ? `${row.name} 기자단-${newspaperData?.title?.trim() || '신문 이름 미정'}`
@@ -1038,19 +1194,10 @@ export default function SubmissionStatusQuickPanel() {
                     newspaperData: journalistNewspapersMap?.[row.id] || null,
                   })
                 } else {
-                  // 정리글 퀵패널 클릭 시, 내용이 작성되어 있으면 DetailModal로 띄워 줌
+                  // 정리글 퀵패널 클릭 시, 내용이 작성되어 있으면 검토 모달(확인/반려/수정)로 띄워 줌
                   if (stepId === 'reflect') {
                     if (reflectionData) {
-                      // submission 형식으로 매칭하여 SubmissionDetailModal이 읽을 수 있게 전달
-                      setSelected({
-                        ...row,
-                        submissions: [{
-                          ...reflectionData,
-                          id: reflectionData.id || row.id,
-                          type: 'reflection',
-                          title: '정리글'
-                        }]
-                      })
+                      setReflectReviewId(row.id)
                     } else {
                       alert(`${row.name} 학생은 아직 작성 전입니다.`)
                     }
@@ -1120,6 +1267,22 @@ export default function SubmissionStatusQuickPanel() {
           title={`${selected.name} 제출 내용`}
           items={selected.submissions}
           renderItem={(item) => <SubmissionDetail item={item} groups={groups} students={students} />}
+        />
+      )}
+
+      {reflectReviewId && reflectReviewData && (
+        <ReflectionReviewModal
+          student={reflectReviewStudent}
+          reflection={reflectReviewData}
+          onClose={() => setReflectReviewId(null)}
+          onApprove={approveReflection}
+          onReject={rejectReflection}
+          onDelete={deleteReflection}
+          onSave={saveReflectionEdit}
+          hasPrev={reflectReviewIndex > 0}
+          hasNext={reflectReviewIndex >= 0 && reflectReviewIndex < submittedReflectStudentIds.length - 1}
+          onPrev={() => { if (reflectReviewIndex > 0) setReflectReviewId(submittedReflectStudentIds[reflectReviewIndex - 1]) }}
+          onNext={() => { if (reflectReviewIndex >= 0 && reflectReviewIndex < submittedReflectStudentIds.length - 1) setReflectReviewId(submittedReflectStudentIds[reflectReviewIndex + 1]) }}
         />
       )}
 

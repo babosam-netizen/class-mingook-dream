@@ -222,17 +222,11 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
   const myNumberRef = useRef(myNumber)
   const myNicknameRef = useRef(myNickname)
   const tempIdRef = useRef(tempId)
-  // 서버에 저장된 현재 상태 추적 — 임시저장/언마운트 자동저장이 제출·승인 상태를
-  // 실수로 'writing'으로 되돌리지 않도록 보존한다. Firebase 구독으로 상태가 바뀌면 동기화.
-  const serverStatusRef = useRef(existing.status || null)
   useEffect(() => { roomCodeRef.current = roomCode }, [roomCode])
   useEffect(() => { myStudentIdRef.current = myStudentId }, [myStudentId])
   useEffect(() => { myNumberRef.current = myNumber }, [myNumber])
   useEffect(() => { myNicknameRef.current = myNickname }, [myNickname])
   useEffect(() => { tempIdRef.current = tempId }, [tempId])
-  useEffect(() => {
-    if (existingReflection?.status) serverStatusRef.current = existingReflection.status
-  }, [existingReflection?.status])
 
   // 본문 오토사이징
   useEffect(() => {
@@ -380,10 +374,6 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
     if (!rc || !sid) return
     const s = stateRef.current
     const tid = tempIdRef.current
-    // 이미 제출(pending)·승인(approved)된 글은 임시저장이 상태를 낮추지 않도록 보존.
-    // (그 외 신규/작성중/반려 상태는 'writing'으로 임시저장)
-    const keepStatus = serverStatusRef.current
-    const draftStatus = (keepStatus === 'approved' || keepStatus === 'pending') ? keepStatus : 'writing'
     const payload = {
       title: (s.title || '').trim(),
       color: s.color || 'yellow',
@@ -418,8 +408,13 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
       impressive: (s.p2Main || '').trim(),
       revisit: (s.p1Main || '').trim(),
       progressStep: stepToSave ?? (s.activeTab || 1),
-      status: draftStatus,
       updatedAt: Date.now(),
+      // status는 여기서 절대 쓰지 않는다 — 상태 전환은 handleFinalSubmit(학생 제출)과
+      // 교사의 승인/반려 액션만 담당한다. 예전엔 여기서도 status를 같이 썼는데,
+      // 교사가 승인/반려하면 부모(ReflectionPage)의 분기가 바뀌면서 이 에디터가
+      // 통째로 리마운트되고, 그 순간 사라지는(언마운트되는) 옛 인스턴스가 자신이
+      // 마지막으로 알던 낡은 상태를 다시 써버려 방금 교사가 바꾼 상태를 덮어쓰는
+      // 경합이 있었다 — 승인대기/작성중/반려가 끝없이 번갈아 뜨던 원인.
     }
     // localStorage에도 백업
     saveToLocal()
@@ -429,6 +424,7 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
       } else {
         const newKey = await pushUnder(rc, 'reflections', {
           ...payload,
+          status: 'writing', // 신규 생성 시에만 초기 상태 지정
           authorStudentId: sid,
           authorNumber: myNumberRef.current,
           authorNickname: myNicknameRef.current,
@@ -437,7 +433,6 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
         })
         setTempId(newKey)
         tempIdRef.current = newKey
-        serverStatusRef.current = draftStatus
         // localStorage 백업에 새 키 반영
         if (localKey) {
           try {
@@ -630,9 +625,7 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
         setTempId(newKey)
         tempIdRef.current = newKey
       }
-      // 제출 상태를 즉시 ref에 반영 — 언마운트/자동저장이 'writing'으로 되돌리지 않도록
-      serverStatusRef.current = payload.status
-      // 이후 자동저장은 keepStatus 보존 로직으로 안전하므로 잠금 해제
+      // saveDraft는 더 이상 status를 건드리지 않으므로 잠금 해제만 하면 됨
       submitLockRef.current = false
 
       setDone(true)

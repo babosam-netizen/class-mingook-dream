@@ -6,6 +6,9 @@
 
 ---
 
+## v1.7.110-docs (2026-07-10) [Claude] — 배포 방식 변경 문서 반영
+- 사용자가 배포 방식을 NAS `deploy.sh` 수동 배포에서 **GitHub main 브랜치 `git push` 시 자동 빌드·배포**(Cloudflare Pages 등 연동)로 전환했다고 알려줌. `CLAUDE.md`(1·2절), `docs/project_context.md`(9·10절), `docs/dev_guidelines.md`(9절)에 남아있던 옛 NAS 배포 안내를 갱신 — 옛 `deploy.sh` 내용은 레거시 참고용으로 남겨두되 더 이상 표준 절차가 아님을 명시. `uploads/`·`fetch_meta.php`만 예외적으로 NAS에서 계속 서비스됨을 명확히 함.
+
 ## v1.7.110 (2026-07-10) [Claude] — 교사 정리글 완성 확인 동기화 버그 수정 + 검토 기능 강화
 - **핵심 버그**: `SubmissionStatusQuickPanel.jsx`(교사 대시보드 '제출 확인 빠른보기')가 정리글을 `data.reflections?.[row.id]`로 학생 id를 키 삼아 직접 조회하고 있었음. 그러나 정리글은 `pushUnder`로 생성된 랜덤 키에 저장되고 학생 id는 `authorStudentId` 필드에만 있어 이 조회는 항상 실패 — 학생이 제출을 마쳐도 항상 "미시작"으로 보이고 완료 카운트·상태 배지·단계별 체크리스트가 전혀 갱신되지 않던 원인. `authorStudentId`로 찾는 `findReflectionByStudent()` 헬퍼를 추가해 해결.
 - **번호 정렬 버그**: `ReflectionApprovalQueue.jsx`(정리글 검토 페이지)의 대기/승인/반려/전체 목록이 제출 시각순으로 정렬돼 있어 번호가 뒤죽박죽으로 보이던 것을 학생 번호(`authorNumber`) 오름차순으로 수정.

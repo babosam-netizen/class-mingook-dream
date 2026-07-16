@@ -794,11 +794,10 @@
 - 기존 방 데이터 호환을 위해 과거 step id 일부(`executive-briefing`, `executive-request`, `executive-end`)가 코드에 남아 있을 수 있다. 새 흐름에서는 사용하지 않는다.
 - 문서에는 제안서 용어 `executive-budget-review`, `executive-adjust-draft`, `executive-result`가 보일 수 있지만, 현재 실제 코드는 `executive-review`, `executive-adjust`, `executive-final`을 사용한다.
 - 의미 있는 변경마다 `app/src/lib/build-info.js`, `history.md`, `task.md`, `project_context.md`를 함께 갱신한다.
-- 배포는 `cd ~/class_democra_dev/app && npm run build` 후 `bash deploy.sh`.
+- **배포 방식 변경(2026-07-10)**: NAS `deploy.sh` 수동 배포는 더 이상 쓰지 않는다. GitHub 저장소 main 브랜치에 `git push`하면 연결된 정적 호스팅(Cloudflare Pages 등)이 자동으로 빌드·배포한다 — 커밋 후 push까지만 하면 끝.
 - 기존 번들 크기 및 dynamic import 경고는 현재 알려진 경고이며, 빌드 실패는 아니다.
 
 ## 10. 배포 정보
-- 현재 빌드: `APP_BUILD = 'v1.2.230'`
-- 빌드 시각: `2026-05-25 01:23`
-- 배포 대상: `<배포경로>/app`
-- 서비스 URL: `https://<배포주소>/class_democra/app/`
+- **배포 방식(2026-07-10부터)**: GitHub 저장소 main 브랜치에 `git push` → 연결된 정적 호스팅(Cloudflare Pages 등)이 자동 빌드·배포. NAS `deploy.sh` 수동 배포는 폐지.
+- 현재 빌드: `src/lib/build-info.js`의 `APP_BUILD` 참조 (이 섹션의 숫자는 과거 NAS 배포 시절 기록이라 최신이 아닐 수 있음)
+- 레거시 이미지(`uploads/`)·`fetch_meta.php`만 NAS(`<배포경로>`)에서 계속 서비스

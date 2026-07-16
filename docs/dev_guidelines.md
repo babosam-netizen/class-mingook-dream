@@ -373,15 +373,21 @@ const c = colorMap[color] || colorMap.indigo
 
 ## 9. 배포 워크플로
 
-### 표준 배포 명령
+> **⚠️ 2026-07-10부로 배포 방식이 바뀌었다.** 아래는 옛 NAS `deploy.sh` 수동 배포 방식이며 더 이상 사용하지 않는다. 현재는 **GitHub 저장소 main 브랜치에 `git push`하면 연결된 정적 호스팅(Cloudflare Pages 등)이 자동으로 빌드·배포**한다. 즉 코드 수정 → 커밋 → `git push origin main`까지만 하면 끝 — 로컬에서 `npm run build`를 수동 실행하거나 산출물을 어딘가로 복사할 필요가 없다.
+>
+> - 배포 여부/진행 상황은 연결된 호스팅 서비스(Cloudflare Pages 등) 대시보드에서 확인한다.
+> - `app/src/lib/build-info.js`의 `APP_BUILD`는 여전히 사람이 보는 버전 표시용이므로, 의미 있는 변경 시 수동으로 올려준다(자동 증가 아님).
+> - `uploads/`(레거시 이미지)·`fetch_meta.php`(PHP)만 예외적으로 NAS에서 계속 서비스되며, 이 두 가지는 배포 파이프라인과 무관하다.
+>
+> 아래 옛 `deploy.sh` 관련 내용은 과거 기록(NAS 단독 배포 시절) 참고용으로만 남겨둔다.
+
+### (레거시) 옛 NAS 배포 명령
 
 ```bash
 cd ~/class_democra_dev/app && bash deploy.sh
 ```
 
-이 명령 하나로 빌드 + 배포 복사가 완료된다. 다른 방법은 사용하지 않는다.
-
-### 금지 사항
+### (레거시) 금지 사항
 
 | 금지 | 이유 |
 |---|---|
@@ -390,21 +396,6 @@ cd ~/class_democra_dev/app && bash deploy.sh
 | `<배포경로>/app/` 에 소스 파일 복사 | 배포 경로는 `dist/` 산출물만 |
 | 에러 상태로 배포 | 빌드 에러 해결 후 배포 (빌드 실패 시 deploy.sh 중단됨) |
 | **`rsync ... <배포경로>/app/dist/`** 같은 직접 rsync 호출 | **라이브 URL이 보는 위치는 `app/` 루트이지 `app/dist/` 가 아니다.** rsync로 `app/dist/`에 복사하면 빌드 산출물이 잘못된 위치에 들어가서 배포가 안 됨. **반드시 `bash deploy.sh` 사용** |
-
-### ⚠️ 흔한 실수 — "배포한 것 같은데 라이브에 반영 안 됨"
-
-증상: 코드를 고치고 `npm run build` + `rsync dist/ ...` 했는데 `https://<배포주소>/class_democra/app/` 가 옛 버전 그대로.
-
-원인: `rsync ... <배포경로>/app/dist/` 는 배포 폴더의 `app/dist/` 하위에 새 번들을 넣었지만, 웹서버가 보는 `index.html`은 `app/` 루트에 있는 옛 것이라 옛 번들을 계속 로드.
-
-대응: 반드시 `bash ~/class_democra_dev/app/deploy.sh` 사용. 이 스크립트는 `app/` 루트를 비우고 `dist/*`를 거기에 직접 복사한다.
-
-검증: 배포 후 `ls <배포경로>/app/index.html` 의 mtime이 방금 시각인지 확인.
-
-### 배포 후 확인
-
-배포 후 `https://<배포주소>/class_democra/app/` 에서 동작 확인.  
-브라우저 캐시 문제로 반영이 안 보이면 강제 새로고침 (`Cmd+Shift+R` / `Ctrl+Shift+R`).
 
 ---
 

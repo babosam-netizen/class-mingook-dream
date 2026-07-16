@@ -6,14 +6,20 @@
 
 ---
 
-## v1.7.110-docs (2026-07-10) [Claude] — 배포 방식 변경 문서 반영
-- 사용자가 배포 방식을 NAS `deploy.sh` 수동 배포에서 **GitHub main 브랜치 `git push` 시 자동 빌드·배포**(Cloudflare Pages 등 연동)로 전환했다고 알려줌. `CLAUDE.md`(1·2절), `docs/project_context.md`(9·10절), `docs/dev_guidelines.md`(9절)에 남아있던 옛 NAS 배포 안내를 갱신 — 옛 `deploy.sh` 내용은 레거시 참고용으로 남겨두되 더 이상 표준 절차가 아님을 명시. `uploads/`·`fetch_meta.php`만 예외적으로 NAS에서 계속 서비스됨을 명확히 함.
+## v1.7.111 (2026-07-10) [Claude] — 정리글 작성 중 내용이 사라지는 치명적 버그 수정
+- **근본 원인(핵심)**: `HighlightBox.jsx`가 교사가 워크플로 강조 단계를 다른 곳으로 옮기는 즉시 강조 대상이 아닌 섹션을 `return null`로 **완전히 언마운트**하고 있었음. 정리글 4번째 여정("시사회")의 정리글 작성(`editor`) 섹션도 이 컴포넌트로 감싸여 있어서, 학생이 한창 타이핑 중에 교사가 다른 학생을 위해 워크플로 단계를 이동하면(교실에서 매우 흔한 상황 — 진도가 빠른/느린 학생이 섞여 있으므로) **`ReflectionStructuredEditor`가 그 순간 통째로 사라지고 React state가 날아감**. 언마운트 cleanup이 fire-and-forget으로 저장을 시도하긴 하나 네트워크가 느리면 유실됨 — "글쓰다가 사라진다", "새로고침하면 없어진다"의 실제 원인. `HighlightBox`는 Phase1~4 전체(포스터, 법안, 사법 등)에서 널리 쓰이므로 같은 유형의 버그가 다른 입력 폼에도 잠재해 있었음.
+- **수정**: 비강조 상태에서 `null` 대신 `className="hidden"`(display:none)으로 화면에서만 숨기고 마운트는 유지 — 진행 중이던 입력·자동저장 타이머·React state가 보존되며, 강조가 다시 돌아오면 즉시 원래 내용 그대로 나타남.
+- **추가 버그(제출 상태 깜박임)**: `handleFinalSubmit`이 최종 제출 직전 예약돼 있던 debounced 자동저장 타이머(2초 유휴 후 발화)를 취소하지 않아, 제출 직후 그 타이머가 뒤늦게 발화하면 `status: 'pending'`(제출완료)을 `status: 'writing'`(임시저장)으로 다시 덮어쓰는 경합이 발생 — 교사 화면에서 "제출"과 "작성중" 배지가 번갈아 깜박이던 원인. `submitLockRef`를 추가해 제출 시작 시 타이머를 취소하고 잠그며, 자동저장 콜백도 잠금 상태면 스킵하도록 수정. 제출 실패 시엔 잠금을 풀어 계속 작성 가능하게 함.
+- `npm run build` 통과. `APP_BUILD` v1.7.111.
 
-## v1.7.110 (2026-07-10) [Claude] — 교사 정리글 완성 확인 동기화 버그 수정 + 검토 기능 강화
-- **핵심 버그**: `SubmissionStatusQuickPanel.jsx`(교사 대시보드 '제출 확인 빠른보기')가 정리글을 `data.reflections?.[row.id]`로 학생 id를 키 삼아 직접 조회하고 있었음. 그러나 정리글은 `pushUnder`로 생성된 랜덤 키에 저장되고 학생 id는 `authorStudentId` 필드에만 있어 이 조회는 항상 실패 — 학생이 제출을 마쳐도 항상 "미시작"으로 보이고 완료 카운트·상태 배지·단계별 체크리스트가 전혀 갱신되지 않던 원인. `authorStudentId`로 찾는 `findReflectionByStudent()` 헬퍼를 추가해 해결.
-- **번호 정렬 버그**: `ReflectionApprovalQueue.jsx`(정리글 검토 페이지)의 대기/승인/반려/전체 목록이 제출 시각순으로 정렬돼 있어 번호가 뒤죽박죽으로 보이던 것을 학생 번호(`authorNumber`) 오름차순으로 수정.
-- **기능 추가**: 두 화면 모두에서 학생 카드/번호 클릭 시 뜨는 검토 모달에 확인(승인)/반려/**수정**(제목·최종본 인라인 편집) 버튼과 "◀ 이전 제출 학생 · 다음 제출 학생 ▶" 이동 버튼 추가 — 제출한 학생만 순서대로 이어서 검토 가능.
-- `APP_BUILD` v1.7.110. (로컬 `node_modules` 미설치 환경이라 `npm run build` 미실행 — 코드 정적 검토만 수행)
+## v1.7.110-docs (2026-07-10) [Claude] — 배포 방식 변경 문서 반영 (다른 세션)
+- 사용자가 배포 방식을 서버 `deploy.sh` 수동 배포에서 **GitHub main 브랜치 `git push` 시 자동 빌드·배포**(Cloudflare Pages 등 연동)로 전환했다고 알려줌. `CLAUDE.md`(1·2절), `docs/project_context.md`(9·10절), `docs/dev_guidelines.md`(9절)에 남아있던 옛 배포 안내를 갱신.
+
+## v1.7.110 (2026-07-10) [Claude] — 교사 정리글 완성 확인 동기화 버그 수정 + 검토 기능 강화 (다른 세션)
+- **핵심 버그**: `SubmissionStatusQuickPanel.jsx`(교사 대시보드 '제출 확인 빠른보기')가 정리글을 `data.reflections?.[row.id]`로 학생 id를 키 삼아 직접 조회 — 실제로는 `pushUnder`의 랜덤 키에 저장되고 학생 id는 `authorStudentId` 필드에만 있어 조회가 항상 실패, 제출해도 계속 "미시작"으로 보이던 버그. `authorStudentId`로 찾는 `findReflectionByStudent()` 헬퍼로 해결.
+- **번호 정렬 버그**: `ReflectionApprovalQueue.jsx` 목록이 제출 시각순 → 학생 번호 오름차순 정렬로 수정.
+- **기능 추가**: 검토 모달에 확인/반려/수정 버튼 + 이전·다음 제출 학생 이동 버튼 추가.
+- `APP_BUILD` v1.7.110. (로컬 `node_modules` 미설치 환경이라 `npm run build` 미실행)
 
 ## v1.7.109 (2026-07-09) [Claude] — 교사 학생분석 '자세히 보기' 팝업이 깨져 나오던 문제 수정
 - **핵심 버그(이스케이프)**: `StudentAnalyticsPage.jsx`의 `handleOpenDetailWindow`가 새 창에 쓰는 최종 HTML 템플릿 리터럴에서 `<title>`, 학생 배지, `<h1>`, 시간, 본문(`bodyHtml`) 삽입부가 전부 `${...}`가 아니라 `\${...}`로 이스케이프되어 있었음 — 즉 실제 값 대신 `${bodyHtml}` 같은 글자 그대로가 팝업에 출력되던 것이 "이상하게 나온다"의 직접 원인. 백슬래시 제거로 정상 보간되도록 수정.

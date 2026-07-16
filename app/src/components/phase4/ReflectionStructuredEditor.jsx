@@ -477,6 +477,9 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
 
   // ── debounced 자동 저장 (2초 유휴 후)
   const autoSaveTimerRef = useRef(null)
+  // 최종 제출 진행/완료 중엔 뒤늦게 발화하는 자동저장 타이머가 status를
+  // 'writing'으로 되돌리는 경합을 막기 위한 잠금 (제출·승인 상태가 깜박이던 버그의 원인)
+  const submitLockRef = useRef(false)
   useEffect(() => {
     // 아직 방/학생 정보가 없으면 스킵
     if (!roomCode || !myStudentId) return
@@ -484,6 +487,7 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
     if (done) return
     clearTimeout(autoSaveTimerRef.current)
     autoSaveTimerRef.current = setTimeout(() => {
+      if (submitLockRef.current) return
       saveDraft(activeTab).then((ok) => {
         if (ok !== false) {
           setSaveDone(true)
@@ -584,6 +588,12 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
       return
     }
 
+    // 제출 시작 — 뒤늦게 발화할 수 있는 자동저장 타이머를 취소하고 잠가서
+    // status: 'pending'(제출)이 곧이어 status: 'writing'(임시저장)에 덮어써지는
+    // 경합을 막는다 (교사 화면에서 제출/작성중이 번갈아 깜박이던 원인).
+    clearTimeout(autoSaveTimerRef.current)
+    submitLockRef.current = true
+
     setBusy(true)
     try {
       const wasApproved = existing.status === 'approved'
@@ -622,6 +632,8 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
       }
       // 제출 상태를 즉시 ref에 반영 — 언마운트/자동저장이 'writing'으로 되돌리지 않도록
       serverStatusRef.current = payload.status
+      // 이후 자동저장은 keepStatus 보존 로직으로 안전하므로 잠금 해제
+      submitLockRef.current = false
 
       setDone(true)
       setShowReviewModal(false)
@@ -631,6 +643,8 @@ export default function ReflectionStructuredEditor({ existingReflection, onEditD
       }, 2000)
     } catch (err) {
       setError(err.message)
+      // 제출 실패 — 계속 작성/자동저장할 수 있도록 잠금 해제
+      submitLockRef.current = false
     } finally {
       setBusy(false)
     }

@@ -67,7 +67,11 @@ function HighlightBox({ active, anyHighlight, children, className = '', previewM
     )
   }
 
-  return null
+  // 강조 대상이 아닌 섹션 — 예전엔 null을 반환해 완전히 언마운트했으나, 그러면 학생이
+  // 입력 중이던 폼(정리글 에디터 등)이 교사의 강조 이동만으로 통째로 사라지고
+  // 자동저장 타이머·React state가 날아가는 치명적 버그가 있었다. display:none으로
+  // 화면에서만 숨기고 마운트는 유지해 진행 중이던 입력이 보존되도록 한다.
+  return <div ref={ref} className="hidden">{children}</div>
 }
 
 export default HighlightBox

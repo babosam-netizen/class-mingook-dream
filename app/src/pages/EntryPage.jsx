@@ -8,9 +8,10 @@ import { auth } from '../lib/firebase'
 import useGameStore, { getDefaultConfig } from '../store/gameStore'
 import ClassroomConfigEditor from '../components/teacher/ClassroomConfigEditor'
 
-// 교사 모드 진입 암호. .env.local의 VITE_TEACHER_PASSCODE로 덮어쓸 수 있음.
-const TEACHER_PASSCODE =
-  import.meta.env.VITE_TEACHER_PASSCODE || '123467'
+// 교사 모드 진입 암호. .env.local(또는 배포 환경변수)의 VITE_TEACHER_PASSCODE로 지정.
+// 값이 없으면 어떤 입력으로도 통과할 수 없도록 잠금(fail-closed) — 예전엔 '123467'
+// 하드코딩 기본값으로 조용히 열려있던 걸, 설정을 깜빡하면 아예 막히도록 바꿈.
+const TEACHER_PASSCODE = import.meta.env.VITE_TEACHER_PASSCODE || null
 // Firebase Auth 교사 계정 (Firebase Console에서 미리 생성해야 함)
 const TEACHER_EMAIL =
   import.meta.env.VITE_TEACHER_EMAIL || 'teacher@mingook.app'
